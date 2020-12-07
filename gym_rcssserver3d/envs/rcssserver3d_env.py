@@ -1,6 +1,7 @@
 import gym
 import socket
-import subprocess as proc
+import sexpr
+#import subprocess as proc
 from gym import error, spaces, utils
 from gym.utils import seeding
 
@@ -19,13 +20,21 @@ class Rcssserver3dEnv(gym.Env):
 
     #receive server state and parse it to the trainer to fill the variables
 
-    
+    lenght = sock.recv(4)                               #Recebe os primeiros 4 bytes que dizem respeito ao tamanho da mensagem                                
+    sockLen = int.from_bytes(lenght, 'little')          #Converte os bytes da mensagem em inteiro, com os bytes ordenados do menor para o maior (little)
+    sockIntLen = socket.ntohl(sockLen)                  #Converte o tamanho da mensagem de network para host long (NtoHL)
+
+    sString = sock.recv(sockIntLen)                     #Recebe a mensagem com o tamanho correto passado como parâmetro
+
+    sexp = sexpr.str2sexpr(str(sString, 'utf-8'))
+
+
     
     
     
     #send init mensage to server. Set playmode to playOn
     
-    msg = "(playMode playOn)"                                       #Constroi a mensagem
+    msg = "(playMode PlayOn)"                                       #Constroi a mensagem
     msgLen = socket.htonl(len(msg))                                 #pega o tamanho da mensagem e traduz utilizando o metodo Host To Network Long
     prefix = msgLen.to_bytes(4, 'little')                           #converte o tamanho de inteiro para bytes no formato little, assim como é devolvido pelo servidor.
 
