@@ -2,6 +2,8 @@ import subprocess as proc
 import socket
 import sys
 import sexpr
+import parser
+
 
 #proc.run(["rcssserver3d", "&"])        #Melhor iniciar numa janela do terminal mesmo por hora
 HOST = 'localhost'
@@ -18,13 +20,8 @@ sString = sock.recv(sockIntLen)                     #Recebe a mensagem com o tam
 
 sexp = sexpr.str2sexpr(str(sString, 'utf-8'))
 
-serverMsgFile = open("serverExpression.txt", "w")
-serverMsgFile.write(str(sexp))
-serverMsgFile.close()
+#parser.search('FieldLength', sexp)
 
-#print(sexp)
-# for x in sexp:
-#         if type(x) is Symbol:
-#             if x.value()=="FieldLength":
-#                 print("achou field")
-
+# serverMsgFile = open("serverExpression.txt", "w")
+# serverMsgFile.write(str(sexp))
+# serverMsgFile.close()
