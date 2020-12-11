@@ -20,7 +20,7 @@ sString = sock.recv(sockIntLen)                     #Recebe a mensagem com o tam
 
 sexp = sexpr.str2sexpr(str(sString, 'utf-8'))
 
-#parser.search('FieldLength', sexp)
+parser.search('play_mode', sexp)
 
 # serverMsgFile = open("serverExpression.txt", "w")
 # serverMsgFile.write(str(sexp))

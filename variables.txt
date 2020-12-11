@@ -1,0 +1,58 @@
+#AGENT DATA
+---->AgentRadius
+---->AgentMass
+---->P (Informações sobre um jogador em específico. Contem sub-expressions. Estudar para criar outra função dentro do arquivo parser que trate essas informações)
+
+#BALL DATA
+---->BallRadius
+---->BallMass
+
+#FIELD DATA
+---->FieldLength
+---->FieldWidth
+---->FieldHeight
+
+#ENVIRONMENT DATA
+---->time
+---->score_left
+---->score_right
+---->play_mode
+
+
+
+
+#TODO
+Adicionar funções de envio de mensagem 
+no parser para cada situação como:
+
+beamPlayer ----> (agent (team [Right,Left])(unum <n>)(pos <x y z>)):
+                Set the position and velocity of the given player on the field.
+                Example: (agent (team Left)(unum 1)(pos -52.0 0.0 0.3))
+
+beamBall ----> (ball (pos <x y z>)):
+                Set the position of the ball on the field.
+                Example: (ball (pos 10 20 1))
+
+changePlayMode ----> (playMode <play_mode>)
+
+
+
+
+#PLAYMODE LIST
+0  ----> BeforeKickOff
+1  ----> KickOff_Left
+2  ----> KickOff_Right 
+3  ----> PlayOn
+4  ----> KickIn_Left 
+5  ----> KickIn_Right 
+6  ----> corner_kick_left 
+7  ----> corner_kick_right
+8  ----> goal_kick_left 
+9  ----> goal_kick_right 
+10 ----> offside_left 
+11 ----> offside_right
+12 ----> GameOver 
+13 ----> Goal_Left 
+14 ----> Goal_Right 
+15 ----> free_kick_left 
+16 ----> free_kick_right
