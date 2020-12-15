@@ -1,7 +1,10 @@
 import gym
 import socket
 import sexpr
-#import subprocess as proc
+import trainer
+import parser
+import world
+#import subprocess as proc                                          #Não consegui achar uma forma de rodar e me liberar o terminal. Melhor rodar o servidor na mão por hora. Ou cria um script.sh pra rodar tudo.
 from gym import error, spaces, utils
 from gym.utils import seeding
 
@@ -9,38 +12,24 @@ class Rcssserver3dEnv(gym.Env):
   metadata = {'render.modes': ['human']}
 
   def __init__(self):                                               #variaveis iniciais como importação do modelo do agente e posicionamento do mesmo. Usar numeros do naosoccersim.rb e spark.rb
-    
-
-    #run and connect to server
-    #proc.run(["rcssserver3d", "&"])                                #Não consegui achar uma forma de rodar e me liberar o terminal. Melhor rodar o servidor na mão por hora. Ou cria um script.sh pra rodar tudo.
+                                   
     HOST = 'localhost'
     PORT = 3200
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)        #AF_INET = ipv4 / SOCK_STREAM = TCP
     sock.connect((HOST, PORT))                                      #estudar TCC de edivã, S-Expression
 
+    comand = trainer.Trainer(sock)
+    comms = parser.Parser(sock)
+    game = world.World(sock)
+    
     #receive server state and parse it to the trainer to fill the variables
 
-    lenght = sock.recv(4)                               #Recebe os primeiros 4 bytes que dizem respeito ao tamanho da mensagem                                
-    sockLen = int.from_bytes(lenght, 'little')          #Converte os bytes da mensagem em inteiro, com os bytes ordenados do menor para o maior (little)
-    sockIntLen = socket.ntohl(sockLen)                  #Converte o tamanho da mensagem de network para host long (NtoHL)
-
-    sString = sock.recv(sockIntLen)                     #Recebe a mensagem com o tamanho correto passado como parâmetro
-
-    sexp = sexpr.str2sexpr(str(sString, 'utf-8'))
-
-
-    
+    #playMode = comms.getValue('play_mode', comms.sexp)
     
     
     #send init mensage to server. Set playmode to playOn
     
-    msg = "(playMode PlayOn)"                                       #Constroi a mensagem
-    msgLen = socket.htonl(len(msg))                                 #pega o tamanho da mensagem e traduz utilizando o metodo Host To Network Long
-    prefix = msgLen.to_bytes(4, 'little')                           #converte o tamanho de inteiro para bytes no formato little, assim como é devolvido pelo servidor.
-
-    fullmsg = str(prefix, "utf-8") + msg                            #concatena o prefixo com a mensagem, transformando o prefixo em string com encode em utf-8, evitando duplicação do "b" de mensagens em bytes
-
-    sock.send(fullmsg.encode())                                     #encoda a mensagem e envia ela pelo socket TCP
+    #comand.changePlayMode("PlayOn")
 
 
     

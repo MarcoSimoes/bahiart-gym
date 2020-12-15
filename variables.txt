@@ -3,39 +3,15 @@
 ---->AgentMass
 ---->P (Informações sobre um jogador em específico. Contem sub-expressions. Estudar para criar outra função dentro do arquivo parser que trate essas informações)
 
-#BALL DATA
----->BallRadius
----->BallMass
-
-#FIELD DATA
----->FieldLength
----->FieldWidth
----->FieldHeight
-
-#ENVIRONMENT DATA
----->time
----->score_left
----->score_right
----->play_mode
-
-
+---> informações das juntas em geral e da posição do pé (centro de massa do pé)
 
 
 #TODO
-Adicionar funções de envio de mensagem 
-no parser para cada situação como:
-
-beamPlayer ----> (agent (team [Right,Left])(unum <n>)(pos <x y z>)):
-                Set the position and velocity of the given player on the field.
-                Example: (agent (team Left)(unum 1)(pos -52.0 0.0 0.3))
-
-beamBall ----> (ball (pos <x y z>)):
-                Set the position of the ball on the field.
-                Example: (ball (pos 10 20 1))
-
-changePlayMode ----> (playMode <play_mode>)
-
-
+Arquivo trainer.py completo, apenas revisar
+updateSexp no parser muito lento -> verificar e corrigir
+Estudar organização em singleton
+Arquivos world.py e connection.py -> estudar aplicação e implementar direito
+Passar coisas do rcssserver3d_env para o Kick_env (Rafael pode criar outro arquivo na mesma pasta, da uma olhada na lógica)
 
 
 #PLAYMODE LIST
@@ -56,3 +32,7 @@ changePlayMode ----> (playMode <play_mode>)
 14 ----> Goal_Right 
 15 ----> free_kick_left 
 16 ----> free_kick_right
+17 ----> direct_free_kick_left
+18 ----> direct_free_kick_right
+19 ----> pass_left
+20 ----> pass_right
