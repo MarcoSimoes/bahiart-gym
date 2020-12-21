@@ -5,10 +5,11 @@ import sexpr
 
 class Parser:
 
+    sexp = None
+
     def __init__(self, sock: socket):
         
         self.socket = sock
-        self.sexp = self.updateSexp()
 
 
     def updateSexp(self):
@@ -25,17 +26,17 @@ class Parser:
         #Recebe a mensagem com o tamanho correto passado como parâmetro
         sString = self.socket.recv(sockIntLen)
 
-        sexp = sexpr.str2sexpr(str(sString, 'utf-8'))
-        return sexp
+        self.sexp = sexpr.str2sexpr(str(sString, 'utf-8'))
 
 
     def search(self,word: str, lst: list):
-        self.sexp = self.updateSexp()
         for i in range(0,len(lst)):
             if type(lst[i]) is list:
                 self.search(word, lst[i])
             elif lst[i] == word:
                 print(word, '=', lst[i+1])
+            else:
+                return
 
     def getValue(self, word: str, lst: list):
         for i in range(0,len(lst)):
@@ -43,6 +44,8 @@ class Parser:
                 self.search(word, lst[i])
             elif lst[i] == word:
                 return lst[i+1]
+            else:
+                return
 
 
 # DEBUG SEARCH

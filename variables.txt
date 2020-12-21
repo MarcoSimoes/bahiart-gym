@@ -7,11 +7,11 @@
 
 
 #TODO
-Arquivo trainer.py completo, apenas revisar
+  (NO PROCESSO)     Arquivos world.py e connection.py -> estudar aplicação e implementar direito
 updateSexp no parser muito lento -> verificar e corrigir
-Estudar organização em singleton
-Arquivos world.py e connection.py -> estudar aplicação e implementar direito
 Passar coisas do rcssserver3d_env para o Kick_env (Rafael pode criar outro arquivo na mesma pasta, da uma olhada na lógica)
+Arquivo trainer.py completo, apenas revisar
+  (FEITO)           Estudar organização em singleton
 
 
 #PLAYMODE LIST

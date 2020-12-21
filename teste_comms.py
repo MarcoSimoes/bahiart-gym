@@ -4,16 +4,13 @@ import sys
 import sexpr
 import parser
 import trainer
+import comms
 #from connection import sParser, comand, Conection
 
 
-HOST = 'localhost'
-PORT = 3200
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect((HOST, PORT))
+net = comms.Comms()
 
-comand = trainer.Trainer(sock)
-sParser = parser.Parser(sock)
+comand = trainer.Trainer(net.sock)
 
-while True:
-    sParser.search('time', sParser.sexp)
+tempo = net.sParser.getValue('time', net.sParser.sexp)
+print(tempo)
