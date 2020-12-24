@@ -7,11 +7,16 @@
 
 
 #TODO
-  (NO PROCESSO)     Arquivos world.py e connection.py -> estudar aplicação e implementar direito
-updateSexp no parser muito lento -> verificar e corrigir
-Passar coisas do rcssserver3d_env para o Kick_env (Rafael pode criar outro arquivo na mesma pasta, da uma olhada na lógica)
-Arquivo trainer.py completo, apenas revisar
+  (NO PROCESSO)     Arquivos world.py -> estudar modelo no trello e implementar direito
+  (A FAZER)         Passar coisas do rcssserver3d_env para o Kick_env (Rafael pode criar outro arquivo na mesma pasta, da uma olhada na lógica) 
+  
   (FEITO)           Estudar organização em singleton
+  (FEITO)           comms.py
+  (FEITO)           parsr.py
+  (FEITO)           trainer.py
+  (FEITO)           updateSexp no parser muito lento -> verificar e corrigir
+  
+  (ULTIMO)          Traduzir todos os textos e comentários em português para inglês.
 
 
 #PLAYMODE LIST

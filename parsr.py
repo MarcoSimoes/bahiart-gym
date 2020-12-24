@@ -1,9 +1,8 @@
-import subprocess as proc
 import socket
 import sys
 import sexpr
 
-class Parser:
+class Parser(object):
 
     sexp = None
 
@@ -12,21 +11,9 @@ class Parser:
         self.socket = sock
 
 
-    def updateSexp(self):
-        #Recebe os primeiros 4 bytes que dizem respeito ao tamanho da mensagem
-        lenght = self.socket.recv(4)                                                               
+    def parse(self, string:str):
         
-        # Converte os bytes da mensagem em inteiro, 
-        # com os bytes ordenados do menor para o maior (little)
-        sockLen = int.from_bytes(lenght, 'little')          
-        
-        #Converte o tamanho da mensagem de network para host long (NtoHL)
-        sockIntLen = socket.ntohl(sockLen)
-
-        #Recebe a mensagem com o tamanho correto passado como parâmetro
-        sString = self.socket.recv(sockIntLen)
-
-        self.sexp = sexpr.str2sexpr(str(sString, 'utf-8'))
+        self.parsedExp = sexpr.str2sexpr(string)
 
 
     def search(self,word: str, lst: list):
