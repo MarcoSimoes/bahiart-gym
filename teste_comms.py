@@ -13,7 +13,7 @@ net = comms.Comms()
 
 while True:
     net.updateSExp()
-    tempo = net.sParser.getValue('time', net.sParser.parsedExp)
+    tempo = net.sParser.getValue('FieldLength', net.sParser.parsedExp)
     print(tempo)
     # if tempo != None:
     #     print(tempo)

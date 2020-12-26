@@ -6,6 +6,7 @@ class Parser(object):
     """
     Class to parse S-Expression from server
     """
+    result = None
 
     def __init__(self, sock: socket):
         
@@ -23,18 +24,13 @@ class Parser(object):
                 self.search(word, lst[i])
             elif lst[i] == word:
                 print(word, '=', lst[i+1])
-            else:
-                return
+        return
 
-
-    #Não retorna valor algum. Sempre None. Verificar e corrigir.
     def getValue(self, word: str, lst: list):
         for i in range(0,len(lst)):
             if type(lst[i]) is list:
-                self.getValue(word, lst[i])
+                self.result = self.getValue(word, lst[i])
             elif lst[i] == word:
-                self.result = lst[i+1]
-                return self.result
-            else:
-                self.result = 'not found'
-                return self.result
+                return lst[i+1]
+            return self.result
+        return self.result
