@@ -1,16 +1,12 @@
 import socket
 import parser
 import trainer
-from comms import sParser
+import comms
 
 class World(object):
     
+    net = comms.Comms()
     _instance = None
-
-    time = None
-    playMode = None
-    scoreLeft = None
-    scoreRight = None
 
     def __new__(self):
         if not self._instance:
@@ -18,22 +14,27 @@ class World(object):
             
         return self._instance
     
-    def updateEnv(self):
+    def dynamicUpdate(self):
         
+        # while socket connected:
+            #update dynamic variables
+
         #ENVIRONMENT
-        self.time = sParser.getValue('time', sParser.sexp)
-        self.playMode = sParser.getValue('play_mode', sParser.sexp)
-        self.scoreLeft = sParser.getValue('score_left', sParser.sexp)
-        self.scoreRight = sParser.getValue('score_right', sParser.sexp)
+        self.time = self.net.sParser.getValue('time', self.net.sParser.parsedExp)
+        self.playMode = self.net.sParser.getValue('play_mode', self.net.sParser.parsedExp)
+        self.scoreLeft = self.net.sParser.getValue('score_left', self.net.sParser.parsedExp)
+        self.scoreRight = self.net.sParser.getValue('score_right', self.net.sParser.parsedExp)
 
-    #FIELD
-    fieldLength = sParser.getValue('FieldLength', sParser.sexp)
-    fieldHeight = sParser.getValue('FieldHeight', sParser.sexp)
-    fieldwidth = sParser.getValue('Fieldwidth', sParser.sexp)
-    goalWidth = sParser.getValue('GoalWidth', sParser.sexp)
-    goalDepth = sParser.getValue('GoalDepth', sParser.sexp)
-    goalHeight = sParser.getValue('GoalHeight', sParser.sexp)
+    def staticUpdate(self):    
 
-    #BALL
-    ballRadius = sParser.getValue('BallRadius', sParser.sexp)
-    ballMass = sParser.getValue('BallMass', sParser.sexp)
+        #FIELD
+        self.fieldLength = self.net.sParser.getValue('FieldLength', self.net.sParser.parsedExp)
+        self.fieldHeight = self.net.sParser.getValue('FieldHeight', self.net.sParser.parsedExp)
+        self.fieldwidth = self.net.sParser.getValue('Fieldwidth', self.net.sParser.parsedExp)
+        self.goalWidth = self.net.sParser.getValue('GoalWidth', self.net.sParser.parsedExp)
+        self.goalDepth = self.net.sParser.getValue('GoalDepth', self.net.sParser.parsedExp)
+        self.goalHeight = self.net.sParser.getValue('GoalHeight', self.net.sParser.parsedExp)
+
+        #BALL
+        self.ballRadius = self.net.sParser.getValue('BallRadius', self.net.sParser.parsedExp)
+        self.ballMass = self.net.sParser.getValue('BallMass', self.net.sParser.parsedExp)

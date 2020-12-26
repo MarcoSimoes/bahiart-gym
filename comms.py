@@ -27,6 +27,8 @@ class Comms(object):
         self.sock.connect((self.HOST, self.PORT))
         self.setParser()
 
+
+
     def setParser(self):
         self.sParser = parsr.Parser(self.sock)
 

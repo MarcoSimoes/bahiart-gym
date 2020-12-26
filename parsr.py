@@ -3,8 +3,9 @@ import sys
 import sexpr
 
 class Parser(object):
-
-    sexp = None
+    """
+    Class to parse S-Expression from server
+    """
 
     def __init__(self, sock: socket):
         
@@ -16,7 +17,7 @@ class Parser(object):
         self.parsedExp = sexpr.str2sexpr(string)
 
 
-    def search(self,word: str, lst: list):
+    def search(self, word: str, lst: list):
         for i in range(0,len(lst)):
             if type(lst[i]) is list:
                 self.search(word, lst[i])
@@ -25,22 +26,15 @@ class Parser(object):
             else:
                 return
 
+
+    #Não retorna valor algum. Sempre None. Verificar e corrigir.
     def getValue(self, word: str, lst: list):
         for i in range(0,len(lst)):
             if type(lst[i]) is list:
-                self.search(word, lst[i])
+                self.getValue(word, lst[i])
             elif lst[i] == word:
-                return lst[i+1]
+                self.result = lst[i+1]
+                return self.result
             else:
-                return
-
-
-# DEBUG SEARCH
-# def testSearch(lst: list):
-#     #print("list length:", len(lst))
-#     for i in range(0, len(lst)):
-#         #print(type(lst[i]) is list)
-#         if type(lst[i]) is list:
-#             testSearch(lst[i])
-#         elif lst[i] == 'FieldWidth':
-#             print(lst[i+1])
+                self.result = 'not found'
+                return self.result
