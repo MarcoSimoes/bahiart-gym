@@ -13,13 +13,13 @@ while True:
 # while True:    
 #     ws.net.updateSExp()
 #     ws.dynamicUpdate()
-# teste = net.sParser.getValue('GoalDepth', net.sParser.parsedExp)
+# test = net.sParser.getValue('GoalDepth', net.sParser.parsedExp)
 # ws.staticUpdate()
 # print(net.sParser.parsedExp)
 
 # while True:
 #     net.updateSExp()
-#     tempo = net.sParser.getValue('time', net.sParser.parsedExp)
-#     print(tempo)
-#     if tempo != None:
-#         print(tempo)
+#     time = net.sParser.getValue('time', net.sParser.parsedExp)
+#     print(time)
+#     if time != None:
+#         print(time)

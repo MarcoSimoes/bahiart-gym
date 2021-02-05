@@ -7,7 +7,7 @@ from gym.utils import seeding
 class WalkEnv(gym.Env):
   metadata = {'render.modes': ['human']}
 
-  def __init__(self): #variaveis iniciais como importação do modelo do agente e posicionamento do mesmo. Usar numeros do naosoccersim.rb e spark.rb
+  def __init__(self): #Initial variables, such as agent model and position import. Use naosoccersim.rb and spark.rb numbers
     
 
     #run and connect to server
@@ -18,11 +18,11 @@ class WalkEnv(gym.Env):
     sock.connect((HOST, PORT))
 
     ...
-  def step(self, action): #Todas as ações são baseadas em numeros passados para as articulações. 22 articulações no total (definir quais são usadas pra cada treino)
+  def step(self, action): # Actions based in numbers passed to the joints. 22 joints total (define which one will be used in each train)
     ...
-  def reset(self): #condições de finalização da simulação e reset de posicionamento
+  def reset(self): # Ending conditions for the simulation and reset position.
     ...
-  def render(self, mode='human'): #rodar o roboviz ou algum monitor na tela pra desenhar o treino
+  def render(self, mode='human'): # Run roboviz or any monitor in the screen to show the training
     ...
   def close(self):
     ...

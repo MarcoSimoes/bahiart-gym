@@ -9,23 +9,22 @@ class Trainer:
 
     Example:
 
-    #Constroi a mensagem
+    # Builds the message
         msg = "(playMode " + playmode + ")"                              
-        
-    # Pega o tamanho da mensagem e traduz utilizando 
-    # o metodo Host To Network Long
+
+    # Get message length and translate using "Host To Network Long" method. 
         msgLen = socket.htonl(len(msg))                                 
-        
-    # Converte o tamanho de inteiro para bytes no formato little, 
-    # assim como é devolvido pelo servidor.
+    
+    # Converts integer size to bytes in the format 'little', 
+    # in the same way it's returned from the server.
         prefix = msgLen.to_bytes(4, 'little')                           
 
-    # Concatena o prefixo com a mensagem, 
-    # transformando o prefixo em string com encode em utf-8, 
-    # evitando duplicação do "b" de mensagens em bytes
+    # Concatenates the prefix with the message,
+    # turning the prefix into string(with 'utf-8' encode),
+    # avoiding duplication of "b" in byte messages.
         fullmsg = str(prefix, "utf-8") + msg                            
 
-    # Encoda a mensagem e envia ela pelo socket TCP
+    # Encodes the message and sends it through TCP socket 
         self.socket.send(fullmsg.encode())
 
     """

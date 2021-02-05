@@ -8,8 +8,8 @@ import parsr
 
 class Comms(object):
     """
-    Classe de comunicação entre o Gym e o servidor. Parâmetros padrões do método construtor da classe
-    levam a uma conexão HOST-PORT localhost-3200.
+    Communication class between Gym and Server.
+    Constructor default parameters creates a HOST-PORT localhost-3200 connection
     """
 
     _instance = None
@@ -42,17 +42,17 @@ class Comms(object):
         self.sock.send(fullmsg.encode())
 
     def updateSExp(self):
-        #Recebe os primeiros 4 bytes que dizem respeito ao tamanho da mensagem
+        # Receive 4 first bytes which contains message lenght info
         lenght = self.sock.recv(4)                                                               
         
-        # Converte os bytes da mensagem em inteiro, 
-        # com os bytes ordenados do menor para o maior (little)
+        # Converts message bytes into integer, 
+        # with the bytes ordered from lowest to highest(little)
         sockLen = int.from_bytes(lenght, 'little')          
         
-        #Converte o tamanho da mensagem de network para host long (NtoHL)
+        # Converts message lenght from 'network' to 'host long'(NtoHL) 
         sockIntLen = socket.ntohl(sockLen)
 
-        #Recebe a mensagem com o tamanho correto passado como parâmetro
+        # Receive message with the right size as parameter
         byteMsg = self.sock.recv(sockIntLen)
 
         #Transforms byteMsg into string
