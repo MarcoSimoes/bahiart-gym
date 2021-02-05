@@ -8,6 +8,12 @@ class Parser(object):
     """
     result = None
 
+    def __new__(cls):
+        if not cls._instance:
+            cls._instance = super(Parser, cls).__new__(cls)
+            
+        return cls._instance
+
     def __init__(self, sock: socket):
         
         self.socket = sock
@@ -24,13 +30,24 @@ class Parser(object):
                 self.search(word, lst[i])
             elif lst[i] == word:
                 print(word, '=', lst[i+1])
+            continue
         return
 
-    def getValue(self, word: str, lst: list):
+    def getValue(self, word: str, lst: list, old):
+        value = None
         for i in range(0,len(lst)):
-            if type(lst[i]) is list:
-                self.result = self.getValue(word, lst[i])
-            elif lst[i] == word:
-                return lst[i+1]
-            return self.result
-        return self.result
+            if value == None or value == old:
+                if lst[i] == word:
+                    value = lst[i+1]
+                    return value
+                elif type(lst[i]) is list:
+                    value = self.getValue(word, lst[i], old)
+                else:
+                    continue
+                if value == None or value == old:
+                    continue
+            else:
+                return value
+        if value is None:
+            value = old
+        return value        

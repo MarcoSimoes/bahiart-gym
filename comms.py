@@ -14,10 +14,10 @@ class Comms(object):
 
     _instance = None
     
-    def __new__(self):
-        if not self._instance:
-            self._instance = super(Comms, self).__new__(self)
-        return self._instance
+    def __new__(cls):
+        if not cls._instance:
+            cls._instance = super(Comms, cls).__new__(cls)
+        return cls._instance
 
     def __init__(self, host='localhost', port=3200):
 
