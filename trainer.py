@@ -1,6 +1,6 @@
 import sys
-import sexpr
-import comms
+from server import sexpr
+from server import comms
 #from connection import sock
 
 class Trainer:

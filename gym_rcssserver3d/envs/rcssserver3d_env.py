@@ -1,9 +1,9 @@
 import gym
 import socket
-import sexpr
-import trainer
 import parser
-import world
+from server import sexpr
+from ... import trainer
+from worldstate import world
 #import subprocess as proc                                          ##Não consegui achar uma forma de rodar e me liberar o terminal. Melhor rodar o servidor na mão por hora. Ou cria um script.sh pra rodar tudo.
 from gym import error, spaces, utils
 from gym.utils import seeding

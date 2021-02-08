@@ -1,7 +1,7 @@
 import parser
 import trainer
-import comms
-import world
+from server import comms
+from worldstate import world
 #from connection import sParser, comand, Conection
 
 ws = world.World()
