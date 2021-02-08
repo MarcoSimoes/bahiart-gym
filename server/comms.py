@@ -1,9 +1,9 @@
 import subprocess as proc
 import socket
 import sys
-import sexpr
-from .. import trainer
-import parsr
+from server import sexpr
+import trainer
+from server import parsr
 
 
 class Comms(object):

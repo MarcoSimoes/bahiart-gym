@@ -1,8 +1,8 @@
 import socket
 import parser
-from .. import trainer
-from ..server import comms
-from ..geometry.geometry import Point
+import trainer
+from server import comms
+from geometry.geometry import Point
 
 class World(object):
     
@@ -28,13 +28,13 @@ class World(object):
 
         #ENVIRONMENT
         self.time = self.net.sParser.getValue('time', self.net.sParser.parsedExp, self.time)
-        #print("Tempo de Jogo: " + self.time)
+        print("Tempo de Jogo: " + self.time)
         self.playMode = self.net.sParser.getValue('play_mode', self.net.sParser.parsedExp, self.playMode)
-        #print("PlayMode: " + self.playMode)
+        print("PlayMode: " + self.playMode)
         self.scoreLeft = self.net.sParser.getValue('score_left', self.net.sParser.parsedExp, self.scoreLeft)
-        #print("score left: " + self.scoreLeft)
+        print("score left: " + self.scoreLeft)
         self.scoreRight = self.net.sParser.getValue('score_right', self.net.sParser.parsedExp, self.scoreRight)
-        #print("score right: " + self.scoreRight)
+        print("score right: " + self.scoreRight)
     
     def staticUpdate(self):    
 
