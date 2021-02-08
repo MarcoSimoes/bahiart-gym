@@ -1,6 +1,10 @@
 import gym
 import socket
-import subprocess as proc
+import parser
+from server import sexpr
+from ... import trainer
+from worldstate import world
+# import subprocess as proc
 from gym import error, spaces, utils
 from gym.utils import seeding
 
@@ -11,12 +15,15 @@ class KickEnv(gym.Env):
     
 
     #run and connect to server
-    proc.run('rcssserver3d')
+    # proc.run('rcssserver3d')
     HOST = 'localhost'
     PORT = 3100
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((HOST, PORT))
 
+    # comand = trainer.Trainer(sock) ### Ver com Gabriel a finalidade dessas 3
+    # comms = parser.Parser(sock)
+    # game = world.World(sock)
     ...
   def step(self, action): # Actions based in numbers passed to the joints. 22 joints total (define which one will be used in each train)
     ...
