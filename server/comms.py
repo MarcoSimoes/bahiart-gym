@@ -1,4 +1,3 @@
-import subprocess as proc
 import socket
 import sys
 from server import sexpr

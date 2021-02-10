@@ -2,11 +2,13 @@ import socket
 import parser
 import trainer
 from server import comms
+from server import proxy
 from geometry.geometry import Point
 
 class World(object):
     
     net = comms.Comms()
+    proxy = proxy.Proxy()
     _instance = None
 
     def __new__(cls):

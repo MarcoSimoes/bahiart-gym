@@ -1,14 +1,14 @@
 import parser
 import trainer
 from server import comms
+from server import proxy
 from worldstate import world
 #from connection import sParser, comand, Conection
 
 ws = world.World()
+proxy = proxy.Proxy()
 
-while True:
-    ws.net.updateSExp()
-    ws.dynamicUpdate()
+proxy.run()
 
 # while True:    
 #     ws.net.updateSExp()
