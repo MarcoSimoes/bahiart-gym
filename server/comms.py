@@ -22,8 +22,20 @@ class Comms(object):
 
         self.HOST = host
         self.PORT = port
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.HOST, self.PORT))
+        try: 
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print("Socket created.")
+        except socket.error as err:
+            print("Socket not created.")
+            print("Error : " + str(err))
+        
+        try: 
+            self.sock.connect((self.HOST, self.PORT))
+            print("Connection established")
+        except socket.error as err:
+            print("Connection not established.")
+            print("Error : " + str(err))
+
         self.setParser()
 
 
@@ -38,7 +50,13 @@ class Comms(object):
         msgLen = socket.htonl(len(msg))
         prefix = msgLen.to_bytes(4, 'little')
         fullmsg = str(prefix, "utf-8") + msg
-        self.sock.send(fullmsg.encode())
+        try:
+            self.sock.send(fullmsg.encode())
+            print("Socket message sent.")
+        except socket.error as err:
+            print("Socket message not sent.")
+            print("Error : " + str(err))
+            print("Message : " + str(fullmsg))
 
     def updateSExp(self):
         # Receive 4 first bytes which contains message lenght info
