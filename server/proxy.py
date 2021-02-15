@@ -29,8 +29,19 @@ class Proxy(object):
     def start_serverSock(self):
         self.serverHOST = 'localhost'
         self.serverPORT = 3100
-        self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.serverSock.connect((self.serverHOST, self.serverPORT))
+        try:
+            self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print("Socket created")
+        except socket.error ass err:
+            print("Socket not created.")
+            print("Error : " str(err))
+
+        try:
+            self.serverSock.connect((self.serverHOST, self.serverPORT))
+            print("Socket connected.")
+        except socket.error as err:
+            print("Socket not connected.")
+            print("Error : " + str(err))
 
     def start_agentSock(self):
         self.agentProxyAddress = ('localhost', 3500)

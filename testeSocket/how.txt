@@ -1,0 +1,5 @@
+1) Rodar primeiro o server
+2) Rodar o client
+
+3) Escrever mensagem no terminal do client e verificar saída no servidor 
+
