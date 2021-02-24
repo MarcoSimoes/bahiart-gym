@@ -1,6 +1,6 @@
 import socket
 import sys
-from server import sexpr
+import sexpr
 
 class Parser(object):
     """

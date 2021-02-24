@@ -1,7 +1,8 @@
 import socket
-from server import sexpr
-import trainer
-from server import parsr
+import sexpr
+# import trainer # Acredito q n será necessário ter o trainer aq mano
+# Tirei só pra fazer uns testes.
+import parsr # Tirei o 'from server' pq tá na mesma pasta
 
 class Proxy(object):
     """
@@ -20,7 +21,7 @@ class Proxy(object):
         return cls._instance
 
     def __init__(self):
-
+        print()
         self.start_serverSock()
         self.start_agentSock()
         self.setProxyParser()
@@ -31,23 +32,33 @@ class Proxy(object):
         self.serverPORT = 3100
         try:
             self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print("Socket created")
-        except socket.error ass err:
-            print("Socket not created.")
-            print("Error : " str(err))
+            print("Server socket created")
+        except socket.error as err:
+            print("Server socket not created.")
+            print("Error : " + str(err))
 
         try:
             self.serverSock.connect((self.serverHOST, self.serverPORT))
-            print("Socket connected.")
+            print("Server socket connected.")
         except socket.error as err:
-            print("Socket not connected.")
+            print("Server socket not connected.")
             print("Error : " + str(err))
 
     def start_agentSock(self):
         self.agentProxyAddress = ('localhost', 3500)
-        self.agentSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            self.agentSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print("Client socket created.")
+        except socket.error as err:
+            print("Client socket not created.")
+            print("Error : " + str(err))
+        
         self.agentSock.bind(self.agentProxyAddress)
-
+        self.agentSock.listen()
+        print('Waiting agent to connect...')
+        self.agentConnection, _ = self.agentSock.accept()
+        print('Agent connected')
+        
     def setProxyParser(self):
         self.proxyParser = parsr.Parser(self.serverSock)
 
