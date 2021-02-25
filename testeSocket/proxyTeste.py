@@ -2,7 +2,7 @@
 
 # prox = Proxy()
 # prox.start_serverSock()
-# prox.start_agentSock()
+# prox.start_agentConnection()
 # while 1:
 #     prox.receiveAgentMessage()
 #     print('Recv Agent')
@@ -22,16 +22,15 @@ agentPORT = 3400
 FORMAT = 'utf-8'
 
 
-
 # CONNECTING TO AGENT
 
 agentProxyAddress = (serverHOST, agentPORT)
-agentSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-agentSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-agentSock.bind(agentProxyAddress)
-agentSock.listen()
+agentConnection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+agentConnection.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+agentConnection.bind(agentProxyAddress)
+agentConnection.listen()
 print('Waiting agent to connect on port : ' + str(agentPORT))
-agentConnection, _ = agentSock.accept()
+agentConnection, _ = agentConnection.accept()
 print('Agent connected')
 
 
@@ -41,6 +40,9 @@ serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSock.connect((serverHOST, serverPORT))
 # serverSock.setblocking(False)
 print("Connected to server on port : " + str(serverPORT))
+
+
+
 
 
 # FUNCTIONS
@@ -69,7 +71,12 @@ def sendToAgent():
 def receivingFromAgent():
     global agentMessage
     while True:
-        agentMessage = agentConnection.recv(1024)
+        lenght = agentConnection.recv(4)                                                                       
+        sockLen = int.from_bytes(lenght, 'little')          
+        sockIntLen = socket.ntohl(sockLen)
+        agentMessage = lenght + agentConnection.recv(sockIntLen)
+
+        # agentMessage = agentConnection.recv(64)
         try:
             print('[AGENT]' + str(agentMessage.decode()))
         except:
@@ -80,7 +87,13 @@ def receivingFromAgent():
 def receivingFromServer():
     global serverMessage
     while True:
-        serverMessage = serverSock.recv(1024)
+        lenght = serverSock.recv(4)                                                                       
+        sockLen = int.from_bytes(lenght, 'little')          
+        sockIntLen = socket.ntohl(sockLen)
+        serverMessage = lenght + serverSock.recv(sockIntLen)
+        
+        
+        # serverMessage = serverSock.recv(64)
         try:
             print('[SERVER]' + str(serverMessage.decode())) 
         except:
@@ -148,9 +161,9 @@ start()
 # Exception in thread Thread-2:
 # Traceback (most recent call last):
 #   File "/usr/lib/python3.6/threading.py", line 916, in _bootstrap_inner
-    # self.run()
+    # run()
 #   File "/usr/lib/python3.6/threading.py", line 864, in run
-    # self._target(*self._args, **self._kwargs)
+    # _target(*_args, **_kwargs)
 #   File "proxyTeste.py", line 75, in receivingFromServer
     # print('[SERVER]' + str(serverMessage.decode()))
 # UnicodeDecodeError: 'utf-8' codec can't decode byte 0xeb in position 3: invalid continuation byte
@@ -160,7 +173,7 @@ start()
 #   File "/usr/lib/python3.6/threading.py", line 1294, in _shutdown
     # t.join()
 #   File "/usr/lib/python3.6/threading.py", line 1056, in join
-    # self._wait_for_tstate_lock()
+    # _wait_for_tstate_lock()
 #   File "/usr/lib/python3.6/threading.py", line 1072, in _wait_for_tstate_lock
     # elif lock.acquire(block, timeout):
 # KeyboardInterrupt
