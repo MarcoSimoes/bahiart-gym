@@ -20,45 +20,34 @@ class Proxy:
         self.serverSock.connect((self.SERVER_HOST, self.SERVER_PORT))
         print("[PROXY]Connected to server on port : " + str(self.SERVER_PORT))
 
+    def connectNewAgent(self):
+        self.agentSock.listen()
+        newAgentSock, _ = self.agentSock.accept()
+        print("[PROXY]new agent connected")
+        return newAgentSock
+
     def start(self):
         # '''
         # STARTS THE PROXY
         # '''
         while True:
-            print('[PROXY]Waiting agent to connect on port : ' + str(self.AGENT_PORT))
-            self.agentSock.listen()
-            newAgentSock, _ = self.agentSock.accept()
-            threadNewConnection = threading.Thread(target=self.connectNewAgents,args=(newAgentSock,))
-            threadNewConnection.start()
-        
-        
-
-    def connectNewAgents(self,newAgentSock):
-        # '''
-        # Get new agent to connect
-        # '''
-        print('[PROXY]new agent connected')
-        while True:
-            self.connectToServer()
-
-            connectionAgentToServer = threading.Thread(target=self.connectionManager,args=(newAgentSock,self.serverSock,'[AGENT - SERVER]'))
-            connectionServerToAgent = threading.Thread(target=self.connectionManager,args=(self.serverSock,newAgentSock,'[SERVER - AGENT]'))
+            newAgentSock = self.connectNewAgent()
+            try:
+                self.connectToServer()
+            except:
+                pass
+            connectionAgentToServer = threading.Thread(target=self.connectionManager,args=(newAgentSock,self.serverSock))
+            connectionServerToAgent = threading.Thread(target=self.connectionManager,args=(self.serverSock,newAgentSock))
 
             connectionAgentToServer.start()
             connectionServerToAgent.start()
- 
 
     # MUST NOT CALL // PRIVATE
     def sendTo(self,sock,message):
-        # '''
-        # Send message to socket
-        # '''
-        # print("SENT")
-        # print(message.decode)
         sock.sendall(message)
 
-    # MUST NOT CALL // PRIVATE
-    def connectionManager(self,listenSock,sendSock,who):
+    # MUST NOT CALL // PRIVATE 
+    def connectionManager(self,listenSock,sendSock):
         # '''
         # Manage 2 connections.
         # Receives from X and sends to Y
@@ -71,11 +60,5 @@ class Proxy:
             sockLen = int.from_bytes(length, 'little')          
             sockIntLen = socket.ntohl(sockLen)
             message = length + listenSock.recv(sockIntLen)
-
-            # try:
-            #     print(f'[PROXY]received {who}: ' + str(message.decode()))
-            # except:
-            #     print(f'[PROXY]received {who}: couldn\'t decode')
-
             threadSend = threading.Thread(target=self.sendTo,args=(sendSock,message,))
             threadSend.start()
