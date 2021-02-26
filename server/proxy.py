@@ -1,106 +1,65 @@
 import socket
-import sexpr
-# import trainer # Acredito q n será necessário ter o trainer aq mano
-# Tirei só pra fazer uns testes.
-import parsr # Tirei o 'from server' pq tá na mesma pasta
+import threading
 
-class Proxy(object):
-    """
-    Proxy class to send and receive agent messages.
-    It simply serves as a simple gateway between the team
-    and the server while retrieving the necessary data.
-    """
+class Proxy:
 
-    _instance = None
-    agentMessage = None
-    serverMessage = None
-    
-    def __new__(cls):
-        if not cls._instance:
-            cls._instance = super(Proxy, cls).__new__(cls)
-        return cls._instance
+    def __init__(self,server_host, server_port, agent_port):
 
-    def __init__(self):
-        print()
-        self.start_serverSock()
-        self.start_agentSock()
-        self.setProxyParser()
+        self.SERVER_HOST = 'localhost'
+        self.SERVER_PORT = server_port
+        self.AGENT_PORT = agent_port
 
+        # AGENT CONNECTION INITIAL SETUP
+        self.agentSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.agentSock.bind((self.SERVER_HOST, self.AGENT_PORT))
 
-    def start_serverSock(self):
-        self.serverHOST = 'localhost'
-        self.serverPORT = 3100
-        try:
-            self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print("Server socket created")
-        except socket.error as err:
-            print("Server socket not created.")
-            print("Error : " + str(err))
+        # SERVER CONNECTION INITIAL SETUP
+        self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        try:
-            self.serverSock.connect((self.serverHOST, self.serverPORT))
-            print("Server socket connected.")
-        except socket.error as err:
-            print("Server socket not connected.")
-            print("Error : " + str(err))
+    def connectToServer(self):
+        self.serverSock.connect((self.SERVER_HOST, self.SERVER_PORT))
+        print("[PROXY]Connected to server on port : " + str(self.SERVER_PORT))
 
-    def start_agentSock(self):
-        self.agentProxyAddress = ('localhost', 3500)
-        try:
-            self.agentSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print("Client socket created.")
-        except socket.error as err:
-            print("Client socket not created.")
-            print("Error : " + str(err))
-        
-        self.agentSock.bind(self.agentProxyAddress)
-        self.agentSock.listen()
-        print('Waiting agent to connect...')
-        self.agentConnection, _ = self.agentSock.accept()
-        print('Agent connected')
-        
-    def setProxyParser(self):
-        self.proxyParser = parsr.Parser(self.serverSock)
+    def connectNewAgents(self):
 
-    def receiveAgentMessage(self):
-        lenght = self.agentSock.recv(4)                                                                       
-        sockLen = int.from_bytes(lenght, 'little')          
-        sockIntLen = socket.ntohl(sockLen)
-        byteMsg = self.agentSock.recv(sockIntLen)
-
-        self.agentMessage = str(byteMsg, 'utf-8')
-
-    def forwardAgentMessage(self):
-        self.agentMessage = self.agentMessage + '(syn)'
-        
-        msgLen = socket.htonl(len(self.agentMessage))
-        prefix = msgLen.to_bytes(4, 'little')
-        fullmsg = str(prefix, "utf-8") + self.agentMessage
-        
-        self.serverSock.send(self.agentMessage.encode())
-
-    def receiveServerMessage(self):
-        lenght = self.serverSock.recv(4)                                                                       
-        sockLen = int.from_bytes(lenght, 'little')          
-        sockIntLen = socket.ntohl(sockLen)
-        byteMsg = self.serverSock.recv(sockIntLen)
-
-        self.serverMessage = str(byteMsg, 'utf-8')
-
-    def forwardServerMessage(self):
-        msgLen = socket.htonl(len(self.serverMessage))
-        prefix = msgLen.to_bytes(4, 'little')
-        fullmsg = str(prefix, "utf-8") + self.serverMessage
-
-        self.agentSock.send(self.serverMessage.encode())
-
-    def run(self):
-        self.setProxyParser()
-        self.agentSock.listen()
-        agentConn, agentAddr = self.agentSock.accept()
+        print('[PROXY]Waiting agent to connect on port : ' + str(self.AGENT_PORT))
+        agentList = []
+        count = 0
         while True:
-            self.receiveAgentMessage()
-            self.forwardAgentMessage()
-            self.receiveServerMessage()
-            self.proxyParser.parse(self.serverMessage)
-            self.forwardServerMessage()
+            self.agentSock.listen()
+            newAgentSock, _ = self.agentSock.accept()
+            agentList.insert(count,newAgentSock)
+            print('[PROXY]new agent connected')
+
+            self.connectToServer()
+
+            connectionAgentToServer = threading.Thread(target=self.connectionManager,args=(agentList[count],self.serverSock,'[AGENT - SERVER]'))
+            connectionServerToAgent = threading.Thread(target=self.connectionManager,args=(self.serverSock,agentList[count],'[SERVER - AGENT]'))
+
+            connectionAgentToServer.start()
+            connectionServerToAgent.start()
+            count += 1
+
+    # MUST NOT CALL // PRIVATE
+    def sendTo(self,sock,message):
+        print("SENT")
+        print(message.decode)
+        sock.sendall(message)
+
+    # MUST NOT CALL // PRIVATE
+    def connectionManager(self,listenSock,sendSock,who):
+        # Initializing variable
+        message = ''.encode() 
+        while True:
+            length = listenSock.recv(4)                                                                       
+            sockLen = int.from_bytes(length, 'little')          
+            sockIntLen = socket.ntohl(sockLen)
+            message = length + listenSock.recv(sockIntLen)
+
+            try:
+                print(f'[PROXY]received {who}: ' + str(message.decode()))
+            except:
+                print(f'[PROXY]received {who}: couldn\'t decode')
+
+            threadSend = threading.Thread(target=self.sendTo,args=(sendSock,message,))
+            threadSend.start()
