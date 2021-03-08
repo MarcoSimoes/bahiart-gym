@@ -3,6 +3,9 @@ import threading
 
 class Proxy:
 
+    # Variable to be passed to the parser
+    self.serverToAgent = ''
+
     def __init__(self,server_host, server_port, agent_port):
 
         self.SERVER_HOST = 'localhost'
@@ -36,18 +39,14 @@ class Proxy:
                 self.connectToServer()
             except:
                 pass
-            connectionAgentToServer = threading.Thread(target=self.connectionManager,args=(newAgentSock,self.serverSock))
-            connectionServerToAgent = threading.Thread(target=self.connectionManager,args=(self.serverSock,newAgentSock))
 
+            connectionAgentToServer = threading.Thread(target=self.connectionManager,args=(newAgentSock,self.serverSock,str('agent')))   
+            connectionServerToAgent = threading.Thread(target=self.connectionManager,args=(self.serverSock,newAgentSock,str('server')))
+            
             connectionAgentToServer.start()
-            connectionServerToAgent.start()
+            connectionServerToAgent.start()  
 
-    # MUST NOT CALL // PRIVATE
-    def sendTo(self,sock,message):
-        sock.sendall(message)
-
-    # MUST NOT CALL // PRIVATE 
-    def connectionManager(self,listenSock,sendSock):
+    def connectionManager(self,listenSock,sendSock,whoIsSending):
         # '''
         # Manage 2 connections.
         # Receives from X and sends to Y
@@ -59,6 +58,12 @@ class Proxy:
             length = listenSock.recv(4)                                                                       
             sockLen = int.from_bytes(length, 'little')          
             sockIntLen = socket.ntohl(sockLen)
-            message = length + listenSock.recv(sockIntLen)
-            threadSend = threading.Thread(target=self.sendTo,args=(sendSock,message,))
-            threadSend.start()
+            message = listenSock.recv(sockIntLen)
+            if whoIsSending == 'server':
+                # print("SERVER SENDING : " + message.decode())
+                self.serverToAgent = message.decode()
+
+            # if whoIsSending == 'agent':
+            #     print("AGENT SENDING  : " + message.decode())
+            message = length + message
+            sendSock.sendall(message)
