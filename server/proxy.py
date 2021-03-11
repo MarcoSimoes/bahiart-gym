@@ -39,7 +39,7 @@ class Proxy:
                 threading._start_new_thread(self.connectionManager,(newAgentSock,self.serverSock))
             except:
                 pass
-            return
+            
 
     def connectionManager(self,agentSock,serverSock):
         # '''
@@ -50,7 +50,7 @@ class Proxy:
         # Initializing variable
         message = ''.encode() 
         while True:
-            message = ''.encode() 
+            
             # AGENTE ENVIANDO MENSAGEM PARA SERVIDOR
             length = agentSock.recv(4)                                                                       
             sockLen = int.from_bytes(length, 'little')          
@@ -61,6 +61,7 @@ class Proxy:
             if not message:
                 agentSock.close()
                 serverSock.close()
+                # self.connectToServer()
                 print('[PROXY]Closed agent connection')
                 return
             serverSock.sendall(message)
