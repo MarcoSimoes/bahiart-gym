@@ -95,13 +95,6 @@ class Proxy:
             message = receiveSock.recv(sockIntLen)
             fullmessage = length + message
 
-            # if not message:
-            #     receiveSock.close()
-            #     # self.connectToServer()
-            #     print('[PROXY]Closed connection.')
-            #     # f.close()
-            #     return
-
             try:
                 sendSock.sendall(fullmessage)
             except:
@@ -109,7 +102,6 @@ class Proxy:
                 receiveSock.close()
                 print('[PROXY] Closed connection.')
                 return
-
 
         #     # DEBUG MESSAGES
 
