@@ -1,7 +1,9 @@
 import socket
 import threading
+import re
 
 class Proxy:
+
 
     def __init__(self,agent_port,server_port=3100,server_host='localhost'):
         # '''
@@ -19,7 +21,21 @@ class Proxy:
         self.agentSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.agentSock.bind((self.SERVER_HOST, self.AGENT_PORT))
 
-        
+        # 
+        self.agentsDict = {
+            '1':[],
+            '2':[],
+            '3':[],
+            '4':[],
+            '5':[],
+            '6':[],
+            '7':[],
+            '8':[],
+            '9':[],
+            '10':[],
+            '11':[]
+        }        
+        #
 
 
     def connectToServer(self):
@@ -33,6 +49,8 @@ class Proxy:
         self.serverSock.connect((self.SERVER_HOST, self.SERVER_PORT))
         print("[PROXY] Connected to server on port : " + str(self.SERVER_PORT))
 
+    def main(self):
+        threading._start_new_thread(self.start,())
 
     def start(self):
         # '''
@@ -67,8 +85,8 @@ class Proxy:
         # SERVER TO THE AGENT
         # '''
 
-        threading._start_new_thread(self.sender,(agentSock,serverSock))
-        threading._start_new_thread(self.sender,(serverSock,agentSock))
+        threading._start_new_thread(self.sender,(agentSock,serverSock,))
+        threading._start_new_thread(self.sender,(serverSock,agentSock,))
 
 
     def sender(self,receiveSock,sendSock):
@@ -79,6 +97,12 @@ class Proxy:
 
         message = ''.encode() 
         fullmessage = ''.encode
+
+        # To record agent messages on dictionary
+        agentNumber = 0
+        # Splits messages through the spaces between them
+        splitMessage = re.split("\s",message.decode())
+        #
 
         while True:
              # RECEIVING MESSAGE
@@ -94,6 +118,21 @@ class Proxy:
             sockIntLen = socket.ntohl(sockLen)
             message = receiveSock.recv(sockIntLen)
             fullmessage = length + message
+            
+
+            # RECORDING MESSAGES ON DICTIONARY
+            if agentNumber == 0:    
+                # If the proxy doesn't know the agent, 
+                # it keeps searching in the messages the number of the agent.
+                splitMessage = re.split("\s",message.decode())
+                for x in range(len(splitMessage)):
+                    if splitMessage[x] == "(unum":
+                        agentNumber = str(splitMessage[x+1].replace(')',''))
+            
+            else:
+                self.agentsDict[agentNumber].append(message.decode())
+
+
 
             try:
                 sendSock.sendall(fullmessage)
@@ -124,3 +163,15 @@ class Proxy:
         #     #   print(fullMessage.decode())
         #     # except:
         #     #   print("Couldn't decode the message.")
+
+
+    def getMessagesFromAgent(self,agentNumber:str):
+        try:
+            listOfMessages = self.agentsDict[agentNumber]
+            self.agentsDict[agentNumber] = []
+            if(listOfMessages == []):
+                return ''
+            else:
+                return listOfMessages
+        except:
+            return ''
