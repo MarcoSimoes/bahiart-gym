@@ -1,15 +1,16 @@
 import socket
 import sys
 from server import sexpr
-import trainer
-from server import parsr
-from singleton import Singleton
+from server import trainer
+from server import serverParser
+from server.singleton import Singleton
 
 class Comms(Singleton):
     """
     Communication class between Gym and Server.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection
     """
+    serverSocket = None
 
     def __init__(self, host='localhost', port=3200):
 
@@ -24,6 +25,7 @@ class Comms(Singleton):
         
         try: 
             self.sock.connect((self.HOST, self.PORT))
+            self.serverSocket = self.sock
             print("Connection established")
         except socket.error as err:
             print("Connection not established.")
@@ -34,7 +36,7 @@ class Comms(Singleton):
 
 
     def setParser(self):
-        self.sParser = parsr.Parser(self.sock)
+        self.sParser = serverParser.ServerParser()
 
     def send(self, msg: str):
         """

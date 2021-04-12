@@ -1,18 +1,14 @@
 import socket
 import sys
-import sexpr
-from singleton import Singleton
+from server import sexpr
+from server import comms
+from server.singleton import Singleton
 
 class Parser(Singleton):
     """
     Class to parse S-Expression from server
     """
     result = None
-
-    # def __init__(self, sock: socket):
-        
-    #     self.socket = sock
-
 
     def parse(self, string:str):
         

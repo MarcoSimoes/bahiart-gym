@@ -5,7 +5,7 @@
 ##  * public domain *
 ##
 
-from abstfilter import AbstractFeeder, AbstractFilter, AbstractConsumer
+from server.abstfilter import AbstractFeeder, AbstractFilter, AbstractConsumer
 
 
 ##  SExprReader

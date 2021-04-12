@@ -1,8 +1,8 @@
 import socket
 import sys
-import sexpr
-import proxy
-from parsr import Parser
+from server import sexpr
+from server import proxy
+from server.parsr import Parser
 
 class AgentParser(Parser):
     """

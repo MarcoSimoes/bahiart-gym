@@ -1,12 +1,12 @@
 import socket
 import threading
 import re
-from singleton import Singleton
+from server.singleton import Singleton
 
 class Proxy(Singleton):
 
 
-    def __init__(self,agent_port,server_port=3100,server_host='localhost'):
+    def __init__(self,agent_port=3500,server_port=3100,server_host='localhost'):
         # '''
         # INITIALIZES THE SERVER_HOST, SERVER_PORT, AGENT_PORT AND ALSO 
         # DOES THE INITIAL SET UP FOR THE AGENT SOCKET AND SERVER SOCKET

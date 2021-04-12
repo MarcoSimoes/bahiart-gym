@@ -1,4 +1,4 @@
-from proxy import Proxy
+from server.proxy import Proxy
 import sys
 
 # TO RUN TYPE : python3 runProxy.py <agentConnectionPort>
