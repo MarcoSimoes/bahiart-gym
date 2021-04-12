@@ -98,9 +98,11 @@ class Proxy:
         message = ''.encode() 
         fullmessage = ''.encode
 
-        # To record agent messages on dictionary
+
+        # TO RECORD AGENT MESSAGES
+        # AGENT NUMBER WILL STORAGE THE NUMBER OF THE AGENT
+        # SPLIT MESSAGE WILL BE THE MESSAGES SPLIT BY THE SPACES AND CONVERTED INTO A LIST
         agentNumber = 0
-        # Splits messages through the spaces between them
         splitMessage = re.split("\s",message.decode())
         #
 
@@ -119,21 +121,6 @@ class Proxy:
             message = receiveSock.recv(sockIntLen)
             fullmessage = length + message
             
-
-            # RECORDING MESSAGES ON DICTIONARY
-            if agentNumber == 0:    
-                # If the proxy doesn't know the agent, 
-                # it keeps searching in the messages the number of the agent.
-                splitMessage = re.split("\s",message.decode())
-                for x in range(len(splitMessage)):
-                    if splitMessage[x] == "(unum":
-                        agentNumber = str(splitMessage[x+1].replace(')',''))
-            
-            else:
-                self.agentsDict[agentNumber].append(message.decode())
-
-
-
             try:
                 sendSock.sendall(fullmessage)
             except:
@@ -163,6 +150,22 @@ class Proxy:
         #     #   print(fullMessage.decode())
         #     # except:
         #     #   print("Couldn't decode the message.")
+
+
+
+        # RECORDING MESSAGES ON DICTIONARY (separated by agent)
+            if agentNumber == 0:    
+                # If the proxy doesn't know the agent, 
+                # it keeps searching in the messages the number of the agent.
+                splitMessage = re.split("\s",message.decode())
+                for x in range(len(splitMessage)):
+                    if splitMessage[x] == "(unum":
+                        agentNumber = str(splitMessage[x+1].replace(')',''))
+
+            else:
+                # If the proxy knows the agent number, it appends the message in the dictionary.
+                self.agentsDict[agentNumber].append(message.decode())
+
 
 
     def getMessagesFromAgent(self,agentNumber:str):
