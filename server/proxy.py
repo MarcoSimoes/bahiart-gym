@@ -1,7 +1,7 @@
 import socket
 import threading
 import re
-from server.singleton import Singleton
+from singleton import Singleton
 
 class Proxy(Singleton):
 
