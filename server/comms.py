@@ -3,20 +3,13 @@ import sys
 from server import sexpr
 import trainer
 from server import parsr
+from singleton import Singleton
 
-
-class Comms(object):
+class Comms(Singleton):
     """
     Communication class between Gym and Server.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection
     """
-
-    _instance = None
-    
-    def __new__(cls):
-        if not cls._instance:
-            cls._instance = super(Comms, cls).__new__(cls)
-        return cls._instance
 
     def __init__(self, host='localhost', port=3200):
 

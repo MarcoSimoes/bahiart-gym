@@ -1,22 +1,16 @@
 import socket
 import parser
-import trainer
+from server import trainer
+from server.singleton import Singleton
 from server import comms
 from server import proxy
 from geometry.geometry import Point
 
-class World(object):
+class World(Singleton):
     
     net = comms.Comms()
     proxy = proxy.Proxy()
-    _instance = None
-
-    def __new__(cls):
-        if not cls._instance:
-            cls._instance = super(World, cls).__new__(cls)
-            
-        return cls._instance
-
+    
     def __init__(self):
         self.time = None
         self.playMode = None
