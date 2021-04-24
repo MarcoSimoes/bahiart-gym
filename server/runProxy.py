@@ -3,12 +3,12 @@ import sys
 
 # TO RUN TYPE : python3 runProxy.py <agentConnectionPort>
 # Ex: python3 runProxy.py 3300
-proxy = Proxy()
+proxy = Proxy(int(sys.argv[1]))
 
 
 #  -------------------- OPTION 1 ------------------------
 # TO RUN THE PROXY
-# proxy.start()
+proxy.start()
 
 
 
@@ -18,10 +18,10 @@ proxy = Proxy()
 # ANOTHER FUNCTIONS WITHOUT BEING STUCK IN THE START FUNCTION.
 
 # IN THIS WAY, WE CAN RECEIVE THE MESSAGES FROM A SPECIFIC AGENT
-proxy.main()
+# proxy.main()
 
-while True:
-    msg = proxy.getMessagesFromAgent('1')
-    if msg != '':
-        print(msg)
-        print("\n")
+# while True:
+#    msg = proxy.getMessagesFromAgent('1')
+#    if msg != '':
+#        print(msg)
+#        print("\n")
