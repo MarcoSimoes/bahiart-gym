@@ -1,5 +1,8 @@
 import socket
+from socket import timeout
 import threading
+import re
+import time
 
 class agentProxy:
 
@@ -7,8 +10,11 @@ class agentProxy:
         self.SERVER_HOST = server_host
         self.SERVER_PORT = server_port
         self.agentSock = agentSock
+        self.MAX_WAIT_TIME = 0.15
         self.isConnected = True
-
+        self.agentNumber = '0'
+        self.listOfMessages = []
+        
     def connectToServer(self):
         serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         serverSock.connect((self.SERVER_HOST, self.SERVER_PORT))
@@ -38,65 +44,87 @@ class agentProxy:
         threading._start_new_thread(self.agentToServer,())
 
     def serverToAgent(self):
+        self.serverSock.settimeout(self.MAX_WAIT_TIME)
+        length = ''.encode()
+        message = ''.encode()
+        splitMessage = re.split("\s",message.decode())
         while True:
             try:
-                length = self.serverSock.recv(4)
-            except:
-                if not self.isConnected:
-                    return
-
-            sockLen = int.from_bytes(length, 'little')          
-            sockIntLen = socket.ntohl(sockLen)
-
-            try:
+                length = self.serverSock.recv(4)          
+                sockLen = int.from_bytes(length, 'little')          
+                sockIntLen = socket.ntohl(sockLen)
                 message = self.serverSock.recv(sockIntLen)
-            except:
-                if not self.isConnected:
-                    return
+                fullmessage = length + message
+                
+                if not message:
+                    if self.isConnected:
+                        self.closeConnection()
+                    else:
+                        return
 
-            if not message:
-                if self.isConnected:
-                    self.closeConnection()
-                    return
+                try:
+                    self.agentSock.sendall(fullmessage)
+                except:
+                    if self.isConnected:
+                        self.closeConnection()
+                    else:
+                        return
 
-            fullmessage = length + message
+            except timeout:
+                message = '(syn)'.encode()
+                sockLen = socket.htonl(len(message))
+                length = sockLen.to_bytes(4,'little')
+                fullmessage = length + message
 
-            try:
-                self.agentSock.sendall(fullmessage)
-            except:
-                if not self.isConnected:
-                    return
-                else:
-                    self.serverSock = self.connectToServer()
+                try:
+                    self.serverSock.sendall(fullmessage)
+                except:
+                    if self.isConnected:
+                        self.closeConnection()
+                    else:
+                        return
+            
+            # RECORDING MESSAGES ON DICTIONARY (separated by agent)
+            if self.agentNumber == '0':    
+                # If the proxy doesn't know the agent, 
+                # it keeps searching in the messages the number of the agent.
+                splitMessage = re.split("\s",message.decode())
+                for x in range(len(splitMessage)):
+                    if 'unum' in splitMessage[x]:
+                        self.agentNumber = str(splitMessage[x+1].split(')',1)[0])
+                        
+            else:
+                # If the proxy knows the agent number, it appends the message in the dictionary.
+                self.listOfMessages.append(message.decode())
 
+                        
     def agentToServer(self):
         while True:
-            try:
-                length = self.agentSock.recv(4)
-            except:
-                if not self.isConnected:
-                    return
-
+            length = self.agentSock.recv(4)
             sockLen = int.from_bytes(length, 'little')          
             sockIntLen = socket.ntohl(sockLen)
-
-            try:
-                message = self.agentSock.recv(sockIntLen)
-            except:
-                if not self.isConnected:
-                    return
+            message = self.agentSock.recv(sockIntLen)
+            fullmessage = length + message
 
             if not message:
                 if self.isConnected:
-                    self.closeConnection()
+                    self.closeConnection
+                else:
                     return
-
-            fullmessage = length + message
 
             try:
                 self.serverSock.sendall(fullmessage)
             except:
-                if not self.isConnected:
-                    return
+                if self.isConnected:
+                    self.closeConnection()
                 else:
-                    self.serverSock = self.connectToServer()
+                    return
+    
+    def getAgentNumber(self):
+        return self.agentNumber
+    
+    def getAgentMessages(self):
+        return self.listOfMessages
+
+    def getIsConnected(self):
+        return self.isConnected

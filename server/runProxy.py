@@ -10,7 +10,12 @@ proxy = Proxy(int(sys.argv[1]))
 # TO RUN THE PROXY
 proxy.start()
 
-
+while True:
+    lista = proxy.getMessagesFromAgent('1')
+    if len(lista) == 0:
+        pass
+    else:
+        print(lista)
 
 
 #  -------------------- OPTION 2 ------------------------
