@@ -26,13 +26,14 @@ class Proxy:
             if self.proxies[x].getAgentNumber() == agentNumber:
                 messages = self.proxies[x].getAgentMessages()
         
-        self.verifyAgents()
+        self.verifyAgent(agentNumber)
         return messages
     
-    def verifyAgents(self):
+    def verifyAgent(self,agentNumber:str):
         for x in range(len(self.proxies)):
-            if not self.proxies[x].getIsConnected():
-                self.proxies.remove(self.proxies[x])
+            if self.proxies[x].getAgentNumber() == agentNumber:
+                if not self.proxies[x].getIsConnected():
+                    self.proxies.remove(self.proxies[x])
 
     def main(self):
         while True:

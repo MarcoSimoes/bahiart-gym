@@ -84,7 +84,7 @@ class agentProxy:
                     else:
                         return
             
-            # RECORDING MESSAGES ON DICTIONARY (separated by agent)
+            # Searching agent number
             if self.agentNumber == '0':    
                 # If the proxy doesn't know the agent, 
                 # it keeps searching in the messages the number of the agent.
@@ -92,9 +92,8 @@ class agentProxy:
                 for x in range(len(splitMessage)):
                     if 'unum' in splitMessage[x]:
                         self.agentNumber = str(splitMessage[x+1].split(')',1)[0])
-                        
-            else:
-                # If the proxy knows the agent number, it appends the message in the dictionary.
+                
+            if not message.decode() == "(syn)":
                 self.listOfMessages.append(message.decode())
 
                         
@@ -124,7 +123,10 @@ class agentProxy:
         return self.agentNumber
     
     def getAgentMessages(self):
-        return self.listOfMessages
+        # Return list of messages and clear it
+        messages = self.listOfMessages.copy()
+        self.listOfMessages = []
+        return messages
 
     def getIsConnected(self):
         return self.isConnected
