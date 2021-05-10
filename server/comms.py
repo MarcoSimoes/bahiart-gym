@@ -71,4 +71,4 @@ class Comms(Singleton):
         self.sexp = str(byteMsg, 'utf-8')
 
         #Sends string with the S-Expression to the parser
-        self.sParser.parse(self.sexp)
+        self.serverExp = self.sParser.parse(self.sexp)
