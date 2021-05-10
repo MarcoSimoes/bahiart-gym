@@ -126,6 +126,10 @@ class agentProxy:
         # Return list of messages and clear it
         messages = self.listOfMessages.copy()
         self.listOfMessages = []
+
+        # Return only the oldest message on the list, so i keep receiving them in order
+        # messages = self.listOfMessages.copy()
+        # self.listOfMessages.pop(0)
         return messages
 
     def getIsConnected(self):

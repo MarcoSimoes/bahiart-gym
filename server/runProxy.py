@@ -1,21 +1,28 @@
 from proxy import Proxy
+from agentParser import AgentParser
 import sys
 
 # TO RUN TYPE : python3 runProxy.py <agentConnectionPort>
 # Ex: python3 runProxy.py 3300
-proxy = Proxy(int(sys.argv[1]))
-
+#proxy = Proxy(int(sys.argv[1]))
+proxy = Proxy(3500)
 
 #  -------------------- OPTION 1 ------------------------
 # TO RUN THE PROXY
 proxy.start()
 
+#Intance Parser
+parser = AgentParser()
+GYRVal = None
 while True:
     lista = proxy.getMessagesFromAgent('1')
+    parsedExp = parser.parse(str(lista))
+    GYRVal = parser.getGyr('GYR', parsedExp, GYRVal)
     if len(lista) == 0:
         pass
     else:
-        print(lista)
+        print(GYRVal)
+        #print(lista)
 
 
 #  -------------------- OPTION 2 ------------------------

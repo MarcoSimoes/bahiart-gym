@@ -1,10 +1,10 @@
 import socket
 import sys
-from server import sexpr
-from server import proxy
-from server import comms
-from server.parsr import Parser
-from server.singleton import Singleton
+import sexpr
+import proxy
+import comms
+from parsr import Parser
+from singleton import Singleton
 
 class ServerParser(Parser, Singleton):
     """

@@ -1,9 +1,9 @@
 import socket
 import sys
-from server import sexpr
-from server import trainer
-from server import serverParser
-from server.singleton import Singleton
+import sexpr
+import trainer
+import serverParser
+from singleton import Singleton
 
 class Comms(Singleton):
     """

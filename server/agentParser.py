@@ -1,8 +1,8 @@
 import socket
 import sys
-from server import sexpr
-from server import proxy
-from server.parsr import Parser
+import sexpr
+import proxy
+from parsr import Parser
 
 class AgentParser(Parser):
     """
@@ -22,6 +22,29 @@ class AgentParser(Parser):
                     return value
                 elif type(lst[i]) is list:
                     value = self.getValue(word, lst[i], old)
+                else:
+                    continue
+                if value == None or value == old:
+                    continue
+            else:
+                return value
+        if value is None:
+            value = old
+        return value
+
+    def getGyr(self, word: str, lst: list, old):
+        value = []
+        for i in range(0,len(lst)):
+            if value == [] or value == old:
+                if lst[i] == word:
+                    valuesList = lst[i+2]
+                    x = valuesList[1]
+                    y = valuesList[2]
+                    z = valuesList[3]
+                    value = [x,y,z]
+                    return value
+                elif type(lst[i]) is list:
+                    value = self.getGyr(word, lst[i], old)
                 else:
                     continue
                 if value == None or value == old:

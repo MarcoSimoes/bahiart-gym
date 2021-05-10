@@ -1,8 +1,7 @@
 import socket
 import sys
-from server import sexpr
-from server import comms
-from server.singleton import Singleton
+import sexpr
+from singleton import Singleton
 
 class Parser(Singleton):
     """
@@ -12,7 +11,8 @@ class Parser(Singleton):
 
     def parse(self, string:str):
         
-        self.parsedExp = sexpr.str2sexpr(string)
+        return sexpr.str2sexpr(string)
+        #self.parsedExp = sexpr.str2sexpr(string)
 
 
     def search(self, word: str, lst: list):
