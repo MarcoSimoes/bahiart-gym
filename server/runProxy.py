@@ -14,14 +14,17 @@ proxy.start()
 #Intance Parser
 parser = AgentParser()
 GYRVal = None
+hingeVal = None
 while True:
     lista = proxy.getMessagesFromAgent('1')
     parsedExp = parser.parse(str(lista))
-    GYRVal = parser.getGyr('GYR', parsedExp, GYRVal)
+    hingeVal = parser.getHinjePos('hj2', parsedExp, hingeVal)
+    #GYRVal = parser.getGyr('GYR', parsedExp, GYRVal)
     if len(lista) == 0:
         pass
     else:
-        print(GYRVal)
+        #print(GYRVal)
+        print(hingeVal)
         #print(lista)
 
 

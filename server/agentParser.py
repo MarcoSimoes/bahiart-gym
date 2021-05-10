@@ -17,11 +17,16 @@ class AgentParser(Parser):
         value = None
         for i in range(0,len(lst)):
             if value == None or value == old:
-                if lst[i] == word:
-                    value = lst[i+4]
-                    return value
+                if lst[i] == 'HJ':
+                    hingeName = lst[i+1]
+                    if hingeName[1] == word:
+                        ax = lst[i+2]
+                        value = ax[1]
+                        return value
+                    else:
+                        continue
                 elif type(lst[i]) is list:
-                    value = self.getValue(word, lst[i], old)
+                    value = self.getHinjePos(word, lst[i], old)
                 else:
                     continue
                 if value == None or value == old:
@@ -32,6 +37,7 @@ class AgentParser(Parser):
             value = old
         return value
 
+    #Can be used for ACC too. Just send 'ACC' as the word instead of 'GYR'
     def getGyr(self, word: str, lst: list, old):
         value = []
         for i in range(0,len(lst)):
