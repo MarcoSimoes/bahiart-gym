@@ -1,9 +1,8 @@
+from server.comms import Comms
 import gym
-import socket
 import parser
-from server import sexpr
-from ... import trainer
-from worldstate import world
+from server import trainer
+from server import world
 # import subprocess as proc
 from gym import error, spaces, utils
 from gym.utils import seeding
@@ -11,23 +10,37 @@ from gym.utils import seeding
 class KickEnv(gym.Env):
   metadata = {'render.modes': ['human']}
 
-  def __init__(self): #Initial variables, such as agent model and position import. Use naosoccersim.rb and spark.rb numbers
+  def __init__(self):
+    
+    #Instance World, Player (how to run a while to keep theese two updated??)
+
+    #Player should instance every player on the field acording to proxy (import player objects from proxy)
+
+
+    #Define action and observation space
+    #Define episode end condition flags
     
 
-    #run and connect to server
-    # proc.run('rcssserver3d')
-    HOST = 'localhost'
-    PORT = 3100
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((HOST, PORT))
-
-    # comand = trainer.Trainer(sock) ### Ver com Gabriel a finalidade dessas 3
+    self.command = trainer.Trainer() ### Ver com Gabriel a finalidade dessas 3
     # comms = parser.Parser(sock)
     # game = world.World(sock)
     ...
   def step(self, action): # Actions based in numbers passed to the joints. 22 joints total (define which one will be used in each train)
+    
+    #instance playerConnection()
+    #playerConnection.sendActions(action)
+
+    #Inside playerConnection class, create socket to communicate with agentPlayers
     ...
-  def reset(self): # Ending conditions for the simulation and reset position.
+  def reset(self):
+
+    #change playmode?
+    
+    #Position ball in the center of the field
+    self.command.beamBall(0,0,0)
+
+    #Position Player behind the ball
+    self.command.beamPlayer(1, "Left", -0.15, 0, 0.3)
     ...
   def render(self, mode='human'): # Run roboviz or any monitor in the screen to show the training
     ...

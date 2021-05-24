@@ -1,5 +1,5 @@
 import socket
-from agentProxy import agentProxy
+from server.agentProxy import AgentProxy
 import threading
 import time
 
@@ -41,7 +41,7 @@ class Proxy:
             newAgentSock, _ = self.agentSock.accept()
 
             try:
-                pxy = agentProxy(newAgentSock,self.SERVER_PORT,self.SERVER_HOST)
+                pxy = AgentProxy(newAgentSock,self.SERVER_PORT,self.SERVER_HOST)
                 pxy.connectionManager()
                 self.proxies.append(pxy)
                 print("[PROXY] New agent connected on port : " + str(self.AGENT_PORT))

@@ -1,13 +1,7 @@
-from worldstate import world
-from server import proxy
+from server.trainer import Trainer
 
-ws = world.World()
+command = Trainer()
 
-proxy = proxy.Proxy()
-proxy.main()
-
-while True:
-    msg = proxy.getMessagesFromAgent('1')
-    if msg != '':
-        print(msg)
-        print("\n")
+#command.changePlayMode("PlayOn")
+command.beamBall(0,0,0)
+command.beamPlayer(1, "Left", -0.15, 0, 0.3)

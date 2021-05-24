@@ -1,4 +1,4 @@
-from agentParser import AgentParser
+from server.agentParser import AgentParser
 
 class Player(object):
     """ 

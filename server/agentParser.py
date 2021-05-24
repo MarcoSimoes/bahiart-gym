@@ -1,10 +1,7 @@
-import socket
-import sys
-import sexpr
-import proxy
-from parsr import Parser
+from server.singleton import Singleton
+from server.parsr import Parser
 
-class AgentParser(Parser):
+class AgentParser(Parser, Singleton):
     """
     Class to retrieve and parse the S-Expression sent by the server to the agents
     """

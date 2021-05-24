@@ -1,10 +1,5 @@
-import socket
-import sys
-import sexpr
-import proxy
-import comms
-from parsr import Parser
-from singleton import Singleton
+from server.parsr import Parser
+from server.singleton import Singleton
 
 class ServerParser(Parser, Singleton):
     """
@@ -13,5 +8,4 @@ class ServerParser(Parser, Singleton):
     """
 
     def __init__(self):
-        self.socket = comms.Comms.serverSocket
-    pass
+        pass

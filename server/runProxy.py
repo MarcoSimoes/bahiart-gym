@@ -1,5 +1,5 @@
-from proxy import Proxy
-from agentParser import AgentParser
+from server.proxy import Proxy
+from server.agentParser import AgentParser
 import sys
 
 # TO RUN TYPE : python3 runProxy.py <agentConnectionPort>
@@ -13,19 +13,12 @@ proxy.start()
 
 #Intance Parser
 parser = AgentParser()
-GYRVal = None
-hingeVal = None
 while True:
     lista = proxy.getMessagesFromAgent('1')
-    parsedExp = parser.parse(str(lista))
-    hingeVal = parser.getHinjePos('hj2', parsedExp, hingeVal)
-    #GYRVal = parser.getGyr('GYR', parsedExp, GYRVal)
     if len(lista) == 0:
         pass
     else:
-        #print(GYRVal)
-        print(hingeVal)
-        #print(lista)
+        print(lista)
 
 
 #  -------------------- OPTION 2 ------------------------

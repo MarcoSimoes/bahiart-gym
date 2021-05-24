@@ -4,7 +4,7 @@ import threading
 import re
 import time
 
-class agentProxy:
+class AgentProxy:
 
     def __init__(self,agentSock,server_port=3100,server_host='localhost'):
         self.SERVER_HOST = server_host

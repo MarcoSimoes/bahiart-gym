@@ -1,13 +1,9 @@
-import socket
-import parser
-import trainer
-import comms
-import proxy
-from singleton import Singleton
+from server.comms import Comms
+from server.singleton import Singleton
 
 class World(Singleton):
     
-    net = comms.Comms()
+    net = Comms()
     
     def __init__(self):
         

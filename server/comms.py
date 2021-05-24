@@ -1,9 +1,6 @@
 import socket
-import sys
-import sexpr
-import trainer
-import serverParser
-from singleton import Singleton
+from server.serverParser import ServerParser
+from server.singleton import Singleton
 
 class Comms(Singleton):
     """
@@ -36,7 +33,7 @@ class Comms(Singleton):
 
 
     def setParser(self):
-        self.sParser = serverParser.ServerParser()
+        self.serverParser = ServerParser()
 
     def send(self, msg: str):
         """
@@ -71,4 +68,4 @@ class Comms(Singleton):
         self.sexp = str(byteMsg, 'utf-8')
 
         #Sends string with the S-Expression to the parser
-        self.serverExp = self.sParser.parse(self.sexp)
+        self.serverExp = self.serverParser.parse(self.sexp)

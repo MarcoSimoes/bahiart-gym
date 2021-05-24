@@ -1,7 +1,5 @@
-import socket
-import sys
-import sexpr
-from singleton import Singleton
+from server.sexpr import str2sexpr
+from server.singleton import Singleton
 
 class Parser(Singleton):
     """
@@ -11,7 +9,7 @@ class Parser(Singleton):
 
     def parse(self, string:str):
         
-        return sexpr.str2sexpr(string)
+        return str2sexpr(string)
         #self.parsedExp = sexpr.str2sexpr(string)
 
 

@@ -1,9 +1,8 @@
-import sys
-import sexpr
-import comms
+from server.comms import Comms
+from server.singleton import Singleton
 #from connection import sock
 
-class Trainer:
+class Trainer(Singleton):
     """
     Sends comands to the server as a Trainer program.
 
@@ -30,7 +29,7 @@ class Trainer:
     """
 
     def __init__(self):
-        self.net = comms.Comms()
+        self.net = Comms()
 
     def changePlayMode(self, playmode: str):
         
@@ -38,9 +37,9 @@ class Trainer:
         self.net.send(self.msg)
 
     def beamBall(self, x: float, y: float, z:float):
-        self.msg = "(ball (pos " + x + " " + y + " " + z + "))"
+        self.msg = "(ball (pos " + str(x) + " " + str(y) + " " + str(z) + "))"
         self.net.send(self.msg)
 
-    def beamPlayer(self, team: str, unum: int, x: float, y: float, z: float):
-        self.msg = "(agent (team " + team + ")(unum " + unum + ")(pos " + x + " " + y + " " + z + "))"
+    def beamPlayer(self, unum, team, x, y, z=0.3):
+        self.msg = "(agent (unum " + str(unum) + ")(team " + team + ")(pos " + str(x) + " " + str(y) + " " + str(z) + "))"
         self.net.send(self.msg)
