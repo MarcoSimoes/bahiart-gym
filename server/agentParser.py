@@ -11,7 +11,7 @@ class AgentParser(Parser, Singleton):
         pass
 
     def getHinjePos(self, word: str, lst: list, old):
-        value = None
+        value = old
         for i in range(0,len(lst)):
             if value == None or value == old:
                 if lst[i] == 'HJ':
@@ -36,7 +36,7 @@ class AgentParser(Parser, Singleton):
 
     #Can be used for ACC too. Just send 'ACC' as the word instead of 'GYR'
     def getGyr(self, word: str, lst: list, old):
-        value = []
+        value = old
         for i in range(0,len(lst)):
             if value == [] or value == old:
                 if lst[i] == word:

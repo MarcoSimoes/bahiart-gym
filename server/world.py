@@ -4,6 +4,7 @@ from server.singleton import Singleton
 class World(Singleton):
     
     net = Comms()
+    parser = net.serverParser
     
     def __init__(self):
         
@@ -24,19 +25,31 @@ class World(Singleton):
         #BALL
         self.ballRadius = None
         self.ballMass = None
+        self.ballPos = None
+        self.ballNode = None
+        self.ballGraph = None
 
     
     def dynamicUpdate(self):
         
         # while socket connected:
             #update dynamic variables
+        self.net.updateSExp()
         serverExp = self.net.serverExp
 
         #ENVIRONMENT
-        self.time = self.net.sParser.getValue('time', serverExp, self.time)
-        self.playMode = self.net.sParser.getValue('play_mode', serverExp, self.playMode)
-        self.scoreLeft = self.net.sParser.getValue('score_left', serverExp, self.scoreLeft)
-        self.scoreRight = self.net.sParser.getValue('score_right', serverExp, self.scoreRight)
+        self.time = self.parser.getValue('time', serverExp, self.time)
+        self.playMode = self.parser.getValue('play_mode', serverExp, self.playMode)
+        self.scoreLeft = self.parser.getValue('score_left', serverExp, self.scoreLeft)
+        self.scoreRight = self.parser.getValue('score_right', serverExp, self.scoreRight)
+
+        #BALLPOS
+        self.ballNode = self.parser.setBallNd(serverExp)
+        self.ballGraph = self.parser.getBallGraph(self.ballNode, self.ballGraph)
+        
+        #NOT WORKING YET
+        #self.ballPos = self.parser.getBallPos(self.ballGraph)
+
 
         #DEBUG
         #print("Game Time: " + self.time)
@@ -45,17 +58,17 @@ class World(Singleton):
         #print("PlayMode: " + self.playMode)
     
     def staticUpdate(self):    
-
+        self.net.updateSExp()
         serverExp = self.net.serverExp
 
         #FIELD
-        self.fieldLength = self.net.sParser.getValue('FieldLength', serverExp, self.fieldLength)
-        self.fieldHeight = self.net.sParser.getValue('FieldHeight', serverExp, self.fieldHeight)
-        self.fieldwidth = self.net.sParser.getValue('FieldWidth', serverExp, self.fieldwidth)
-        self.goalWidth = self.net.sParser.getValue('GoalWidth', serverExp, self.goalWidth)
-        self.goalDepth = self.net.sParser.getValue('GoalDepth', serverExp, self.goalDepth)
-        self.goalHeight = self.net.sParser.getValue('GoalHeight', serverExp, self.goalHeight)
+        self.fieldLength = self.parser.getValue('FieldLength', serverExp, self.fieldLength)
+        self.fieldHeight = self.parser.getValue('FieldHeight', serverExp, self.fieldHeight)
+        self.fieldwidth = self.parser.getValue('FieldWidth', serverExp, self.fieldwidth)
+        self.goalWidth = self.parser.getValue('GoalWidth', serverExp, self.goalWidth)
+        self.goalDepth = self.parser.getValue('GoalDepth', serverExp, self.goalDepth)
+        self.goalHeight = self.parser.getValue('GoalHeight', serverExp, self.goalHeight)
 
         #BALL
-        self.ballRadius = self.net.sParser.getValue('BallRadius', serverExp, self.ballRadius)
-        self.ballMass = self.net.sParser.getValue('BallMass', serverExp, self.ballMass)
+        self.ballRadius = self.parser.getValue('BallRadius', serverExp, self.ballRadius)
+        self.ballMass = self.parser.getValue('BallMass', serverExp, self.ballMass)

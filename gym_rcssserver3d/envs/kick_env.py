@@ -1,11 +1,8 @@
-from server.comms import Comms
 import gym
-import parser
-from server import trainer
-from server import world
-# import subprocess as proc
 from gym import error, spaces, utils
 from gym.utils import seeding
+
+from server.trainer import Trainer
 
 class KickEnv(gym.Env):
   metadata = {'render.modes': ['human']}
@@ -21,7 +18,7 @@ class KickEnv(gym.Env):
     #Define episode end condition flags
     
 
-    self.command = trainer.Trainer() ### Ver com Gabriel a finalidade dessas 3
+    self.command = Trainer() ### Ver com Gabriel a finalidade dessas 3
     # comms = parser.Parser(sock)
     # game = world.World(sock)
     ...

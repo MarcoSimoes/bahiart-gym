@@ -23,7 +23,7 @@ class Parser(Singleton):
         return
 
     def getValue(self, word: str, lst: list, old):
-        value = None
+        value = old
         for i in range(0,len(lst)):
             if value == None or value == old:
                 if lst[i] == word:
