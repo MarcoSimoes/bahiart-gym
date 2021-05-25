@@ -36,10 +36,12 @@ class ServerParser(Parser, Singleton):
             value = old
         return value
 
-    #NOT WORKING YET. IF BALL IS NOT UPDATED, IT CRASHES
-    def getBallPos(self, lst: list):
-        x = lst[12]
-        y = lst[13]
-        z = lst[14]
-        ballPos = [x, y, z]
-        return ballPos
+    def getBallPos(self, lst: list, old: list):
+        if(lst is None or len(lst) < 12):
+            return old
+        else:
+            x = lst[12]
+            y = lst[13]
+            z = lst[14]
+            ballPos = [x, y, z]
+            return ballPos

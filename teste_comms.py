@@ -6,9 +6,9 @@ ws = World()
 while True:
     #ws.net.updateSExp()
     ws.dynamicUpdate()
-    print(ws.ballGraph)
-    print("time: " + str(ws.time))
-    print("playMode: " + str(ws.playMode))
+    print(ws.ballPos)
+    #print("time: " + str(ws.time))
+    #print("playMode: " + str(ws.playMode))
     #print(ws.net.serverExp)
     print("\n")
 

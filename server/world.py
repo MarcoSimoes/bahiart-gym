@@ -46,9 +46,7 @@ class World(Singleton):
         #BALLPOS
         self.ballNode = self.parser.setBallNd(serverExp)
         self.ballGraph = self.parser.getBallGraph(self.ballNode, self.ballGraph)
-        
-        #NOT WORKING YET
-        #self.ballPos = self.parser.getBallPos(self.ballGraph)
+        self.ballPos = self.parser.getBallPos(self.ballGraph, self.ballPos)
 
 
         #DEBUG
