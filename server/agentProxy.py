@@ -3,6 +3,8 @@ from socket import timeout
 import threading
 import re
 import time
+from server.player import Player
+
 
 class AgentProxy:
 
@@ -92,6 +94,10 @@ class AgentProxy:
                 for x in range(len(splitMessage)):
                     if 'unum' in splitMessage[x]:
                         self.agentNumber = str(splitMessage[x+1].split(')',1)[0])
+                        # # # # # # # # # # # # # # # # 
+                        # Instance of player created  #
+                        self.player = Player()        #
+                        # # # # # # # # # # # # # # # # 
                 
             if not message.decode() == "(syn)":
                 self.listOfMessages.append(message.decode())
