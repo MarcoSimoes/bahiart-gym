@@ -38,10 +38,10 @@ class World(Singleton):
         serverExp = self.net.serverExp
 
         #ENVIRONMENT
-        self.time = self.parser.getValue('time', serverExp, self.time)
-        self.playMode = self.parser.getValue('play_mode', serverExp, self.playMode)
-        self.scoreLeft = self.parser.getValue('score_left', serverExp, self.scoreLeft)
-        self.scoreRight = self.parser.getValue('score_right', serverExp, self.scoreRight)
+        self.time = float(self.parser.getValue('time', serverExp, self.time))
+        self.playMode = int(self.parser.getValue('play_mode', serverExp, self.playMode))
+        self.scoreLeft = int(self.parser.getValue('score_left', serverExp, self.scoreLeft))
+        self.scoreRight = int(self.parser.getValue('score_right', serverExp, self.scoreRight))
 
         #BALLPOS
         self.ballNode = self.parser.setBallNd(serverExp)
@@ -60,13 +60,13 @@ class World(Singleton):
         serverExp = self.net.serverExp
 
         #FIELD
-        self.fieldLength = self.parser.getValue('FieldLength', serverExp, self.fieldLength)
-        self.fieldHeight = self.parser.getValue('FieldHeight', serverExp, self.fieldHeight)
-        self.fieldwidth = self.parser.getValue('FieldWidth', serverExp, self.fieldwidth)
-        self.goalWidth = self.parser.getValue('GoalWidth', serverExp, self.goalWidth)
-        self.goalDepth = self.parser.getValue('GoalDepth', serverExp, self.goalDepth)
-        self.goalHeight = self.parser.getValue('GoalHeight', serverExp, self.goalHeight)
+        self.fieldLength = float(self.parser.getValue('FieldLength', serverExp, self.fieldLength))
+        self.fieldHeight = float(self.parser.getValue('FieldHeight', serverExp, self.fieldHeight))
+        self.fieldwidth = float(self.parser.getValue('FieldWidth', serverExp, self.fieldwidth))
+        self.goalWidth = float(self.parser.getValue('GoalWidth', serverExp, self.goalWidth))
+        self.goalDepth = float(self.parser.getValue('GoalDepth', serverExp, self.goalDepth))
+        self.goalHeight = float(self.parser.getValue('GoalHeight', serverExp, self.goalHeight))
 
         #BALL
-        self.ballRadius = self.parser.getValue('BallRadius', serverExp, self.ballRadius)
-        self.ballMass = self.parser.getValue('BallMass', serverExp, self.ballMass)
+        self.ballRadius = float(self.parser.getValue('BallRadius', serverExp, self.ballRadius))
+        self.ballMass = float(self.parser.getValue('BallMass', serverExp, self.ballMass))

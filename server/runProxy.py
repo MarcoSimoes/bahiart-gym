@@ -1,6 +1,9 @@
+import sys
+# sys.path.append('/home/mask/workspace/bahiart-openaigym')
+
 from server.proxy import Proxy
 from server.agentParser import AgentParser
-import sys
+
 
 # TO RUN TYPE : python3 runProxy.py <agentConnectionPort>
 # Ex: python3 runProxy.py 3300
@@ -13,13 +16,17 @@ proxy.start()
 
 #Intance Parser
 parser = AgentParser()
+agent = None
 while True:
-    lista = proxy.getMessagesFromAgent('1')
-    if len(lista) == 0:
-        pass
+    #lista = proxy.getMessagesFromAgent('1')
+    if agent == None:
+        agent = proxy.getPlayerObj('1')
     else:
-        print(lista)
-
+        if agent.getUnum() == None:
+            pass
+        else:
+            pass
+            print(agent.neckYaw)
 
 #  -------------------- OPTION 2 ------------------------
 # TO RUN THE PROXY IN ANOTHER THREAD AND STILL BE ABLE TO CALL 

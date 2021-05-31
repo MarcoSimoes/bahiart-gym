@@ -43,5 +43,5 @@ class ServerParser(Parser, Singleton):
             x = lst[12]
             y = lst[13]
             z = lst[14]
-            ballPos = [x, y, z]
+            ballPos = [float(x), float(y), float(z)]
             return ballPos

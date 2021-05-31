@@ -15,7 +15,11 @@ class Player(object):
 
     parser = AgentParser()
 
-    def __init__(self):
+    def __init__(self, unum):
+
+        self.unum = unum
+        self.agentState = None
+
         self.neckYaw = None
         self.neckPitch = None
         self.leftShoulderPitch = None
@@ -38,21 +42,24 @@ class Player(object):
         self.rightShoulderYaw = None
         self.rightArmRoll = None
         self.rightArmYaw = None
-        pass
 
     def getAgentState(self):
-        pass
+        return self.agentState
 
     def setAgentState(self):
+        #Fallen, for instance
         pass
 
     def getUnum(self):
-        pass
+        return self.unum
 
     def getPos(self):
         pass
 
-    def updateJoints(self, agentMsg: list):
+    def getBallPercept(self):
+        pass
+
+    def updateStats(self, agentMsg):
 
         HJlist = self.parser.parse(agentMsg)
         

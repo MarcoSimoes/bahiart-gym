@@ -16,6 +16,7 @@ class AgentProxy:
         self.isConnected = True
         self.agentNumber = '0'
         self.listOfMessages = []
+        self.player = None
         
     def connectToServer(self):
         serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -96,11 +97,13 @@ class AgentProxy:
                         self.agentNumber = str(splitMessage[x+1].split(')',1)[0])
                         # # # # # # # # # # # # # # # # 
                         # Instance of player created  #
-                        self.player = Player()        #
-                        # # # # # # # # # # # # # # # # 
+                        self.player = Player(self.agentNumber)        #
+                        # # # # # # # # # # # # # # # #
                 
             if not message.decode() == "(syn)":
                 self.listOfMessages.append(message.decode())
+                if self.player:
+                    self.player.updateStats(message.decode())
 
                         
     def agentToServer(self):
@@ -140,3 +143,6 @@ class AgentProxy:
 
     def getIsConnected(self):
         return self.isConnected
+
+    def getPlayerObj(self):
+        return self.player

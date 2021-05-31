@@ -1,3 +1,4 @@
+from server.player import Player
 import socket
 from server.agentProxy import AgentProxy
 import threading
@@ -29,6 +30,16 @@ class Proxy:
         self.verifyAgent(agentNumber)
         return messages
     
+    def getPlayerObj(self,agentNumber:str):
+        for x in range(len(self.proxies)):
+            if self.proxies[x].getAgentNumber() == agentNumber:
+                player = self.proxies[x].getPlayerObj()
+                self.verifyAgent(agentNumber)
+                return player
+        
+        self.verifyAgent(agentNumber)
+        return
+
     def verifyAgent(self,agentNumber:str):
         for x in range(len(self.proxies)):
             if self.proxies[x].getAgentNumber() == agentNumber:
