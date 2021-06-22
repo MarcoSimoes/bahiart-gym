@@ -19,7 +19,7 @@ class AgentParser(Parser, Singleton):
                     if hingeName[1] == word:
                         ax = lst[i+2]
                         value = ax[1]
-                        return value
+                        return float(value)
                     else:
                         continue
                 elif type(lst[i]) is list:
@@ -41,10 +41,10 @@ class AgentParser(Parser, Singleton):
             if value == [] or value == old:
                 if lst[i] == word:
                     valuesList = lst[i+2]
-                    x = valuesList[1]
-                    y = valuesList[2]
-                    z = valuesList[3]
-                    value = [x,y,z]
+                    x = float(valuesList[1])
+                    y = float(valuesList[2])
+                    z = float(valuesList[3])
+                    value = [x, y, z]
                     return value
                 elif type(lst[i]) is list:
                     value = self.getGyr(word, lst[i], old)
@@ -57,3 +57,29 @@ class AgentParser(Parser, Singleton):
         if value is None:
             value = old
         return value
+
+    def getBallVision(self, lst: list, old):
+        value = old
+        for i in range(0,len(lst)):
+            if value == [] or value == old:
+                if lst[i] == 'B':
+                    valuesList = lst[i+1]
+                    distance = float(valuesList[1])
+                    angle1 = float(valuesList[2])
+                    angle2 = float(valuesList[3])
+                    value = [distance, angle1, angle2]
+                    return value
+                elif type(lst[i]) is list:
+                    value = self.getBallVision(lst[i], old)
+                else:
+                    continue
+                if value == None or value == old:
+                    continue
+            else:
+                return value
+        if value is None:
+            value = old
+        return value
+
+    def getFootResistance(self):
+        pass

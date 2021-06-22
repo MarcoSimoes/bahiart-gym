@@ -17,9 +17,21 @@ class Player(object):
 
     def __init__(self, unum):
 
+        #Number/id
         self.unum = unum
-        self.agentState = None
 
+        #ACC / GYR
+        self.acc = None
+        self.gyro = None
+
+        #Force Perceptors
+        self.lfp = None
+        self.rfp = None
+
+        #ballPos
+        self.ballPos = None
+
+        #Joints
         self.neckYaw = None
         self.neckPitch = None
         self.leftShoulderPitch = None
@@ -43,45 +55,48 @@ class Player(object):
         self.rightArmRoll = None
         self.rightArmYaw = None
 
-    def getAgentState(self):
-        return self.agentState
 
-    def setAgentState(self):
-        #Fallen, for instance
+    def isStanding(self):
         pass
 
     def getUnum(self):
         return self.unum
 
-    def getPos(self):
-        pass
-
-    def getBallPercept(self):
-        pass
+    def getBallPos(self):
+        return self.ballPos
 
     def updateStats(self, agentMsg):
 
-        HJlist = self.parser.parse(agentMsg)
+        #AGENT MSG
+        parsedMsg = self.parser.parse(agentMsg)
         
-        self.neckYaw = self.parser.getHinjePos('hj1', HJlist, self.neckYaw)
-        self.neckPitch = self.parser.getHinjePos('hj2', HJlist, self.neckPitch)
-        self.leftShoulderPitch = self.parser.getHinjePos('laj1', HJlist, self.leftShoulderPitch)
-        self.leftShoulderYaw = self.parser.getHinjePos('laj2', HJlist, self.leftShoulderYaw)
-        self.leftArmRoll = self.parser.getHinjePos('laj3', HJlist, self.leftArmRoll)
-        self.leftArmYaw = self.parser.getHinjePos('laj4', HJlist, self.leftArmYaw)
-        self.leftHipYawPitch = self.parser.getHinjePos('llj1', HJlist, self.leftHipYawPitch)
-        self.leftHipRoll = self.parser.getHinjePos('llj2', HJlist, self.leftHipRoll)
-        self.leftHipPitch = self.parser.getHinjePos('llj3', HJlist, self.leftHipPitch)
-        self.leftKneePitch = self.parser.getHinjePos('llj4', HJlist, self.leftKneePitch)
-        self.leftFootPitch = self.parser.getHinjePos('llj5', HJlist, self.leftFootPitch)
-        self.leftFootRoll = self.parser.getHinjePos('llj6', HJlist, self.leftFootRoll)
-        self.rightHipYawPitch = self.parser.getHinjePos('rlj1', HJlist, self.rightHipYawPitch)
-        self.rightHipRoll = self.parser.getHinjePos('rlj2', HJlist, self.rightHipRoll)
-        self.rightHipPitch = self.parser.getHinjePos('rlj3', HJlist, self.rightHipPitch)
-        self.rightKneePitch = self.parser.getHinjePos('rlj4', HJlist, self.rightKneePitch)
-        self.rightFootPitch = self.parser.getHinjePos('rlj5', HJlist, self.rightFootPitch)
-        self.rightFootRoll = self.parser.getHinjePos('rlj6', HJlist, self.rightFootRoll)
-        self.rightShoulderPitch = self.parser.getHinjePos('raj1', HJlist, self.rightShoulderPitch)
-        self.rightShoulderYaw = self.parser.getHinjePos('raj2', HJlist, self.rightShoulderYaw)
-        self.rightArmRoll = self.parser.getHinjePos('raj3', HJlist, self.rightArmRoll)
-        self.rightArmYaw = self.parser.getHinjePos('raj4', HJlist, self.rightArmYaw)
+        #JOINTS
+        self.neckYaw = self.parser.getHinjePos('hj1', parsedMsg, self.neckYaw)
+        self.neckPitch = self.parser.getHinjePos('hj2', parsedMsg, self.neckPitch)
+        self.leftShoulderPitch = self.parser.getHinjePos('laj1', parsedMsg, self.leftShoulderPitch)
+        self.leftShoulderYaw = self.parser.getHinjePos('laj2', parsedMsg, self.leftShoulderYaw)
+        self.leftArmRoll = self.parser.getHinjePos('laj3', parsedMsg, self.leftArmRoll)
+        self.leftArmYaw = self.parser.getHinjePos('laj4', parsedMsg, self.leftArmYaw)
+        self.leftHipYawPitch = self.parser.getHinjePos('llj1', parsedMsg, self.leftHipYawPitch)
+        self.leftHipRoll = self.parser.getHinjePos('llj2', parsedMsg, self.leftHipRoll)
+        self.leftHipPitch = self.parser.getHinjePos('llj3', parsedMsg, self.leftHipPitch)
+        self.leftKneePitch = self.parser.getHinjePos('llj4', parsedMsg, self.leftKneePitch)
+        self.leftFootPitch = self.parser.getHinjePos('llj5', parsedMsg, self.leftFootPitch)
+        self.leftFootRoll = self.parser.getHinjePos('llj6', parsedMsg, self.leftFootRoll)
+        self.rightHipYawPitch = self.parser.getHinjePos('rlj1', parsedMsg, self.rightHipYawPitch)
+        self.rightHipRoll = self.parser.getHinjePos('rlj2', parsedMsg, self.rightHipRoll)
+        self.rightHipPitch = self.parser.getHinjePos('rlj3', parsedMsg, self.rightHipPitch)
+        self.rightKneePitch = self.parser.getHinjePos('rlj4', parsedMsg, self.rightKneePitch)
+        self.rightFootPitch = self.parser.getHinjePos('rlj5', parsedMsg, self.rightFootPitch)
+        self.rightFootRoll = self.parser.getHinjePos('rlj6', parsedMsg, self.rightFootRoll)
+        self.rightShoulderPitch = self.parser.getHinjePos('raj1', parsedMsg, self.rightShoulderPitch)
+        self.rightShoulderYaw = self.parser.getHinjePos('raj2', parsedMsg, self.rightShoulderYaw)
+        self.rightArmRoll = self.parser.getHinjePos('raj3', parsedMsg, self.rightArmRoll)
+        self.rightArmYaw = self.parser.getHinjePos('raj4', parsedMsg, self.rightArmYaw)
+
+        #ACC/GYR
+        self.acc = self.parser.getGyr('ACC', parsedMsg, self.acc)
+        self.gyro = self.parser.getGyr('GYR', parsedMsg, self.gyro)
+
+        #BALL
+        self.ballPos = self.parser.getBallVision(parsedMsg, self.ballPos)
