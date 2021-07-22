@@ -1,4 +1,5 @@
 import socket
+import select as slt
 from server.serverParser import ServerParser
 from server.singleton import Singleton
 
@@ -24,6 +25,7 @@ class Comms(Singleton):
             self.sock.connect((self.HOST, self.PORT))
             self.serverSocket = self.sock
             print("Connection established")
+            self.serverSocket.setblocking(0) #SET AS NON-BLOCKING
         except socket.error as err:
             print("Connection not established.")
             print("Error : " + str(err))
@@ -51,18 +53,43 @@ class Comms(Singleton):
             print("Message : " + str(fullmsg))
 
     def updateSExp(self):
-        # Receive 4 first bytes which contains message lenght info
-        lenght = self.sock.recv(4)                                                               
+        try:
+            ready = slt.select([self.sock], [], [], 5)
+            if not ready[0]:
+                return False
         
-        # Converts message bytes into integer, 
-        # with the bytes ordered from lowest to highest(little)
-        sockLen = int.from_bytes(lenght, 'little')          
-        
-        # Converts message lenght from 'network' to 'host long'(NtoHL) 
-        sockIntLen = socket.ntohl(sockLen)
+            # Receive 4 first bytes which contains message lenght info
+            lenght = self.sock.recv(4)                                                               
+            
+            # Converts message bytes into integer, 
+            # with the bytes ordered from lowest to highest(little)
+            sockLen = int.from_bytes(lenght, 'little')          
+            
+            # Converts message lenght from 'network' to 'host long'(NtoHL) 
+            sockIntLen = socket.ntohl(sockLen)
 
-        # Receive message with the right size as parameter
-        byteMsg = self.sock.recv(sockIntLen)
+            read=0
+
+            # Receive message with the right size as parameter until byteMsg has the full server message
+            byteMsg = None
+
+            while read < sockIntLen:
+                if byteMsg is None:
+                    byteMsg = self.sock.recv(sockIntLen-read)
+                else:
+                    byteMsg += self.sock.recv(sockIntLen-read)
+                if byteMsg is not None:
+                    read = len(byteMsg)
+
+        except socket.timeout:
+            print("Timeout in updateSExp")
+            return(False)
+        except socket.error as err:
+            print("Socker error in updateSExp")
+            return(False)
+        except:
+            print("Connection Dropped in updateSExp")
+            return(False)
 
         #Transforms byteMsg into string
         self.sexp = str(byteMsg, 'utf-8')

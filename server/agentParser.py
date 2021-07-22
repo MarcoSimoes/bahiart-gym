@@ -8,7 +8,7 @@ class AgentParser(Parser, Singleton):
     result = None
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def getHinjePos(self, word: str, lst: list, old):
         value = old
@@ -57,6 +57,28 @@ class AgentParser(Parser, Singleton):
         if value is None:
             value = old
         return value
+
+    def getTime(self, lst: list, old, word='GS'):
+        value = old
+        time = None
+        for i in range(0,len(lst)):
+            if value == [] or value == old:
+                if lst[i] == word:
+                    time = self.getValue('t', lst, old)
+                    value = float(time)
+                    return value
+                elif type(lst[i]) is list:
+                    value = self.getTime(lst[i], old)
+                else:
+                    continue
+                if value == None or value == old:
+                    continue
+            else:
+                return value
+        if value is None:
+            value = old
+        return value
+
 
     def getBallVision(self, lst: list, old):
         value = old

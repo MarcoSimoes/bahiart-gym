@@ -12,26 +12,26 @@ from server.agentParser import AgentParser
 # TO RUN TYPE : python3 runProxy.py <agentConnectionPort>
 # Ex: python3 runProxy.py 3300
 #proxy = Proxy(int(sys.argv[1]))
-proxy = Proxy(3500)
+#proxy = Proxy(3500)
 
 #  -------------------- OPTION 1 ------------------------
 # TO RUN THE PROXY
-proxy.start()
+#proxy.start()
 
 
-file = open("/home/mask/workspace/gymOut.txt", "a")
+file = open("/home/mask/workspace/gymOut.txt", "w")
 file.write("PYTHON\n")
 file.close()
 
-print("starting...")
-while True:
-    msg = proxy.getMessagesFromAgent('1')
-    if(msg):
-        print(msg[0])
-    print('\n')
-    print("Message List Size: " + str(len(msg)))
-    print('\n')
-    time.sleep(5)
+# print("starting...")
+# while True:
+#     msg = proxy.getMessagesFromAgent('1')
+#     if(msg):
+#         print(msg[0])
+#     print('\n')
+#     print("Message List Size: " + str(len(msg)))
+#     print('\n')
+#     time.sleep(5)
 
 #  -------------------- TESTE COM SOCKET -----------------
 # HOST = "localhost"

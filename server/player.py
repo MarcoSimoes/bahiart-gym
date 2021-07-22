@@ -1,4 +1,6 @@
+from server.ball import Ball
 from server.agentParser import AgentParser
+from math import fabs
 
 class Player(object):
     """ 
@@ -14,6 +16,7 @@ class Player(object):
     """
 
     parser = AgentParser()
+    ball = Ball()
 
     def __init__(self, unum):
 
@@ -30,6 +33,9 @@ class Player(object):
 
         #ballPos
         self.ballPos = None
+
+        #Time
+        self.time = None
 
         #Joints
         self.neckYaw = None
@@ -57,13 +63,24 @@ class Player(object):
 
 
     def isStanding(self):
-        pass
+        return self.mFallen
 
     def getUnum(self):
         return self.unum
 
     def getBallPos(self):
         return self.ballPos
+
+    def checkFallen(self):
+        
+        self.mFallen = False
+
+        X_ACEL = self.acc[0]
+        Y_ACEL = self.acc[1]
+        Z_ACEL = self.acc[2]
+
+        if((fabs(X_ACEL) > Z_ACEL or fabs(Y_ACEL) > Z_ACEL) and Z_ACEL < 5):
+            self.mFallen = True
 
     def updateStats(self, agentMsg):
 
@@ -97,6 +114,14 @@ class Player(object):
         #ACC/GYR
         self.acc = self.parser.getGyr('ACC', parsedMsg, self.acc)
         self.gyro = self.parser.getGyr('GYR', parsedMsg, self.gyro)
+        
+        #TIME
+        self.time = self.parser.getTime(parsedMsg, self.time)
 
         #BALL
         self.ballPos = self.parser.getBallVision(parsedMsg, self.ballPos)
+        
+        #self.ball.updatePlayer(self.ballPos, self.time)
+
+        #CHECK IF PLAYER IS FALLEN
+        self.checkFallen()

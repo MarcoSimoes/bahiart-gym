@@ -8,12 +8,12 @@ class ServerParser(Parser, Singleton):
     """
 
     def __init__(self):
-        pass
+        super().__init__()
 
     #Gets the entire ball node
     def setBallNd(self, lst: list):
         sceneGraph = lst[2]
-        ballNd = sceneGraph[35]
+        ballNd = sceneGraph[-1]
         return ballNd
 
     #Gets only the N.O.A.P Values inside the node

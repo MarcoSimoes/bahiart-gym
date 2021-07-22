@@ -36,7 +36,7 @@ class Trainer(Singleton):
         self.msg = "(playMode " + playmode + ")"                              
         self.net.send(self.msg)
 
-    def beamBall(self, x: float, y: float, z:float):
+    def beamBall(self, x, y, z):
         self.msg = "(ball (pos " + str(x) + " " + str(y) + " " + str(z) + "))"
         self.net.send(self.msg)
 

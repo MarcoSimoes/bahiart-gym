@@ -1,7 +1,7 @@
 from server.sexpr import str2sexpr
 from server.singleton import Singleton
 
-class Parser(Singleton):
+class Parser(object):
     """
     Class to parse S-Expression from server
     """
