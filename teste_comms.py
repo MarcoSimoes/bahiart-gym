@@ -7,6 +7,7 @@ proxy = Proxy(3500)
 proxy.start()
 time.sleep(5)
 
+
 ply = proxy.getPlayerObj('6')
 
 env = KickEnv()

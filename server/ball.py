@@ -27,8 +27,11 @@ class Ball(Singleton):
             b = np.array((self.currentServerPos[0], self.currentServerPos[1], self.currentServerPos[2]))
 
             dist = np.linalg.norm(b-a)
-                
-            self.speedBallServer = dist / (self.currentServerTime - self.latestServerTime)        
+            
+            if((self.currentServerTime - self.latestServerTime) < 0.000000000000001):
+                self.speedBallServer = 0.0
+            else:
+                self.speedBallServer = dist / (self.currentServerTime - self.latestServerTime)        
 
     def updatePlayer(self, ballPos, time):
         self.speedBallPlayer

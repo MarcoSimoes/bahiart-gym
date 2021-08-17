@@ -97,13 +97,18 @@ class AgentProxy:
                         self.agentNumber = str(splitMessage[x+1].split(')',1)[0])
                         # # # # # # # # # # # # # # # # 
                         # Instance of player created  #
-                        self.player = Player(self.agentNumber)        #
+                        self.player = Player(self.agentNumber)
                         # # # # # # # # # # # # # # # #
                 
             if not message.decode() == "(syn)":
-                self.listOfMessages.append(message.decode())
-                if self.player:
-                    self.player.updateStats(message.decode())
+                if self.getIsConnected:
+                    self.listOfMessages.append(message.decode())
+                    if self.player is not None:
+                        try:
+                            self.player.updateStats(message.decode())
+                        except Exception as e:
+                            print(e)
+
 
                         
     def agentToServer(self):
