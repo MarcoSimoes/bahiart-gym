@@ -34,36 +34,45 @@ class World(Singleton):
     
     def dynamicUpdate(self):
         
-        # while socket connected:
-            #update dynamic variables
-        self.net.updateSExp()
-        serverExp = self.net.serverExp
+        serverExp = []
+        try:
+            self.net.updateSExp()
+            serverExp = self.net.serverExp
+        except Exception as e:
+            #pass
+            print("-----SERVER S-EXPRESSION UPDATE ERROR-----:")
+            print(e)
         #print(serverExp)
-
+        # except:
+        #     print("Skipped server EXP update --------------------------------------")
+        
         #ENVIRONMENT
         try:
             self.time = float(self.parser.getValue('time', serverExp, self.time))
-            print('DEBUG')
-            print(self.time)
-        except:
-            print(serverExp)
-        self.playMode = int(self.parser.getValue('play_mode', serverExp, self.playMode))
-        self.scoreLeft = int(self.parser.getValue('score_left', serverExp, self.scoreLeft))
-        self.scoreRight = int(self.parser.getValue('score_right', serverExp, self.scoreRight))
+            self.playMode = int(self.parser.getValue('play_mode', serverExp, self.playMode))
+            self.scoreLeft = int(self.parser.getValue('score_left', serverExp, self.scoreLeft))
+            self.scoreRight = int(self.parser.getValue('score_right', serverExp, self.scoreRight))
+        except Exception as e:
+            pass
+            #print("-----ENVIRONMENT EXCEPTION-----: ")
+            #print(e)
 
         #BALLPOS
-        self.ballNode = self.parser.setBallNd(serverExp)
-        self.ballGraph = self.parser.getBallGraph(self.ballNode, self.ballGraph)
-        self.ballPos = self.parser.getBallPos(self.ballGraph, self.ballPos)
+        try:
+            self.ballNode = self.parser.setBallNd(serverExp)
+            self.ballGraph = self.parser.getBallGraph(self.ballNode, self.ballGraph)
+            self.ballPos = self.parser.getBallPos(self.ballGraph, self.ballPos)
 
-        if(self.ballPos is not None):
-            self.ball.updateServer(self.ballPos, self.time)
-            #DEBUG
-            print('SERVER TIME: ' + str(self.time))
-            print('SPEED BALL SERVER: ' + str(self.ball.speedBallServer))
-        else:
-            print("BALL POS IS NONE")
-
+            if(self.ballPos is not None):
+                self.ball.updateServer(self.ballPos, self.time)
+            else:
+                pass
+                #DEBUG
+                #print("BALL POS IS NONE")
+        except Exception as e:
+            pass
+            #print("-----BALLPOSS EXCEPTION-----:")
+            #print(e)
 
         #DEBUG
         #print("Game Time: " + self.time)

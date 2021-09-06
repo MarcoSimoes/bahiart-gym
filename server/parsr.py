@@ -1,15 +1,20 @@
 from server.sexpr import str2sexpr
 from server.singleton import Singleton
+from multiprocessing import Lock
 
 class Parser(object):
     """
     Class to parse S-Expression from server
     """
-    result = None
 
-    def parse(self, string:str):
-        
-        return str2sexpr(string)
+    def __init__(self):
+        self.mutex = Lock()
+
+    def parse(self, string:str):       
+        parsedString = []       
+        with self.mutex:
+            parsedString = str2sexpr(string)    
+        return parsedString
         #self.parsedExp = sexpr.str2sexpr(string)
 
 

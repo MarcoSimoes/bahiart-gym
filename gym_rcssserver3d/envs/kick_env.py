@@ -63,7 +63,7 @@ class KickEnv(gym.Env):
       file.write(',')
     
     file.close()
-    print(file)
+    #print(file)
 
     #sleep for maxKickTime
     #time.sleep(self.maxKickTime)

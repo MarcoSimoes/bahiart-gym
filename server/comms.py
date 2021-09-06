@@ -95,4 +95,9 @@ class Comms(Singleton):
         self.sexp = str(byteMsg, 'utf-8')
 
         #Sends string with the S-Expression to the parser
-        self.serverExp = self.serverParser.parse(self.sexp)
+        try:
+            self.serverExp = self.serverParser.parse(self.sexp)
+        except Exception as e:
+            pass
+            #print("-----COMMS SERVER PARSE EXCEPTION-----: ")
+            #print(e)

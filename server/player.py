@@ -23,13 +23,19 @@ class Player(object):
         #Number/id
         self.unum = unum
 
+        #Standing of Fallen State
+        self.isFallen = False
+
         #ACC / GYR
         self.acc = None
         self.gyro = None
 
         #Force Perceptors
-        self.lfp = None
-        self.rfp = None
+        self.lf = []
+        self.rf = []
+        #NAO TOE ONLY
+        #self.lf1 = []
+        #self.rf1 = []
 
         #ballPos
         self.ballPos = None
@@ -60,10 +66,10 @@ class Player(object):
         self.rightShoulderYaw = None
         self.rightArmRoll = None
         self.rightArmYaw = None
+        #NAO TOE ONLY
+        #self.leftToePitch = None
+        #self.rightToePitch = None
 
-
-    def isStanding(self):
-        return self.mFallen
 
     def getUnum(self):
         return self.unum
@@ -73,19 +79,25 @@ class Player(object):
 
     def checkFallen(self):
         
-        self.mFallen = False
+        fallen = False
 
         X_ACEL = self.acc[0]
         Y_ACEL = self.acc[1]
         Z_ACEL = self.acc[2]
 
         if((fabs(X_ACEL) > Z_ACEL or fabs(Y_ACEL) > Z_ACEL) and Z_ACEL < 5):
-            self.mFallen = True
+            print("FALLEN: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
+            fallen = True
+        else:
+            print("STANDING: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
+        
+        return fallen
 
     def updateStats(self, agentMsg):
 
         #AGENT MSG
         parsedMsg = self.parser.parse(agentMsg)
+        #print(parsedMsg)
         
         #JOINTS
         self.neckYaw = self.parser.getHinjePos('hj1', parsedMsg, self.neckYaw)
@@ -120,8 +132,18 @@ class Player(object):
 
         #BALL
         self.ballPos = self.parser.getBallVision(parsedMsg, self.ballPos)
+
+        #FORCE RESISTANCE PERCEPTORS
+        self.lf = self.parser.getFootResistance('lf', parsedMsg, self.lf)
+        self.rf = self.parser.getFootResistance('rf', parsedMsg, self.rf)
         
         #self.ball.updatePlayer(self.ballPos, self.time)
 
         #CHECK IF PLAYER IS FALLEN
-        self.checkFallen()
+        self.isFallen = self.checkFallen()
+        
+        #NAO TOE
+        #self.lf1 = self.parser.getFootResistance('lf1', parsedMsg, self.lf1)
+        #self.rf1 = self.parser.getFootResistance('rf1', parsedMsg, self.rf1)
+        #self.leftToePitch = self.parser.getHinjePos('llj7', parsedMsg, self.leftToePitch)
+        #self.rightToePitch = self.parser.getHinjePos('rlj7', parsedMsg, self.leftToePitch)

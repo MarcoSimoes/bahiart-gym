@@ -1,14 +1,22 @@
+from server.sexpr import str2sexpr
 from server.singleton import Singleton
-from server.parsr import Parser
+from multiprocessing import Lock
+#from server.parsr import Parser
 
-class AgentParser(Parser, Singleton):
+class AgentParser(Singleton):
     """
     Class to retrieve and parse the S-Expression sent by the server to the agents
     """
-    result = None
 
     def __init__(self):
         super().__init__()
+        self.mutex = Lock()
+
+    def parse(self, string:str):
+        parsedString = []       
+        with self.mutex:
+            parsedString = str2sexpr(string)    
+        return parsedString
 
     def getHinjePos(self, word: str, lst: list, old):
         value = old
@@ -103,5 +111,59 @@ class AgentParser(Parser, Singleton):
             value = old
         return value
 
-    def getFootResistance(self):
-        pass
+    def getFootResistance(self, word: str, lst: list, old):
+        value = old
+        for i in range(0,len(lst)):
+            if value == [] or value == old:
+                if lst[i] == 'FRP':
+                    foot = lst[i+1]
+                    if foot[1] == word:
+                        coordList = lst[i+2]
+                        forceList = lst[i+3]
+                        x1 = float(coordList[1])
+                        y1 = float(coordList[2])
+                        z1 = float(coordList[3])
+                        x2 = float(forceList[1])
+                        y2 = float(forceList[2])
+                        z2 = float(forceList[3])
+                        value = [[x1, y1, z1], [x2, y2, z2]]
+                        return value
+                elif type(lst[i]) is list:
+                    value = self.getFootResistance(word, lst[i], old)
+                else:
+                    continue
+                if value == None or value == old:
+                    continue
+            else:
+                return value
+        if value == None or value == []:
+            value = old
+        return value
+
+    def search(self, word: str, lst: list):
+        for i in range(0,len(lst)):
+            if type(lst[i]) is list:
+                self.search(word, lst[i])
+            elif lst[i] == word:
+                print(word, '=', lst[i+1])
+            continue
+        return
+
+    def getValue(self, word: str, lst: list, old):
+        value = old
+        for i in range(0,len(lst)):
+            if value == None or value == old:
+                if lst[i] == word:
+                    value = lst[i+1]
+                    return value
+                elif type(lst[i]) is list:
+                    value = self.getValue(word, lst[i], old)
+                else:
+                    continue
+                if value == None or value == old:
+                    continue
+            else:
+                return value
+        if value is None:
+            value = old
+        return value
