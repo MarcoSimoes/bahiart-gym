@@ -22,7 +22,7 @@ class ServerParser(Singleton):
     #Gets the entire ball node
     def setBallNd(self, lst: list):
         sceneGraph = lst[2]
-        ballNd = sceneGraph[-1]
+        ballNd = sceneGraph[35]
         return ballNd
 
     #Gets only the N.O.A.P Values inside the node

@@ -1,6 +1,6 @@
 from server.ball import Ball
 from server.agentParser import AgentParser
-from math import fabs
+from math import fabs, sqrt
 
 class Player(object):
     """ 
@@ -38,7 +38,10 @@ class Player(object):
         #self.rf1 = []
 
         #ballPos
-        self.ballPos = None
+        self.ballFinalPos = [] #The returned list corresponds to [distance, horizontal angle, vertical angle] from the object.
+        self.ballInitPos = []
+        self.ballSpeed = 0
+        self.ballCycle = 0
 
         #Time
         self.time = None
@@ -75,23 +78,23 @@ class Player(object):
         return self.unum
 
     def getBallPos(self):
-        return self.ballPos
+        return self.ballFinalPos
 
-    def checkFallen(self):
+    # def checkFallen(self):
         
-        fallen = False
+    #     fallen = False
 
-        X_ACEL = self.acc[0]
-        Y_ACEL = self.acc[1]
-        Z_ACEL = self.acc[2]
+    #     X_ACEL = self.acc[0]
+    #     Y_ACEL = self.acc[1]
+    #     Z_ACEL = self.acc[2]
 
-        if((fabs(X_ACEL) > Z_ACEL or fabs(Y_ACEL) > Z_ACEL) and Z_ACEL < 5):
-            print("FALLEN: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
-            fallen = True
-        else:
-            print("STANDING: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
+    #     if((fabs(X_ACEL) > Z_ACEL or fabs(Y_ACEL) > Z_ACEL) and Z_ACEL < 5):
+    #         #print("FALLEN: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
+    #         fallen = True
+    #     # else:
+    #     #     print("STANDING: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
         
-        return fallen
+    #     return fallen
 
     def updateStats(self, agentMsg):
 
@@ -131,7 +134,15 @@ class Player(object):
         self.time = self.parser.getTime(parsedMsg, self.time)
 
         #BALL
-        self.ballPos = self.parser.getBallVision(parsedMsg, self.ballPos)
+        self.ballFinalPos = self.parser.getBallVision(parsedMsg, self.ballFinalPos)
+        # print("Ball POS: " + str(self.ballFinalPos))
+        # if(self.ballCycle == 0):
+        #     self.ballInitPos = self.ballFinalPos
+        # self.ballCycle += 1
+        # if(self.ballCycle == 29):
+        #     self.ballSpeed = sqrt((self.ballFinalPos[0] - self.ballInitPos[0])**2 + (self.ballFinalPos[1] - self.ballInitPos[1])**2) / 0.6
+        #     self.ballCycle = 0
+        #     print("ball Speed: " + str(self.ballSpeed))
 
         #FORCE RESISTANCE PERCEPTORS
         self.lf = self.parser.getFootResistance('lf', parsedMsg, self.lf)
@@ -140,7 +151,7 @@ class Player(object):
         #self.ball.updatePlayer(self.ballPos, self.time)
 
         #CHECK IF PLAYER IS FALLEN
-        self.isFallen = self.checkFallen()
+        #self.isFallen = self.checkFallen()
         
         #NAO TOE
         #self.lf1 = self.parser.getFootResistance('lf1', parsedMsg, self.lf1)

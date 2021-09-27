@@ -3,7 +3,7 @@ from gym_rcssserver3d.envs.kick_env import KickEnv
 import socket
 import time
 
-proxy = Proxy(3500)
+proxy = Proxy(3600)
 proxy.start()
 time.sleep(5)
 
@@ -11,7 +11,7 @@ time.sleep(5)
 ply = proxy.getPlayerObj('6')
 
 env = KickEnv()
-#env.setPlayer(ply)
+env.setPlayer(ply)
 
 #print(env.action_space.sample())
 

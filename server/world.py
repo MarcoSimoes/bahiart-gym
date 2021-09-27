@@ -1,5 +1,6 @@
 from server.comms import Comms
 from server.ball import Ball
+from math import sqrt
 from server.singleton import Singleton
 
 class World(Singleton):
@@ -27,24 +28,30 @@ class World(Singleton):
         #BALL
         self.ballRadius = 0.0
         self.ballMass = 0.0
-        self.ballPos = None
         self.ballNode = None
         self.ballGraph = None
 
+        #BALL SPEED
+        self.ballFinalPos = []
+        self.ballInitPos = []
+        self.ballSpeed = 0
+        self.ballInitTime = 0
+        self.count = 0
     
     def dynamicUpdate(self):
         
         serverExp = []
         try:
             self.net.updateSExp()
-            serverExp = self.net.serverExp
+            serverExp = self.net.serverExp            
         except Exception as e:
             #pass
             print("-----SERVER S-EXPRESSION UPDATE ERROR-----:")
             print(e)
+        #DEBUG
+        #print("SERVER EXPRESSION BEGIN")
         #print(serverExp)
-        # except:
-        #     print("Skipped server EXP update --------------------------------------")
+        #print("SERVER EXPRESSION END")
         
         #ENVIRONMENT
         try:
@@ -61,18 +68,30 @@ class World(Singleton):
         try:
             self.ballNode = self.parser.setBallNd(serverExp)
             self.ballGraph = self.parser.getBallGraph(self.ballNode, self.ballGraph)
-            self.ballPos = self.parser.getBallPos(self.ballGraph, self.ballPos)
-
-            if(self.ballPos is not None):
-                self.ball.updateServer(self.ballPos, self.time)
-            else:
-                pass
-                #DEBUG
-                #print("BALL POS IS NONE")
+            self.ballFinalPos = self.parser.getBallPos(self.ballGraph, self.ballFinalPos)       
         except Exception as e:
             pass
             #print("-----BALLPOSS EXCEPTION-----:")
             #print(e)
+
+        #BALL SPEED
+        try:
+            if(self.count == 0):
+                print("ENTROU BALL CYCLE 0")
+                self.ballInitPos = self.ballFinalPos
+                self.ballInitTime = self.time
+            if(self.count == 9):
+                print("ENTROU BALL CYCLE 9")
+                if(len(self.ballInitPos) > 0):
+                    self.ballSpeed = sqrt(((self.ballFinalPos[0] - self.ballInitPos[0])**2) + ((self.ballFinalPos[1] - self.ballInitPos[1])**2)) / (self.time - self.ballInitTime)
+                self.count = -1
+                print("ball Speed SERVER: " + str(self.ballSpeed))
+            self.count = self.count + 1
+        except Exception as e:
+            pass
+            # print("------EXCEPTION SPEED---------")
+            # print(e)
+            # print("---------END EXCEPTION-------")
 
         #DEBUG
         #print("Game Time: " + self.time)
