@@ -1,3 +1,5 @@
+from gym.spaces import box, space
+from numpy.core.fromnumeric import shape
 from server.player import Player
 from server.trainer import Trainer
 from server.proxy import Proxy
@@ -17,7 +19,7 @@ class KickEnv(gym.Env):
 
   optPlayer: Player = None
 
-  def __init__(self):
+  def __init__(self, player: Player):
     
     #CREATING WORLD OBJECT AND UPDATING ITS VARIABLES
     self.ws = World()
@@ -26,8 +28,10 @@ class KickEnv(gym.Env):
 
     self.generalTarget = np.array([15.0, 0.0, 0.0])   #DEFAULT: Enemy Goal (considering the agent is in the middle of the field)
     
+    self.setPlayer(player)
+    
     self.createActionSpace()
-    # CREATEOBSERVATIONSPACE()
+    self.createObservationSpace()
 
     #Define episode end condition flags
     self.maxKickTime = 5                              #DEFAULT: 5 seconds
@@ -156,15 +160,39 @@ class KickEnv(gym.Env):
         [90.0, 6.109]]),     #raj4
         dtype=np.float64)
 
-  def createObservationSpace(self, player):
-    self.observation_space = spaces.Box(
-      np.array(
-
-      ),
-      np.array(
-
-      ),
-      dtype=np.float64)
+  def createObservationSpace(self):
+    
+    self.observation_space = spaces.Dict({
+      'joints': spaces.Dict({
+        'neckYaw': spaces.Box(low=np.array([-120]), high=np.array([120]), dtype=np.float64),
+        'neckPitch': spaces.Box(low=np.array([-45]), high=np.array([45]), dtype=np.float64),
+        'leftHipYawPitch': spaces.Box(low=np.array([-90]), high=np.array([1]), dtype=np.float64),
+        'rightHipYawPitch': spaces.Box(low=np.array([-120]), high=np.array([120]), dtype=np.float64),
+        'leftHipRoll': spaces.Box(low=np.array([-25]), high=np.array([45]), dtype=np.float64),
+        'rightHipRoll': spaces.Box(low=np.array([-45]), high=np.array([25]), dtype=np.float64),
+        'leftHipPitch': spaces.Box(low=np.array([-25]), high=np.array([100]), dtype=np.float64),
+        'rightHipPitch': spaces.Box(low=np.array([-25]), high=np.array([100]), dtype=np.float64),
+        'leftKneePitch': spaces.Box(low=np.array([-130]), high=np.array([1]), dtype=np.float64),
+        'rightKneePitch': spaces.Box(low=np.array([-130]), high=np.array([1]), dtype=np.float64),
+        'leftFootPitch': spaces.Box(low=np.array([-45]), high=np.array([75]), dtype=np.float64),
+        'rightFootPitch': spaces.Box(low=np.array([-45]), high=np.array([75]), dtype=np.float64),
+        'leftFootRoll': spaces.Box(low=np.array([-45]), high=np.array([25]), dtype=np.float64),
+        'rightFootRoll': spaces.Box(low=np.array([-25]), high=np.array([45]), dtype=np.float64),
+        'leftShoulderPitch': spaces.Box(low=np.array([-120]), high=np.array([120]), dtype=np.float64),
+        'rightShoulderPitch': spaces.Box(low=np.array([-120]), high=np.array([120]), dtype=np.float64),
+        'leftShoulderYaw': spaces.Box(low=np.array([-1]), high=np.array([95]), dtype=np.float64),
+        'rightShoulderYaw': spaces.Box(low=np.array([-95]), high=np.array([1]), dtype=np.float64),
+        'leftArmRoll': spaces.Box(low=np.array([-120]), high=np.array([120]), dtype=np.float64),
+        'rightArmRoll': spaces.Box(low=np.array([-120]), high=np.array([120]), dtype=np.float64),
+        'leftArmYaw': spaces.Box(low=np.array([-90]), high=np.array([1]), dtype=np.float64),
+        'rightArmYaw': spaces.Box(low=np.array([-1]), high=np.array([90]), dtype=np.float64)        
+      }),
+      'acc': spaces.Box(low=np.array([-100, -100, -100]), high=np.array([100, 100, 100]), dtype=np.float64),
+      'gyr': spaces.Box(low=np.array([-800, -800, -800]), high=np.array([800, 800, 800]), dtype=np.float64),
+      'ballpos': spaces.Box(low=np.array([0, -61, -61]), high=np.array([50, 61, 61]), dtype=np.float64),
+      'leftFootResistance': spaces.Tuple((spaces.Box(low=-0.10, high=0.10, shape=(3,), dtype=np.float64), spaces.Box(low=-245, high=245, shape=(3,), dtype=np.float64))),
+      'rightFootResistance': spaces.Tuple((spaces.Box(low=-0.10, high=0.10, shape=(3,), dtype=np.float64), spaces.Box(low=-245, high=245, shape=(3,), dtype=np.float64)))
+    })
 
   def close(self):
     ...

@@ -10,12 +10,13 @@ time.sleep(5)
 
 ply = proxy.getPlayerObj('6')
 
-env = KickEnv()
-env.setPlayer(ply)
+env = KickEnv(ply)
 
 #print(env.action_space.sample())
+#print(env.observation_space.sample())
 
 while True:
     env.ws.dynamicUpdate()
+    print(env.optPlayer.getObs())
     #print(env.ws.time)
     #env.step(env.action_space.sample())

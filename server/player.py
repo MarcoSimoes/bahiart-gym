@@ -1,6 +1,8 @@
+from numpy.core.defchararray import array
 from server.ball import Ball
 from server.agentParser import AgentParser
 from math import fabs, sqrt
+import numpy as np
 
 class Player(object):
     """ 
@@ -17,6 +19,11 @@ class Player(object):
 
     parser = AgentParser()
     ball = Ball()
+
+    def pol2cart(self, mag, theta):
+        x = mag * np.cos(theta)
+        y = mag * np.sin(theta)
+        return [x, y]
 
     def __init__(self, unum):
 
@@ -38,7 +45,8 @@ class Player(object):
         #self.rf1 = []
 
         #ballPos
-        self.ballFinalPos = [] #The returned list corresponds to [distance, horizontal angle, vertical angle] from the object.
+        self.ballPolarPos = [] #The returned list corresponds to [distance, horizontal angle, vertical angle] from the object.
+        self.ballCartPos = []
         self.ballInitPos = []
         self.ballSpeed = 0
         self.ballCycle = 0
@@ -73,12 +81,46 @@ class Player(object):
         #self.leftToePitch = None
         #self.rightToePitch = None
 
+        self.max = 0
+
 
     def getUnum(self):
         return self.unum
 
-    def getBallPos(self):
-        return self.ballFinalPos
+    def getObs(self):
+        
+        observation = {'joints': {
+            'neckYaw': np.array([self.neckYaw]),
+            'neckPitch': np.array([self.neckPitch]),
+            'leftHipYawPitch': np.array([self.leftHipYawPitch]),
+            'rightHipYawPitch': np.array([self.rightHipYawPitch]),
+            'leftHipRoll': np.array([self.leftHipRoll]),
+            'rightHipRoll': np.array([self.rightHipRoll]),
+            'leftHipPitch': np.array([self.leftHipPitch]),
+            'rightHipPitch': np.array([self.rightHipPitch]),
+            'leftKneePitch': np.array([self.leftKneePitch]),
+            'rightKneePitch': np.array([self.rightKneePitch]),
+            'leftFootPitch': np.array([self.leftFootPitch]),
+            'rightFootPitch': np.array([self.rightFootPitch]),
+            'leftFootRoll': np.array([self.leftFootRoll]),
+            'rightFootRoll': np.array([self.rightFootRoll]),
+            'leftShoulderPitch': np.array([self.leftShoulderPitch]),
+            'rightShoulderPitch': np.array([self.rightShoulderPitch]),
+            'leftShoulderYaw': np.array([self.leftShoulderYaw]),
+            'rightShoulderYaw': np.array([self.rightShoulderYaw]),
+            'leftArmRoll': np.array([self.leftArmRoll]),
+            'rightArmRoll': np.array([self.rightArmRoll]),
+            'leftArmYaw': np.array([self.leftArmYaw]),
+            'rightArmYaw': np.array([self.rightArmYaw])
+        },
+            'acc': np.array(self.acc),
+            'gyro': np.array(self.gyro),
+            'ballpos': np.array(self.ballPolarPos),
+            'leftFootResistance': (np.array(self.lf[0]), np.array(self.lf[1])),
+            'rightFootResistance': (np.array(self.rf[0]), np.array(self.rf[1]))
+        }
+
+        return observation
 
     # def checkFallen(self):
         
@@ -105,25 +147,25 @@ class Player(object):
         #JOINTS
         self.neckYaw = self.parser.getHinjePos('hj1', parsedMsg, self.neckYaw)
         self.neckPitch = self.parser.getHinjePos('hj2', parsedMsg, self.neckPitch)
-        self.leftShoulderPitch = self.parser.getHinjePos('laj1', parsedMsg, self.leftShoulderPitch)
-        self.leftShoulderYaw = self.parser.getHinjePos('laj2', parsedMsg, self.leftShoulderYaw)
-        self.leftArmRoll = self.parser.getHinjePos('laj3', parsedMsg, self.leftArmRoll)
-        self.leftArmYaw = self.parser.getHinjePos('laj4', parsedMsg, self.leftArmYaw)
         self.leftHipYawPitch = self.parser.getHinjePos('llj1', parsedMsg, self.leftHipYawPitch)
-        self.leftHipRoll = self.parser.getHinjePos('llj2', parsedMsg, self.leftHipRoll)
-        self.leftHipPitch = self.parser.getHinjePos('llj3', parsedMsg, self.leftHipPitch)
-        self.leftKneePitch = self.parser.getHinjePos('llj4', parsedMsg, self.leftKneePitch)
-        self.leftFootPitch = self.parser.getHinjePos('llj5', parsedMsg, self.leftFootPitch)
-        self.leftFootRoll = self.parser.getHinjePos('llj6', parsedMsg, self.leftFootRoll)
         self.rightHipYawPitch = self.parser.getHinjePos('rlj1', parsedMsg, self.rightHipYawPitch)
+        self.leftHipRoll = self.parser.getHinjePos('llj2', parsedMsg, self.leftHipRoll)
         self.rightHipRoll = self.parser.getHinjePos('rlj2', parsedMsg, self.rightHipRoll)
+        self.leftHipPitch = self.parser.getHinjePos('llj3', parsedMsg, self.leftHipPitch)
         self.rightHipPitch = self.parser.getHinjePos('rlj3', parsedMsg, self.rightHipPitch)
+        self.leftKneePitch = self.parser.getHinjePos('llj4', parsedMsg, self.leftKneePitch)
         self.rightKneePitch = self.parser.getHinjePos('rlj4', parsedMsg, self.rightKneePitch)
+        self.leftFootPitch = self.parser.getHinjePos('llj5', parsedMsg, self.leftFootPitch)
         self.rightFootPitch = self.parser.getHinjePos('rlj5', parsedMsg, self.rightFootPitch)
+        self.leftFootRoll = self.parser.getHinjePos('llj6', parsedMsg, self.leftFootRoll)
         self.rightFootRoll = self.parser.getHinjePos('rlj6', parsedMsg, self.rightFootRoll)
+        self.leftShoulderPitch = self.parser.getHinjePos('laj1', parsedMsg, self.leftShoulderPitch)
         self.rightShoulderPitch = self.parser.getHinjePos('raj1', parsedMsg, self.rightShoulderPitch)
+        self.leftShoulderYaw = self.parser.getHinjePos('laj2', parsedMsg, self.leftShoulderYaw)
         self.rightShoulderYaw = self.parser.getHinjePos('raj2', parsedMsg, self.rightShoulderYaw)
+        self.leftArmRoll = self.parser.getHinjePos('laj3', parsedMsg, self.leftArmRoll)
         self.rightArmRoll = self.parser.getHinjePos('raj3', parsedMsg, self.rightArmRoll)
+        self.leftArmYaw = self.parser.getHinjePos('laj4', parsedMsg, self.leftArmYaw)
         self.rightArmYaw = self.parser.getHinjePos('raj4', parsedMsg, self.rightArmYaw)
 
         #ACC/GYR
@@ -134,8 +176,10 @@ class Player(object):
         self.time = self.parser.getTime(parsedMsg, self.time)
 
         #BALL
-        self.ballFinalPos = self.parser.getBallVision(parsedMsg, self.ballFinalPos)
-        # print("Ball POS: " + str(self.ballFinalPos))
+        self.ballPolarPos = self.parser.getBallVision(parsedMsg, self.ballPolarPos)
+        #if(len(self.ballPolarPos) > 0):
+        #    self.ballCartPos = self.pol2cart(self.ballPolarPos[0], self.ballPolarPos[1])
+        # print("Ball POS: " + str(self.ballPolarPos))
         # if(self.ballCycle == 0):
         #     self.ballInitPos = self.ballFinalPos
         # self.ballCycle += 1
@@ -143,12 +187,11 @@ class Player(object):
         #     self.ballSpeed = sqrt((self.ballFinalPos[0] - self.ballInitPos[0])**2 + (self.ballFinalPos[1] - self.ballInitPos[1])**2) / 0.6
         #     self.ballCycle = 0
         #     print("ball Speed: " + str(self.ballSpeed))
+        #self.ball.updatePlayer(self.ballPos, self.time)
 
         #FORCE RESISTANCE PERCEPTORS
         self.lf = self.parser.getFootResistance('lf', parsedMsg, self.lf)
         self.rf = self.parser.getFootResistance('rf', parsedMsg, self.rf)
-        
-        #self.ball.updatePlayer(self.ballPos, self.time)
 
         #CHECK IF PLAYER IS FALLEN
         #self.isFallen = self.checkFallen()

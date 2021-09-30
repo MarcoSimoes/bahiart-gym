@@ -1,6 +1,7 @@
 from server.sexpr import str2sexpr
 from server.singleton import Singleton
 from multiprocessing import Lock
+import numpy as np
 #from server.parsr import Parser
 
 class AgentParser(Singleton):
@@ -67,7 +68,10 @@ class AgentParser(Singleton):
         return value
 
     def getTime(self, lst: list, old, word='GS'):
-        value = old
+        try:
+            value = old.copy()
+        except:
+            value = old
         time = None
         for i in range(0,len(lst)):
             if value == [] or value == old:
