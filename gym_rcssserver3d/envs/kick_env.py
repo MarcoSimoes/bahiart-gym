@@ -22,20 +22,26 @@ class KickEnv(gym.Env):
   def __init__(self, player: Player):
     
     #CREATING WORLD OBJECT AND UPDATING ITS VARIABLES
+    self.command = Trainer()
     self.ws = World()
     self.ws.staticUpdate()
     self.ws.dynamicUpdate()
 
     self.generalTarget = np.array([15.0, 0.0, 0.0])   #DEFAULT: Enemy Goal (considering the agent is in the middle of the field)
+    self.episodeInitTime = None
+    self.initBallPos = None
     
-    self.setPlayer(player)
-    
+    self.setPlayer(player)  
     self.createActionSpace()
     self.createObservationSpace()
+
+    self.state = player.getObs()
 
     #Define episode end condition flags
     self.maxKickTime = 5                              #DEFAULT: 5 seconds
     self.kickThreshold = 1                            #DEFAULT: 1 meter radius
+    self.minBallSpeed = 0.05
+
     #Episode ending conditions: Time + Ball speed close to 0 / player fell + Ball speed close to 0 / Ball outside kick threshold (1 meter) + ball speed close to 0
     
     
@@ -44,14 +50,20 @@ class KickEnv(gym.Env):
     ...
   def step(self, action): # Actions based in numbers passed to the joints. 22 joints total (define which one will be used in each train)
     
-    #self.ws.dynamicUpdate()
-    #Apply Action: write file
-    #Calculate reward:
-    #check if episode is done:
-    #return step information:
+    self.command.reqFullState()
+    self.ws.dynamicUpdate()
+    #DEBUG
+    print("BallPOS: {}".format(self.ws.ballFinalPos))
+    print("BALLSPEED: {}".format(self.ws.ballSpeed))
+    print("TIME: {}".format(self.ws.time))
+    #FIMDEBUG
+    if(self.episodeInitTime == None):
+      self.episodeInitTime = self.ws.time
+    if(self.initBallPos == None):
+      self.initBallPos = self.ws.ballFinalPos[0] #TODO: Corrigir esse ballpos. Verificar novamente o node, mandar printar len pra ver se estou pegando o node correto. Comparar logica do gamemonitor.py de Marco
+    reward = 0
 
-    #use data from optPlayer
-
+    # 1 - Write the actions into another file for the team to collect.
     myList = []
 
     for i in range(0, len(action)):
@@ -67,42 +79,92 @@ class KickEnv(gym.Env):
       file.write(',')
     
     file.close()
+    
+    # 1 - Write 0 into a ready file to let the team know the actions are ready to be executed.
+    ready = open("/home/mask/workspace/ready.txt", "w")
+    ready.write('0')
+    ready.close()
+  
+    #Keep waiting for team to execute step
+    ready = open("/home/mask/workspace/ready.txt", "r")
+    readyFile = ready.read()
+    ready.close()
+    while(readyFile == '0'):
+      #time.sleep(1)
+      ready = open("/home/mask/workspace/ready.txt", "r")
+      readyFile = ready.read()
+      ready.close()
+      #DEBUGS
+      #print("PRESO NO WHILE: {}".format(readyFile))
+    
+    #Check if the team executed the action and proceed.
+    if(readyFile == '1'):
+      #Update world and observation information
+      self.ws.dynamicUpdate()
+      currBallPos = self.ws.ballFinalPos[0]
+      currTime = self.ws.time
+      elapsedTime = currTime - self.episodeInitTime
+      self.state = self.optPlayer.getObs() # + action space + count
+      
+      #Calculate reward (EXTRA: -2 each goal taken, +4 each goal scored)
+      ballDistanceDiff = currBallPos - self.initBallPos
+      if(ballDistanceDiff <= 0):
+        reward += -1
+      elif(ballDistanceDiff > 0 and ballDistanceDiff < 0.1):
+        reward += 0
+      elif(ballDistanceDiff > 0.1):
+        reward = (ballDistanceDiff/0.1)*2 #Not summing. Otherwise it would keep adding until the time was up. I only want the last.
+      
+      #Verify if episode is done
+      if(elapsedTime > 5 and self.ws.ballSpeed < 0.005):
+        done = True
+        if(ballDistanceDiff < 0.001):
+          reward += -5
+        self.initBallPos = None
+        self.episodeInitTime = None
+      else:
+        done = False
+      
+
+      info = {}
+      #DEBUGS
+      print("CHEGOU NO FIM. RESULTADOS: ")
+      print("NoneState:{} reward:{} done:{} info:{}".format((self.state == None), reward, done, info))  
+      #FIMDEBUGS
+      return self.state, reward, done, info
+    
+    else:
+      print("ERRO NO READY: {}".format(readyFile))
+      return self.state, 0, False, {}
+    
+    #if ready = 1:
+      
+      #Verifica de o step = done.
+      #Return.
+
     #print(file)
 
-    #sleep for maxKickTime
-    #time.sleep(self.maxKickTime)
 
     #get agent->ballPos: self.state + ballpos
     
     #calculate reward: finalpos - initial pos
-    # +1 - each 0.1 positive distance on X, -1 each 0.1 negative distance on X, -2 each goal taken, +2 each goal scored
-    self.info = {}
+    
 
     #Return self.state, reward, done, info    
     ...
   def reset(self):
 
-    self.command = Trainer()
-
     self.ws.dynamicUpdate()
-    self.startTime = self.ws.time
     
     #Place the ball in the center of the field
     self.command.beamBall(0.0, 0.0, 0.0)
 
     #Place the Player behind the ball
-    self.command.beamPlayer(self.optPlayer.getUnum(), "Left", -0.5, 0.0)
-    #self.command.beamPlayer(self.optPlayer.getUnum(), "Left", -0.15, 0, 0.3)
+    self.command.beamPlayer(self.optPlayer.getUnum(), "Left", -0.2, 0, 0.3)
 
-    #wait 1 second just to make sure everything will be beamed correctly
-    
+    self.state = self.optPlayer.getObs()
 
-    self.ballInitPos = self.optPlayer.getBallPos() #returns Distance, Angle1, Angle2
-    
-    #MUST IMPLEMENT THIS 
-    #self.agentInitPos = self.optPlayer.getSelfPos()
-
-    self.state = self.ballInitPos
+    return self.state
 
   def render(self, mode='human'): # Run roboviz or any monitor in the screen to show the training
     ...

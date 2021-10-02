@@ -119,7 +119,7 @@ class Player(object):
             'leftFootResistance': (np.array(self.lf[0]), np.array(self.lf[1])),
             'rightFootResistance': (np.array(self.rf[0]), np.array(self.rf[1]))
         }
-
+        #TODO: FALTA O CONTADOR E A POSIÇÃO ANTERIOR DAS JUNTAS (Action Space)
         return observation
 
     # def checkFallen(self):

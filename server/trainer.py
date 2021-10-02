@@ -33,13 +33,17 @@ class Trainer(Singleton):
 
     def changePlayMode(self, playmode: str):
         
-        self.msg = "(playMode " + playmode + ")"                              
-        self.net.send(self.msg)
+        msg = "(playMode " + playmode + ")"                              
+        self.net.send(msg)
 
     def beamBall(self, x, y, z):
-        self.msg = "(ball (pos " + str(x) + " " + str(y) + " " + str(z) + "))"
-        self.net.send(self.msg)
+        msg = "(ball (pos " + str(x) + " " + str(y) + " " + str(z) + "))"
+        self.net.send(msg)
 
     def beamPlayer(self, unum, team, x, y, z=0.3):
-        self.msg = "(agent (unum " + str(unum) + ")(team " + team + ")(pos " + str(x) + " " + str(y) + " " + str(z) + "))"
-        self.net.send(self.msg)
+        msg = "(agent (unum " + str(unum) + ")(team " + team + ")(pos " + str(x) + " " + str(y) + " " + str(z) + "))"
+        self.net.send(msg)
+
+    def reqFullState(self):
+        msg = "(reqfullstate)"
+        self.net.send(msg)

@@ -44,6 +44,9 @@ Thumbs.db
 *.mp4
 *.tiff
 *.avi
+
+#Test txt files
+*.txt
 *.flv
 *.mov
 *.wmv

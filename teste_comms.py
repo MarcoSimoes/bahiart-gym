@@ -12,11 +12,23 @@ ply = proxy.getPlayerObj('6')
 
 env = KickEnv(ply)
 
+episodes = 10
+for episodes in range(1, episodes+1):
+    state = env.reset()
+    done = False
+    score = 0
+
+    while not done:
+        action = env.action_space.sample()
+        n_state, reward, done, info = env.step(action)
+        score += reward
+    print('-----------------Episode:{} Score:{}'.format(episodes, score))
+
 #print(env.action_space.sample())
 #print(env.observation_space.sample())
 
-while True:
-    env.ws.dynamicUpdate()
-    print(env.optPlayer.getObs())
+# while True:
+#     env.ws.dynamicUpdate()
+#     print(env.optPlayer.getObs())
     #print(env.ws.time)
     #env.step(env.action_space.sample())
