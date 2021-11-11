@@ -1,6 +1,6 @@
+from multiprocessing import Lock
 from server.sexpr import str2sexpr
 from server.singleton import Singleton
-from multiprocessing import Lock
 #from server.parsr import Parser
 
 class ServerParser(Singleton):
@@ -19,11 +19,46 @@ class ServerParser(Singleton):
             parsedString = str2sexpr(string)    
         return parsedString
 
+    def searchObject(self, word: str, lst: list):
+        found=False
+        for i in range(0,len(lst)):
+            if type(lst[i]) is list:
+                found=self.searchObject(word, lst[i])
+            elif lst[i] == word:
+                found=True
+            if found:
+                break
+    ##        print("Word: ",str(lst[i]), "Found: ", str(found)) 
+        return found
+
     #Gets the entire ball node
-    def setBallNd(self, lst: list):
+    def getBallIndex(self, lst: list, latestIndex): #Change this to index
         sceneGraph = lst[2]
-        ballNd = sceneGraph[35]
+        sceneGraphHeader = lst[1]
+        #ballNd = sceneGraph[35]
+        #return ballNd
+        foundBall=False
+        if(sceneGraphHeader[0]=="RSG"):
+            #print("Searching ball in full graph ....")
+            for idx, nod in enumerate(sceneGraph):
+                foundBall=self.searchObject("models/soccerball.obj",nod)
+                if(foundBall):  
+                    break
+        else:
+            if(latestIndex is None):
+                latestIndex = 35 #In previous tests, the index 35 seemed to be the ball index almost everytime. This is just to make sure i'm not using None as index.
+            ballIndex = latestIndex
+            return ballIndex
+        if(foundBall):
+            #print("Node ball index: ",str(idx), " Graph Size: ", str(len(sceneGraph)))
+            ballIndex = idx
+            return ballIndex
+
+    def getBallNd(self, lst: list, ballIndex):
+        sceneGraph = lst[2]
+        ballNd = sceneGraph[ballIndex]
         return ballNd
+
 
     #Gets only the N.O.A.P Values inside the node
     def getBallGraph(self, lst: list, old):

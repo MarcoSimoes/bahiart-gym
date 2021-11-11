@@ -1,13 +1,15 @@
+from math import sqrt
 from server.comms import Comms
 from server.ball import Ball
-from math import sqrt
 from server.singleton import Singleton
+from server.trainer import Trainer
 
 class World(Singleton):
     
     net = Comms()
     ball = Ball()
     parser = net.serverParser
+    trainer = Trainer()
     
     def __init__(self):
         
@@ -28,6 +30,7 @@ class World(Singleton):
         #BALL
         self.ballRadius = 0.0
         self.ballMass = 0.0
+        self.ballIndex = None
         self.ballNode = None
         self.ballGraph = None
 
@@ -66,7 +69,7 @@ class World(Singleton):
 
         #BALLPOS
         try:
-            self.ballNode = self.parser.setBallNd(serverExp)
+            self.ballNode = self.parser.getBallNd(serverExp, self.ballIndex)
             self.ballGraph = self.parser.getBallGraph(self.ballNode, self.ballGraph)
             self.ballFinalPos = self.parser.getBallPos(self.ballGraph, self.ballFinalPos)       
         except Exception as e:
@@ -99,18 +102,40 @@ class World(Singleton):
         #print("score left: " + self.scoreLeft)
         #print("PlayMode: " + self.playMode)
     
-    def staticUpdate(self):    
-        self.net.updateSExp()
-        serverExp = self.net.serverExp
+    def staticUpdate(self):
+        while(self.ballIndex is None):    
+            try:
+                self.trainer.reqFullState()
+                self.net.updateSExp()
+                serverExp = self.net.serverExp
+                self.ballIndex = self.parser.getBallIndex(serverExp, self.ballIndex) #The ball should be initiated along with the server so if the ball is up, everything else should be ready as well.
+            except Exception as e:
+                pass
+                #print("-----BALLPOSS EXCEPTION-----:")
+                #print(e)
+        
+        try:
+            self.net.updateSExp()
+            serverExp = self.net.serverExp
+            self.ballIndex = self.parser.getBallIndex(serverExp, self.ballIndex) #The ball should be initiated along with the server so if the ball is up, everything else should be ready as well.
+        except Exception as e:
+            pass
+            #print("-----BALLPOSS EXCEPTION-----:")
+            #print(e)
 
-        #FIELD
-        self.fieldLength = float(self.parser.getValue('FieldLength', serverExp, self.fieldLength))
-        self.fieldHeight = float(self.parser.getValue('FieldHeight', serverExp, self.fieldHeight))
-        self.fieldwidth = float(self.parser.getValue('FieldWidth', serverExp, self.fieldwidth))
-        self.goalWidth = float(self.parser.getValue('GoalWidth', serverExp, self.goalWidth))
-        self.goalDepth = float(self.parser.getValue('GoalDepth', serverExp, self.goalDepth))
-        self.goalHeight = float(self.parser.getValue('GoalHeight', serverExp, self.goalHeight))
+        try:
+            #FIELD
+            self.fieldLength = float(self.parser.getValue('FieldLength', serverExp, self.fieldLength))
+            self.fieldHeight = float(self.parser.getValue('FieldHeight', serverExp, self.fieldHeight))
+            self.fieldwidth = float(self.parser.getValue('FieldWidth', serverExp, self.fieldwidth))
+            self.goalWidth = float(self.parser.getValue('GoalWidth', serverExp, self.goalWidth))
+            self.goalDepth = float(self.parser.getValue('GoalDepth', serverExp, self.goalDepth))
+            self.goalHeight = float(self.parser.getValue('GoalHeight', serverExp, self.goalHeight))
 
-        #BALL
-        self.ballRadius = float(self.parser.getValue('BallRadius', serverExp, self.ballRadius))
-        self.ballMass = float(self.parser.getValue('BallMass', serverExp, self.ballMass))
+            #BALL
+            self.ballRadius = float(self.parser.getValue('BallRadius', serverExp, self.ballRadius))
+            self.ballMass = float(self.parser.getValue('BallMass', serverExp, self.ballMass))
+        except Exception as e:
+            pass
+            #print("-----BALLPOSS EXCEPTION-----:")
+            #print(e)
