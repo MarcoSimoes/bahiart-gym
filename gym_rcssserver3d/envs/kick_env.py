@@ -36,6 +36,8 @@ class KickEnv(gym.Env):
         self.createObservationSpace()
 
         self.state = player.getObs()
+        self.thisStep = 0
+        self.prevAction = None
 
         #Define episode end condition flags
         self.maxKickTime = 5                              #DEFAULT: 5 seconds
@@ -48,19 +50,22 @@ class KickEnv(gym.Env):
         #self.state = self.ballInitPos
 
         ...
-    def step(self, action): # Actions based in numbers passed to the joints. 22 joints total (define which one will be used in each train)
+    def step(self, action, thisStep): # Actions based in numbers passed to the joints. 22 joints total (define which one will be used in each train)
     
         self.command.reqFullState()
+        self.ws.staticUpdate()
         self.ws.dynamicUpdate()
+        self.prevAction = action
+        self.thisStep = thisStep
         #DEBUG
-        print("BallPOS: {}".format(self.ws.ballFinalPos))
-        print("BALLSPEED: {}".format(self.ws.ballSpeed))
-        print("TIME: {}".format(self.ws.time))
+        #print("BallPOS: {}".format(self.ws.ballFinalPos))
+        #print("BALLSPEED: {}".format(self.ws.ballSpeed))
+        #print("TIME: {}".format(self.ws.time))
         #FIMDEBUG
         if(self.episodeInitTime is None):
             self.episodeInitTime = self.ws.time
         if(self.initBallPos is None):
-            self.initBallPos = self.ws.ballFinalPos[0] #TODO: Corrigir esse ballpos. Verificar novamente o node, mandar printar len pra ver se estou pegando o node correto. Comparar logica do gamemonitor.py de Marco
+            self.initBallPos = self.ws.ballFinalPos[0]
         reward = 0
 
         # 1 - Write the actions into another file for the team to collect.
@@ -104,7 +109,10 @@ class KickEnv(gym.Env):
             currBallPos = self.ws.ballFinalPos[0]
             currTime = self.ws.time
             elapsedTime = currTime - self.episodeInitTime
-            self.state = self.optPlayer.getObs() # + action space + count
+            self.state = self.optPlayer.getObs()
+            self.state['prevAction'] = self.prevAction
+            self.state['count'] = self.thisStep
+            #self.state = self.optPlayer.getObs() # + action space + count
             
             #Calculate reward (EXTRA: -2 each goal taken, +4 each goal scored)
             ballDistanceDiff = currBallPos - self.initBallPos
@@ -118,8 +126,8 @@ class KickEnv(gym.Env):
             #Verify if episode is done
             if(elapsedTime > 5 and self.ws.ballSpeed < 0.005):
                 done = True
-            if(ballDistanceDiff < 0.001):
-                reward += -5
+                if(ballDistanceDiff < 0.001):
+                    reward += -5
                 self.initBallPos = None
                 self.episodeInitTime = None
             else:
@@ -128,8 +136,8 @@ class KickEnv(gym.Env):
 
             info = {}
             #DEBUGS
-            print("CHEGOU NO FIM. RESULTADOS: ")
-            print("NoneState:{} reward:{} done:{} info:{}".format((self.state == None), reward, done, info))  
+            #print("CHEGOU NO FIM. RESULTADOS: ")
+            #print("NoneState:{} reward:{} done:{} info:{}".format((self.state == None), reward, done, info))  
             #FIMDEBUGS
             return self.state, reward, done, info
 
@@ -154,6 +162,7 @@ class KickEnv(gym.Env):
         ...
     def reset(self):
 
+        self.ws.staticUpdate()
         self.ws.dynamicUpdate()
         
         #Place the ball in the center of the field
@@ -163,6 +172,8 @@ class KickEnv(gym.Env):
         self.command.beamPlayer(self.optPlayer.getUnum(), "Left", -0.2, 0, 0.3)
 
         self.state = self.optPlayer.getObs()
+        self.state['prevAction'] = self.prevAction
+        self.state['count'] = self.thisStep
 
         return self.state
 
@@ -253,7 +264,56 @@ class KickEnv(gym.Env):
         'gyr': spaces.Box(low=np.array([-800, -800, -800]), high=np.array([800, 800, 800]), dtype=np.float64),
         'ballpos': spaces.Box(low=np.array([0, -61, -61]), high=np.array([50, 61, 61]), dtype=np.float64),
         'leftFootResistance': spaces.Tuple((spaces.Box(low=-0.10, high=0.10, shape=(3,), dtype=np.float64), spaces.Box(low=-245, high=245, shape=(3,), dtype=np.float64))),
-        'rightFootResistance': spaces.Tuple((spaces.Box(low=-0.10, high=0.10, shape=(3,), dtype=np.float64), spaces.Box(low=-245, high=245, shape=(3,), dtype=np.float64)))
+        'rightFootResistance': spaces.Tuple((spaces.Box(low=-0.10, high=0.10, shape=(3,), dtype=np.float64), spaces.Box(low=-245, high=245, shape=(3,), dtype=np.float64))),
+        'prevAction': spaces.Box(
+            np.array([
+                [-120.0, -6.109],     #hj1
+                [-45.0, -6.109],      #hj2
+                [-90.0, -6.109],      #llj1
+                [-120.0, -6.109],     #rlj1
+                [-25.0, -6.109],      #llj2
+                [-45.0, -6.109],      #rlj2
+                [-25.0, -6.109],      #llj3
+                [-25.0, -6.109],      #rlj3
+                [-130.0, -6.109],     #llj4
+                [-130.0, -6.109],     #rlj4
+                [-45.0, -6.109],      #llj5
+                [-45.0, -6.109],      #rlj5
+                [-45.0, -6.109],      #llj6
+                [-25.0, -6.109],      #rlj6
+                [-120.0, -6.109],     #laj1
+                [-120.0, -6.109],     #raj1
+                [-1.0, -6.109],       #laj2
+                [-95.0, -6.109],      #raj2
+                [-120.0, -6.109],     #laj3
+                [-120.0, -6.109],     #raj3
+                [-90.0, -6.109],      #laj4
+                [-1.0, -6.109]]),     #raj4
+            np.array([
+                [120.0, 6.109],      #hj1
+                [45.0, 6.109],       #hj2
+                [1.0, 6.109],        #llj1
+                [120.0, 6.109],      #rlj1
+                [45.0, 6.109],       #llj2
+                [25.0, 6.109],       #rlj2
+                [100.0, 6.109],      #llj3
+                [100.0, 6.109],      #rlj3
+                [1.0, 6.109],        #llj4
+                [1.0, 6.109],        #rlj4
+                [75.0, 6.109],       #llj5 
+                [75.0, 6.109],       #rlj5
+                [25.0, 6.109],       #llj6
+                [45.0, 6.109],       #rlj6
+                [120.0, 6.109],      #laj1
+                [120.0, 6.109],      #raj1
+                [95.0, 6.109],       #laj2
+                [1.0, 6.109],        #raj2
+                [120.0, 6.109],      #laj3
+                [120.0, 6.109],      #raj3
+                [1.0, 6.109],        #laj4
+                [90.0, 6.109]]),     #raj4
+                dtype=np.float64),
+        'count': spaces.Discrete(1000) # TODO: Definir count. Default até 1000 steps
         })
 
     def close(self):
