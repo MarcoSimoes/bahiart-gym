@@ -1,3 +1,5 @@
+#TODO: Transformar em um codigo de "treino" padrão para funcionar de exemplo.
+
 from server.proxy import Proxy
 from gym_rcssserver3d.envs.kick_env import KickEnv
 import socket

@@ -9,6 +9,7 @@ class Ball(Singleton):
         self.latestServerPos = None
         self.currentServerPos = None
 
+    # Update ballSpeed based on server perception
     def updateServer(self, ballPos, time):
         if(not self.latestServerPos):
             self.latestServerPos = ballPos
@@ -33,6 +34,7 @@ class Ball(Singleton):
             else:
                 self.speedBallServer = dist / (self.currentServerTime - self.latestServerTime)        
 
+    #TODO: Update ballSpeed based on player perception
     def updatePlayer(self, ballPos, time):
         self.speedBallPlayer
         pass

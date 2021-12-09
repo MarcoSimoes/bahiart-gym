@@ -90,7 +90,7 @@ class AgentProxy:
             # Searching agent number
             if self.agentNumber == '0':    
                 # If the proxy doesn't know the agent, 
-                # it keeps searching in the messages the number of the agent.
+                # it keeps searching in the messages for the number of the agent.
                 splitMessage = re.split("\s",message.decode())
                 for x in range(len(splitMessage)):
                     if 'unum' in splitMessage[x]:
@@ -141,9 +141,6 @@ class AgentProxy:
         messages = self.listOfMessages.copy()
         self.listOfMessages = []
 
-        # Return only the oldest message on the list, so i keep receiving them in order
-        # messages = self.listOfMessages.copy()
-        # self.listOfMessages.pop(0)
         return messages
 
     def getIsConnected(self):

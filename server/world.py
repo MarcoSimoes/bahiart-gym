@@ -80,15 +80,12 @@ class World(Singleton):
         #BALL SPEED
         try:
             if(self.count == 0):
-                #print("ENTROU BALL CYCLE 0")
                 self.ballInitPos = self.ballFinalPos
                 self.ballInitTime = self.time
             if(self.count == 9):
-                #print("ENTROU BALL CYCLE 9")
                 if(len(self.ballInitPos) > 0):
                     self.ballSpeed = sqrt(((self.ballFinalPos[0] - self.ballInitPos[0])**2) + ((self.ballFinalPos[1] - self.ballInitPos[1])**2)) / (self.time - self.ballInitTime)
                 self.count = -1
-                #print("ball Speed SERVER: " + str(self.ballSpeed))
             self.count = self.count + 1
         except Exception as e:
             pass

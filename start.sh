@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#TODO: Refazer para condizer com a nova organização do código
 agentDir=/home/mask/workspace/binRT
 
 

@@ -25,7 +25,7 @@ class Comms(Singleton):
             self.sock.connect((self.HOST, self.PORT))
             self.serverSocket = self.sock
             print("Connection established")
-            self.serverSocket.setblocking(0) #SET AS NON-BLOCKING
+            self.serverSocket.setblocking(0)
         except socket.error as err:
             print("Connection not established.")
             print("Error : " + str(err))

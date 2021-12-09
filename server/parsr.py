@@ -15,8 +15,6 @@ class Parser(object):
         with self.mutex:
             parsedString = str2sexpr(string)    
         return parsedString
-        #self.parsedExp = sexpr.str2sexpr(string)
-
 
     def search(self, word: str, lst: list):
         for i in range(0,len(lst)):
