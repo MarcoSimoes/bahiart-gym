@@ -6,7 +6,7 @@ import numpy as np
 
 class Player(object):
     """ 
-    Class to deal with the many player instances for each team
+    This class deals with every player instantiated on proxy
     """
     """
     Perceptor Grammar:
@@ -121,27 +121,27 @@ class Player(object):
         }
         return observation
 
-    # def checkFallen(self):
+    def checkFallen(self):
         
-    #     fallen = False
+        fallen = False
 
-    #     X_ACEL = self.acc[0]
-    #     Y_ACEL = self.acc[1]
-    #     Z_ACEL = self.acc[2]
+        X_ACEL = self.acc[0]
+        Y_ACEL = self.acc[1]
+        Z_ACEL = self.acc[2]
 
-    #     if((fabs(X_ACEL) > Z_ACEL or fabs(Y_ACEL) > Z_ACEL) and Z_ACEL < 5):
-    #         #print("FALLEN: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
-    #         fallen = True
-    #     # else:
-    #     #     print("STANDING: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
+        if((fabs(X_ACEL) > Z_ACEL or fabs(Y_ACEL) > Z_ACEL) and Z_ACEL < 5):
+            if((Y_ACEL < -6.5 and Z_ACEL < 3) or (Y_ACEL > 7.5 and Z_ACEL < 3) or (fabs(X_ACEL) > 6.5)):
+                fallen = True
+                print("FALLEN: " + str([X_ACEL, Y_ACEL, Z_ACEL]) + " time: " + str(self.time))
+        else:
+            print("STANDING: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
         
-    #     return fallen
+        return fallen
 
     def updateStats(self, agentMsg):
 
         #AGENT MSG
         parsedMsg = self.parser.parse(agentMsg)
-        #print(parsedMsg)
         
         #JOINTS
         self.neckYaw = self.parser.getHinjePos('hj1', parsedMsg, self.neckYaw)
@@ -176,24 +176,13 @@ class Player(object):
 
         #BALL
         self.ballPolarPos = self.parser.getBallVision(parsedMsg, self.ballPolarPos)
-        #if(len(self.ballPolarPos) > 0):
-        #    self.ballCartPos = self.pol2cart(self.ballPolarPos[0], self.ballPolarPos[1])
-        # print("Ball POS: " + str(self.ballPolarPos))
-        # if(self.ballCycle == 0):
-        #     self.ballInitPos = self.ballFinalPos
-        # self.ballCycle += 1
-        # if(self.ballCycle == 29):
-        #     self.ballSpeed = sqrt((self.ballFinalPos[0] - self.ballInitPos[0])**2 + (self.ballFinalPos[1] - self.ballInitPos[1])**2) / 0.6
-        #     self.ballCycle = 0
-        #     print("ball Speed: " + str(self.ballSpeed))
-        #self.ball.updatePlayer(self.ballPos, self.time)
 
         #FORCE RESISTANCE PERCEPTORS
         self.lf = self.parser.getFootResistance('lf', parsedMsg, self.lf)
         self.rf = self.parser.getFootResistance('rf', parsedMsg, self.rf)
 
         #CHECK IF PLAYER IS FALLEN
-        #self.isFallen = self.checkFallen()
+        self.isFallen = self.checkFallen()
         
         #NAO TOE
         #self.lf1 = self.parser.getFootResistance('lf1', parsedMsg, self.lf1)

@@ -6,7 +6,6 @@ from server.singleton import Singleton
 class ServerParser(Singleton):
     """
     Class to retrieve and parse the S-Expression sent from the server
-    'Consider changing the name to TrainerParser'
     """
 
     def __init__(self):
@@ -27,19 +26,16 @@ class ServerParser(Singleton):
             elif lst[i] == word:
                 found=True
             if found:
-                break
-    ##        print("Word: ",str(lst[i]), "Found: ", str(found)) 
+    #            print("Word: ",str(lst[i]), "Found: ", str(found))
+                break 
         return found
 
     #Gets the entire ball node
-    def getBallIndex(self, lst: list, latestIndex): #Change this to index
+    def getBallIndex(self, lst: list, latestIndex):
         sceneGraph = lst[2]
         sceneGraphHeader = lst[1]
-        #ballNd = sceneGraph[35]
-        #return ballNd
         foundBall=False
         if(sceneGraphHeader[0]=="RSG"):
-            #print("Searching ball in full graph ....")
             for idx, nod in enumerate(sceneGraph):
                 foundBall=self.searchObject("models/soccerball.obj",nod)
                 if(foundBall):  
@@ -50,7 +46,6 @@ class ServerParser(Singleton):
             ballIndex = latestIndex
             return ballIndex
         if(foundBall):
-            #print("Node ball index: ",str(idx), " Graph Size: ", str(len(sceneGraph)))
             ballIndex = idx
             return ballIndex
 
