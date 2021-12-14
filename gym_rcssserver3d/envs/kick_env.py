@@ -1,3 +1,5 @@
+import sys, os
+sys.path.append("../")
 import gym
 from gym.spaces import box, space
 from gym import error, spaces, utils
@@ -7,10 +9,13 @@ from server.player import Player
 from server.trainer import Trainer
 from server.proxy import Proxy
 from server.world import World
+from gym_rcssserver3d.agentcomms import AgentComms
+from gym_rcssserver3d.agentcomms import InvalidHostAndPortLengths
 
 import numpy as np
-import sys, time
+
 sys.path.append("../../server")
+
 
 from server import *
 
@@ -20,7 +25,28 @@ class KickEnv(gym.Env):
     optPlayer: Player = None
 
     def __init__(self, player: Player):
-
+        
+        hosts=[]
+        ports=[]
+        if os.path.isfile('config.txt'):
+            try:
+                with open('config.txt') as f:
+                    fi=f.readlines()
+                    for linha in fi:
+                        hp=linha.split(":")
+                        hosts.append(hp[0])
+                        ports.append(hp[1])
+                self.agents=AgentComms(hosts,ports)
+            except IOError:
+                print("Error reading config.txt file.")
+            except InvalidHostAndPortLengths as err:
+                print(str(err))
+        else:
+            try:
+                self.agents=AgentComms()   
+            except InvalidHostAndPortLengths as err:
+                print(str(err))
+                
         #CREATING WORLD OBJECT AND UPDATING ITS VARIABLES
         self.command = Trainer()
         self.ws = World()
@@ -76,74 +102,79 @@ class KickEnv(gym.Env):
                 myList.append(action[i,j])
 
         #toPrint = str(myList)
-        file = open("/home/mask/workspace/gymOut.txt", "w").close() #Creating a file if not existing
-        file = open("/home/mask/workspace/gymOut.txt", "a")
+        #file = open("/home/mask/workspace/gymOut.txt", "w").close() #Creating a file if not existing
+        #file = open("/home/mask/workspace/gymOut.txt", "a")
+        message=""
 
         for value in myList:
-            file.write(str(value))
-            file.write(',')
+            message+=(str(value))
+            message+=','
+            
+        self.agents.sendAll(message)
+        
+        self.agents.receiveAll()
 
-        file.close()
+        #file.close()
 
         # 1 - Write 0 into a ready file to let the team know the actions are ready to be executed.
-        ready = open("/home/mask/workspace/ready.txt", "w")
-        ready.write('0')
-        ready.close()
+        #ready = open("/home/mask/workspace/ready.txt", "w")
+        #ready.write('0')
+        #ready.close()
 
         #Keep waiting for team to execute step
-        ready = open("/home/mask/workspace/ready.txt", "r")
-        readyFile = ready.read()
-        ready.close()
-        while(readyFile == '0'):
+        #ready = open("/home/mask/workspace/ready.txt", "r")
+        #readyFile = ready.read()
+        #ready.close()
+        #while(readyFile == '0'):
             #time.sleep(1)
-            ready = open("/home/mask/workspace/ready.txt", "r")
-            readyFile = ready.read()
-            ready.close()
+        #    ready = open("/home/mask/workspace/ready.txt", "r")
+        #    readyFile = ready.read()
+        #    ready.close()
             #DEBUGS
             #print("PRESO NO WHILE: {}".format(readyFile))
 
         #Check if the team executed the action and proceed.
-        if(readyFile == '1'):
+       # if(readyFile == '1'):
             #Update world and observation information
-            self.ws.dynamicUpdate()
-            currBallPos = self.ws.ballFinalPos[0]
-            currTime = self.ws.time
-            elapsedTime = currTime - self.episodeInitTime
-            self.state = self.optPlayer.getObs()
-            self.state['prevAction'] = self.prevAction
-            self.state['count'] = self.thisStep
-            #self.state = self.optPlayer.getObs() # + action space + count
-            
-            #Calculate reward (EXTRA: -2 each goal taken, +4 each goal scored)
-            ballDistanceDiff = currBallPos - self.initBallPos
-            if(ballDistanceDiff <= 0):
-                reward += -1
-            elif(ballDistanceDiff > 0 and ballDistanceDiff < 0.1):
-                reward += 0
-            elif(ballDistanceDiff > 0.1):
-                reward = (ballDistanceDiff/0.1)*2 #Not summing. Otherwise it would keep adding until the time was up. I only want the last.
-            
-            #Verify if episode is done
-            if(elapsedTime > 5 and self.ws.ballSpeed < 0.005):
-                done = True
-                if(ballDistanceDiff < 0.001):
-                    reward += -5
-                self.initBallPos = None
-                self.episodeInitTime = None
-            else:
-                done = False
-            
-
-            info = {}
-            #DEBUGS
-            #print("CHEGOU NO FIM. RESULTADOS: ")
-            #print("NoneState:{} reward:{} done:{} info:{}".format((self.state == None), reward, done, info))  
-            #FIMDEBUGS
-            return self.state, reward, done, info
-
+        self.ws.dynamicUpdate()
+        currBallPos = self.ws.ballFinalPos[0]
+        currTime = self.ws.time
+        elapsedTime = currTime - self.episodeInitTime
+        self.state = self.optPlayer.getObs()
+        self.state['prevAction'] = self.prevAction
+        self.state['count'] = self.thisStep
+        #self.state = self.optPlayer.getObs() # + action space + count
+        
+        #Calculate reward (EXTRA: -2 each goal taken, +4 each goal scored)
+        ballDistanceDiff = currBallPos - self.initBallPos
+        if(ballDistanceDiff <= 0):
+            reward += -1
+        elif(ballDistanceDiff > 0 and ballDistanceDiff < 0.1):
+            reward += 0
+        elif(ballDistanceDiff > 0.1):
+            reward = (ballDistanceDiff/0.1)*2 #Not summing. Otherwise it would keep adding until the time was up. I only want the last.
+        
+        #Verify if episode is done
+        if(elapsedTime > 5 and self.ws.ballSpeed < 0.005):
+            done = True
+            if(ballDistanceDiff < 0.001):
+                reward += -5
+            self.initBallPos = None
+            self.episodeInitTime = None
         else:
-            print("ERRO NO READY: {}".format(readyFile))
-            return self.state, 0, False, {}
+            done = False
+        
+
+        info = {}
+        #DEBUGS
+        #print("CHEGOU NO FIM. RESULTADOS: ")
+        #print("NoneState:{} reward:{} done:{} info:{}".format((self.state == None), reward, done, info))  
+        #FIMDEBUGS
+        return self.state, reward, done, info
+
+#        else:
+#            print("ERRO NO READY: {}".format(readyFile))
+#            return self.state, 0, False, {}
 
         #if ready = 1:
             
