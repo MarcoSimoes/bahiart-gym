@@ -1,4 +1,5 @@
 import socket
+import threading
 from server.singleton import Singleton
 
 class InvalidHostAndPortLengths(Exception):
@@ -12,39 +13,83 @@ class AgentComms(Singleton):
     """
     
 
-    def __init__(self, host=['localhost'], port=[4100]):
+    def __init__(self,  port=4100):
 
-        if len(host)!=len(port):
-            raise InvalidHostAndPortLengths("Host and Port lists should have the same size!")
-        self.HOST = host
-        self.PORT = port
-        self.socks=[]
-        i=1
-        try: 
-            for h in host:
-                sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.socks.append(sock)             
-                print("Socket {} created".format(i))
-                i=i+1
-        except socket.error as err:
-            print("Socket {} not created.".format(i))
-            print("Error : " + str(err))
         
-        i=1
-        try: 
+ 
+        self.gymsock= socket.socket()        
+        print ("[AGENT COMMS] Socket successfully created")
+                       
+        self.gymsock.bind(('', port))        
+        print ("[AGENT COMMS] socket binded to %s" %(port))
+         
+        self.gymsock.listen(11)    
+        print ("[AGENT COMMS] socket is listening")      
+        
+        self.agents={}
+         
+        threading._start_new_thread(self.acceptConnections,())
+ 
+
+
+
+################################
+ #        if len(host)!=len(port):
+ #            raise InvalidHostAndPortLengths("Host and Port lists should have the same size!")
+ #        self.HOST = host
+ #        self.PORT = port
+ #        self.socks=[]
+ #        i=1
+ #        try: 
+ #            for h in host:
+ #                sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ #                self.socks.append(sock)             
+ #                print("Socket {} created".format(i))
+ #                i=i+1
+ #        except socket.error as err:
+ #            print("Socket {} not created.".format(i))
+ #            print("Error : " + str(err))
+        
+ #        i=1
+ #        try: 
             
-            for h,p,s in zip(host,port,self.socks):
-                s.connect((h, p))
+ #            for h,p,s in zip(host,port,self.socks):
+ #                s.connect((h, p))
               
-                print("[AGENTCOMMS]Connection {} established".format(i))
-                i+=1
- #               s.setblocking(0)
-        except socket.error as err:
-            print("[AGENTCOMMS]Connection {} not established.".format(i))
-            print("Error : " + str(err))
+ #                print("[AGENTCOMMS]Connection {} established".format(i))
+ #                i+=1
+ # #               s.setblocking(0)
+ #        except socket.error as err:
+ #            print("[AGENTCOMMS]Connection {} not established.".format(i))
+ #            print("Error : " + str(err))
 
 
+    def acceptConnections(self):
+        """
+        Accept connections from agents in Training Mode. Must run as an independent Thread.
 
+        Returns
+        -------
+        None.
+
+        """
+        while True:        
+            c, addr = self.gymsock.accept()    
+            print ('[AGENT COMMS] Got connection from', addr )
+            msg = c.recv(4)    
+            if msg>0:
+                num = int.from_bytes(msg, 'little')          
+                unum = socket.ntohl(num)
+                self.agents[unum]=c
+                print("[AGENT COMMS] Agent %s connected." %(unum))
+                c.send('Ok'.encode())
+            else:
+                if msg==0:
+                    print("[AGENT COMMS] Client %s closed the connection." %(addr))
+                elif msg==-1:
+                    print("[AGENT COMMS] Error receiving message from %s." %(addr))
+   
+        
     def sendAll(self, msg: str):
         """
         Sends environment message msg to all agents.
@@ -52,26 +97,26 @@ class AgentComms(Singleton):
         msgLen = socket.htonl(len(msg))
         prefix = msgLen.to_bytes(4, 'little')
         fullmsg = str(prefix, "utf-8") + msg
-        i=1
+    
         try:
-           for s in self.socks:
-                s.sendall(fullmsg.encode())
-                print("[AGENTCOMMS]Socket message {} sent.".format(i))
-                print("[AGENTCOMMS]Socket message: {}".format(fullmsg))
-                i+=1
+           for unum in self.agents:
+                self.agents[unum].sendall(fullmsg.encode())
+                print("[AGENT COMMS]Socket message sent to player %s." %(unum))
+                print("[AGENT COMMS]Socket message: {}".format(fullmsg))
+            
         except socket.error as err:
-            print("[AGENTCOMMS]Socket message {} not sent.".format(i))
-            print("Error : " + str(err))
-            print("Message : " + str(fullmsg))
+           print("[AGENT COMMS]Socket message not sent to player %s." %(unum))
+           print("Error : " + str(err))
+           print("Message : " + str(fullmsg))
 
-    def send(self, index: int, msg:str):     
+    def send(self, unum: int, msg:str):     
        """
-       Sends the message msg to the agent identified by the socket in the position "index" in the list of sockets initialized in this object.
+       Sends the message msg to the agent identified by the number of t-shirt in the list of sockets initialized in this object.
        
        Parameters
        ----------
-       index : int
-           position of the socket in the sockets list to which the message will be sent.
+       unum : int
+           number of player's t-shirt used as index to retrieve its socket.
        msg : str
             Message to be sent.
         
@@ -83,31 +128,57 @@ class AgentComms(Singleton):
        msgLen = socket.htonl(len(msg))
        prefix = msgLen.to_bytes(4, 'little')
        fullmsg = str(prefix, "utf-8") + msg
-       sock=self.socks[index]
+       
        try:
+           sock=self.agents[unum]
            sock.sendall(fullmsg.encode())    
-           print("[AGENTCOMMS]Socket message sent.")
+           print("[AGENT COMMS] Socket message sent to player %s." %(unum))
+       except KeyError:
+            print("[AGENT COMMS] Player %s has no connection initialized to Gym." %(unum))
        except socket.error as err:
-           print("[AGENTCOMMS]Socket message not sent.")
+           print("[AGENTCOMMS] Socket message not sent.")
            print("Error : " + str(err))
            print("Message : " + str(fullmsg))
         
     def receiveAll(self):
-        i=1
+        """
+        Receive a confirmation message "Ok" from all connected agents.
+
+        Returns
+        -------
+        None.
+
+        """
+        
         try:
-            for s in self.socks:
-                s.recv(4096)
-                print("[AGENTCOMMS]Socket message {} received".format(i))
-                i+=1
+            for unum in self.agents:
+                self.agents[unum].recv(4)
+                print("[AGENT COMMS]Socket message received from player %s" %(unum))
+            
         except socket.error as err:
-            print("[AGENTCOMMS]Socket message {} not received".format(i))
+            print("[AGENT COMMS]Socket message not received from player %s" %(unum))
             print("Error : " + str(err))
                   
-    def receive(self,index: int):
-            try:
-                self.socks[index].recv(4096)
-                print("[AGENTCOMMS]Socket message received.")
-            except socket.error as err:
-                print("[AGENTCOMMS]Socket message not received.")
-                print("Error : " + str(err))
-                
+    def receive(self,unum: int):
+        """
+        Receive a confirmation message from player number unum.
+
+        Parameters
+        ----------
+        unum : int
+            Number of player's t-shirt whose message is received.
+
+        Returns
+        -------
+        None.
+
+        """
+        try:
+            self.agents[unum].recv(4)
+            print("[AGENT COMMS]Socket message received from player %s." %(unum))
+        except KeyError:
+            print("[AGENT COMMS] Player %s has no connection initialized to Gym." %(unum))
+        except socket.error as err:
+            print("[AGENT COMMS]Socket message not received rom player %s." %(unum))
+            print("Error : " + str(err))
+            
