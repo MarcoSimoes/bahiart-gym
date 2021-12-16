@@ -132,9 +132,10 @@ class Player(object):
         if((fabs(X_ACEL) > Z_ACEL or fabs(Y_ACEL) > Z_ACEL) and Z_ACEL < 5):
             if((Y_ACEL < -6.5 and Z_ACEL < 3) or (Y_ACEL > 7.5 and Z_ACEL < 3) or (fabs(X_ACEL) > 6.5)):
                 fallen = True
-                print("FALLEN: " + str([X_ACEL, Y_ACEL, Z_ACEL]) + " time: " + str(self.time))
+                #print("FALLEN: " + str([X_ACEL, Y_ACEL, Z_ACEL]) + " time: " + str(self.time))
         else:
-            print("STANDING: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
+            pass
+            #print("STANDING: " + str([X_ACEL, Y_ACEL, Z_ACEL]))
         
         return fallen
 

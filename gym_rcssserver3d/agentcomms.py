@@ -36,11 +36,11 @@ class AgentComms(Singleton):
             for h,p,s in zip(host,port,self.socks):
                 s.connect((h, p))
               
-                print("Connection {} established".format(i))
+                print("[AGENTCOMMS]Connection {} established".format(i))
                 i+=1
  #               s.setblocking(0)
         except socket.error as err:
-            print("Connection {} not established.".format(i))
+            print("[AGENTCOMMS]Connection {} not established.".format(i))
             print("Error : " + str(err))
 
 
@@ -55,11 +55,12 @@ class AgentComms(Singleton):
         i=1
         try:
            for s in self.socks:
-                s.send(fullmsg.encode())    
-                print("Socket message {} sent.".format(i))
+                s.sendall(fullmsg.encode())
+                print("[AGENTCOMMS]Socket message {} sent.".format(i))
+                print("[AGENTCOMMS]Socket message: {}".format(fullmsg))
                 i+=1
         except socket.error as err:
-            print("Socket message {} not sent.".format(i))
+            print("[AGENTCOMMS]Socket message {} not sent.".format(i))
             print("Error : " + str(err))
             print("Message : " + str(fullmsg))
 
@@ -84,29 +85,29 @@ class AgentComms(Singleton):
        fullmsg = str(prefix, "utf-8") + msg
        sock=self.socks[index]
        try:
-           sock.send(fullmsg.encode())    
-           print("Socket message sent.")
+           sock.sendall(fullmsg.encode())    
+           print("[AGENTCOMMS]Socket message sent.")
        except socket.error as err:
-           print("Socket message not sent.")
+           print("[AGENTCOMMS]Socket message not sent.")
            print("Error : " + str(err))
            print("Message : " + str(fullmsg))
         
-       def receiveAll(self):
-            i=1
-            try:
-               for s in self.socks:
-                    s.recv(4096)
-                    print("Socket message {} received".format(i))
-                    i+=1
-            except socket.error as err:
-                print("Socket message {} not received".format(i))
-                print("Error : " + str(err))
+    def receiveAll(self):
+        i=1
+        try:
+            for s in self.socks:
+                s.recv(4096)
+                print("[AGENTCOMMS]Socket message {} received".format(i))
+                i+=1
+        except socket.error as err:
+            print("[AGENTCOMMS]Socket message {} not received".format(i))
+            print("Error : " + str(err))
                   
     def receive(self,index: int):
             try:
                 self.socks[index].recv(4096)
-                print("Socket message received.")
+                print("[AGENTCOMMS]Socket message received.")
             except socket.error as err:
-                print("Socket message not received.")
+                print("[AGENTCOMMS]Socket message not received.")
                 print("Error : " + str(err))
                 

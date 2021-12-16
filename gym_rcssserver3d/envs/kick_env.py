@@ -1,13 +1,9 @@
 import sys, os
 sys.path.append("../")
 import gym
-from gym.spaces import box, space
-from gym import error, spaces, utils
-from gym.utils import seeding
-from numpy.core.fromnumeric import shape
+from gym import spaces
 from server.player import Player
 from server.trainer import Trainer
-from server.proxy import Proxy
 from server.world import World
 from gym_rcssserver3d.agentcomms import AgentComms
 from gym_rcssserver3d.agentcomms import InvalidHostAndPortLengths
@@ -53,7 +49,6 @@ class KickEnv(gym.Env):
         self.ws.staticUpdate()
         self.ws.dynamicUpdate()
 
-        self.generalTarget = np.array([15.0, 0.0, 0.0])   #DEFAULT: Enemy Goal (considering the agent is in the middle of the field)
         self.episodeInitTime = None
         self.initBallPos = None
         
@@ -70,12 +65,6 @@ class KickEnv(gym.Env):
         self.kickThreshold = 1                            #DEFAULT: 1 meter radius
         self.minBallSpeed = 0.05
 
-        #Episode ending conditions: Time + Ball speed close to 0 / player fell + Ball speed close to 0 / Ball outside kick threshold (1 meter) + ball speed close to 0
-        
-        
-        #self.state = self.ballInitPos
-
-        ...
     def step(self, action, thisStep): # Actions based in numbers passed to the joints. 22 joints total (define which one will be used in each train)
     
         self.command.reqFullState()
