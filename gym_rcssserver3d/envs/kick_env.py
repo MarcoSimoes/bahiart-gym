@@ -20,29 +20,14 @@ class KickEnv(gym.Env):
 
     optPlayer: Player = None
 
-    def __init__(self, player: Player):
+    def __init__(self):
         
-        hosts=[]
-        ports=[]
-        if os.path.isfile('config.txt'):
-            try:
-                with open('config.txt') as f:
-                    fi=f.readlines()
-                    for linha in fi:
-                        hp=linha.split(":")
-                        hosts.append(hp[0])
-                        ports.append(hp[1])
-                self.agents=AgentComms(hosts,ports)
-            except IOError:
-                print("Error reading config.txt file.")
-            except InvalidHostAndPortLengths as err:
-                print(str(err))
-        else:
-            try:
-                self.agents=AgentComms()   
-            except InvalidHostAndPortLengths as err:
-                print(str(err))
-                
+        
+        
+        
+#        input()  
+        self.agents=AgentComms()   
+#        input()                    
         #CREATING WORLD OBJECT AND UPDATING ITS VARIABLES
         self.command = Trainer()
         self.ws = World()
@@ -52,11 +37,11 @@ class KickEnv(gym.Env):
         self.episodeInitTime = None
         self.initBallPos = None
         
-        self.setPlayer(player)  
+#        self.setPlayer(player)  
         self.createActionSpace()
         self.createObservationSpace()
 
-        self.state = player.getObs()
+#        self.state = player.getObs()
         self.thisStep = 0
         self.prevAction = None
 

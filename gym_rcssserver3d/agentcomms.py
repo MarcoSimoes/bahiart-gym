@@ -76,10 +76,10 @@ class AgentComms(Singleton):
         while True:        
             c, addr = self.gymsock.accept()    
             print ('[AGENT COMMS] Got connection from', addr )
-            msg = c.recv(4)    
-            if msg>0:
-                num = int.from_bytes(msg, 'little')          
-                unum = socket.ntohl(num)
+            msg = c.recv(4)  
+            num = int.from_bytes(msg, 'little') 
+            unum = socket.ntohl(num)
+            if unum>0:
                 self.agents[unum]=c
                 print("[AGENT COMMS] Agent %s connected." %(unum))
                 c.send('Ok'.encode())

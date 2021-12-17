@@ -4,14 +4,19 @@ from server.proxy import Proxy
 from gym_rcssserver3d.envs.kick_env import KickEnv
 import time
 
-proxy = Proxy(3500)
+proxy = Proxy(3800)
 proxy.start()
+
+
+
+
+
+env = KickEnv()
+
 time.sleep(5)
 
-
 ply = proxy.getPlayerObj('1')
-
-env = KickEnv(ply)
+env.setPlayer(ply)
 
 episodes = 5
 for episodes in range(1, episodes+1):
