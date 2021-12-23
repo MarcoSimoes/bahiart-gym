@@ -1,15 +1,12 @@
 #TODO: Transformar em um codigo de "treino" padrão para funcionar de exemplo.
+# ADICIONAR FALLEN ANTES DO STEP / MODIFICAR BEHAVETRAINING
 
 from server.proxy import Proxy
 from gym_rcssserver3d.envs.kick_env import KickEnv
 import time
 
-proxy = Proxy(3800)
+proxy = Proxy(3500)
 proxy.start()
-
-
-
-
 
 env = KickEnv()
 
@@ -17,6 +14,9 @@ time.sleep(5)
 
 ply = proxy.getPlayerObj('1')
 env.setPlayer(ply)
+env.setDone(2.0, True)
+
+env.stayIdleBeforeKickOff()
 
 episodes = 5
 for episodes in range(1, episodes+1):

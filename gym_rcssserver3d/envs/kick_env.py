@@ -1,4 +1,4 @@
-import sys, os
+import sys
 sys.path.append("../")
 import gym
 from gym import spaces
@@ -22,9 +22,6 @@ class KickEnv(gym.Env):
 
     def __init__(self):
         
-        
-        
-        
 #        input()  
         self.agents=AgentComms()   
 #        input()                    
@@ -37,47 +34,42 @@ class KickEnv(gym.Env):
         self.episodeInitTime = None
         self.initBallPos = None
         
-#        self.setPlayer(player)  
         self.createActionSpace()
         self.createObservationSpace()
 
-#        self.state = player.getObs()
         self.thisStep = 0
         self.prevAction = None
 
         #Define episode end condition flags
-        self.maxKickTime = 5                              #DEFAULT: 5 seconds
-        self.kickThreshold = 1                            #DEFAULT: 1 meter radius
-        self.minBallSpeed = 0.05
+        self.episodeTimeLimit = 5.0
+        self.endEpisodeIfFallen = True
 
-    def step(self, action, thisStep): # Actions based in numbers passed to the joints. 22 joints total (define which one will be used in each train)
+    def step(self, action, thisStep): 
+        """
+            Actions based in numbers passed to the joints. 
+            22 joints total (define which one will be used in each train)
+        """
+
     
         self.command.reqFullState()
         self.ws.staticUpdate()
         self.ws.dynamicUpdate()
         self.prevAction = action
         self.thisStep = thisStep
-        #DEBUG
-        #print("BallPOS: {}".format(self.ws.ballFinalPos))
-        #print("BALLSPEED: {}".format(self.ws.ballSpeed))
-        #print("TIME: {}".format(self.ws.time))
-        #FIMDEBUG
+
         if(self.episodeInitTime is None):
             self.episodeInitTime = self.ws.time
         if(self.initBallPos is None):
             self.initBallPos = self.ws.ballFinalPos[0]
         reward = 0
 
-        # 1 - Write the actions into another file for the team to collect.
+        # 1 - Organize actions in a list to be sent to the team.
         myList = []
 
         for i in range(0, len(action)):
             for j in range(0, len(action[i])):
                 myList.append(action[i,j])
 
-        #toPrint = str(myList)
-        #file = open("/home/mask/workspace/gymOut.txt", "w").close() #Creating a file if not existing
-        #file = open("/home/mask/workspace/gymOut.txt", "a")
         message=""
 
         for value in myList:
@@ -88,28 +80,6 @@ class KickEnv(gym.Env):
         
         self.agents.receiveAll()
 
-        #file.close()
-
-        # 1 - Write 0 into a ready file to let the team know the actions are ready to be executed.
-        #ready = open("/home/mask/workspace/ready.txt", "w")
-        #ready.write('0')
-        #ready.close()
-
-        #Keep waiting for team to execute step
-        #ready = open("/home/mask/workspace/ready.txt", "r")
-        #readyFile = ready.read()
-        #ready.close()
-        #while(readyFile == '0'):
-            #time.sleep(1)
-        #    ready = open("/home/mask/workspace/ready.txt", "r")
-        #    readyFile = ready.read()
-        #    ready.close()
-            #DEBUGS
-            #print("PRESO NO WHILE: {}".format(readyFile))
-
-        #Check if the team executed the action and proceed.
-       # if(readyFile == '1'):
-            #Update world and observation information
         self.ws.dynamicUpdate()
         currBallPos = self.ws.ballFinalPos[0]
         currTime = self.ws.time
@@ -117,22 +87,10 @@ class KickEnv(gym.Env):
         self.state = self.optPlayer.getObs()
         self.state['prevAction'] = self.prevAction
         self.state['count'] = self.thisStep
-        #self.state = self.optPlayer.getObs() # + action space + count
-        
-        #Calculate reward (EXTRA: -2 each goal taken, +4 each goal scored)
-        ballDistanceDiff = currBallPos - self.initBallPos
-        if(ballDistanceDiff <= 0):
-            reward += -1
-        elif(ballDistanceDiff > 0 and ballDistanceDiff < 0.1):
-            reward += 0
-        elif(ballDistanceDiff > 0.1):
-            reward = (ballDistanceDiff/0.1)*2 #Not summing. Otherwise it would keep adding until the time was up. I only want the last.
         
         #Verify if episode is done
-        if(elapsedTime > 5 and self.ws.ballSpeed < 0.005):
+        if((elapsedTime > self.episodeTimeLimit) or (self.endEpisodeIfFallen and self.optPlayer.checkFallen())):
             done = True
-            if(ballDistanceDiff < 0.001):
-                reward += -5
             self.initBallPos = None
             self.episodeInitTime = None
         else:
@@ -140,31 +98,10 @@ class KickEnv(gym.Env):
         
 
         info = {}
-        #DEBUGS
-        #print("CHEGOU NO FIM. RESULTADOS: ")
-        #print("NoneState:{} reward:{} done:{} info:{}".format((self.state == None), reward, done, info))  
-        #FIMDEBUGS
+        reward = 0 #There is no reward on this default environment
+
         return self.state, reward, done, info
 
-#        else:
-#            print("ERRO NO READY: {}".format(readyFile))
-#            return self.state, 0, False, {}
-
-        #if ready = 1:
-            
-            #Verifica de o step = done.
-            #Return.
-
-        #print(file)
-
-
-        #get agent->ballPos: self.state + ballpos
-
-        #calculate reward: finalpos - initial pos
-
-
-        #Return self.state, reward, done, info    
-        ...
     def reset(self):
 
         self.ws.staticUpdate()
@@ -320,6 +257,20 @@ class KickEnv(gym.Env):
                 dtype=np.float64),
         'count': spaces.Discrete(1000) # TODO: Definir count. Default até 1000 steps
         })
+
+    def setDone(self, episodeTime: float, endIfFallen: bool):
+        """ 
+            Sets conditions for episode's end. 
+            Default: episodeTime = 5.0 / endIfFallen = True
+        """
+        self.endEpisodeIfFallen = endIfFallen
+        self.episodeTimeLimit = episodeTime
+
+    def stayIdleBeforeKickOff(self):
+        while True:
+            self.ws.dynamicUpdate()
+            if(self.ws.playMode != 0):
+                break
 
     def close(self):
         ...
