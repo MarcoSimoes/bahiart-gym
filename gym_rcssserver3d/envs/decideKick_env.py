@@ -14,7 +14,7 @@ sys.path.append("../../server")
 
 from server import *
 
-class KickEnv(gym.Env):
+class decideKick_env(gym.Env):
   metadata = {'render.modes': ['human']}
 
   optPlayer: Player = None
@@ -106,20 +106,10 @@ class KickEnv(gym.Env):
       elapsedTime = currTime - self.episodeInitTime
       self.state = self.optPlayer.getObs() # + action space + count
       
-      #Calculate reward (EXTRA: -2 each goal taken, +4 each goal scored)
-      ballDistanceDiff = currBallPos - self.initBallPos
-      if(ballDistanceDiff <= 0):
-        reward += -1
-      elif(ballDistanceDiff > 0 and ballDistanceDiff < 0.1):
-        reward += 0
-      elif(ballDistanceDiff > 0.1):
-        reward = (ballDistanceDiff/0.1)*2 #Not summing. Otherwise it would keep adding until the time was up. I only want the last.
+      reward = calculateReward()
       
-      #Verify if episode is done
-      if(elapsedTime > 5 and self.ws.ballSpeed < 0.005):
+      if(episodeDone()):
         done = True
-        if(ballDistanceDiff < 0.001):
-          reward += -5
         self.initBallPos = None
         self.episodeInitTime = None
       else:
@@ -137,23 +127,9 @@ class KickEnv(gym.Env):
       print("ERRO NO READY: {}".format(readyFile))
       return self.state, 0, False, {}
     
-    #if ready = 1:
-      
-      #Verifica de o step = done.
-      #Return.
-
-    #print(file)
-
-
-    #get agent->ballPos: self.state + ballpos
-    
-    #calculate reward: finalpos - initial pos
-    
-
-    #Return self.state, reward, done, info    
-    ...
+  # TODO reset conditions
   def reset(self):
-
+    
     self.ws.dynamicUpdate()
     
     #Place the ball in the center of the field
@@ -168,80 +144,70 @@ class KickEnv(gym.Env):
 
   def render(self, mode='human'): # Run roboviz or any monitor in the screen to show the training
     ...
+
   
   def setPlayer(self, player: Player):
     self.optPlayer = player
 
   def createActionSpace(self):
-    # void AgentActions::directKick
-    # void AgentActions::dynamicKickToTarget
-    # void AgentActions::kickToTarget
-    # void AgentActions::goToShootPoint
-    # void AgentActions::moveBalltoTarg
-    self.action_space = spaces.Box(
-      np.array([
-        [-120.0, -6.109],     #hj1 (angle, angular vel) MIN
-        [-45.0, -6.109],      #hj2
-        [-90.0, -6.109],      #llj1
-        [-120.0, -6.109],     #rlj1
-        [-25.0, -6.109],      #llj2
-        [-45.0, -6.109],      #rlj2
-        [-25.0, -6.109],      #llj3
-        [-25.0, -6.109],      #rlj3
-        [-130.0, -6.109],     #llj4
-        [-130.0, -6.109],     #rlj4
-        [-45.0, -6.109],      #llj5
-        [-45.0, -6.109],      #rlj5
-        [-45.0, -6.109],      #llj6
-        [-25.0, -6.109],      #rlj6
-        [-120.0, -6.109],     #laj1
-        [-120.0, -6.109],     #raj1
-        [-1.0, -6.109],       #laj2
-        [-95.0, -6.109],      #raj2
-        [-120.0, -6.109],     #laj3
-        [-120.0, -6.109],     #raj3
-        [-90.0, -6.109],      #laj4
-        [-1.0, -6.109]]),     #raj4
-      np.array([
-        [120.0, 6.109],      #hj1 (angle, angular vel) MAX
-        [45.0, 6.109],       #hj2
-        [1.0, 6.109],        #llj1
-        [120.0, 6.109],      #rlj1
-        [45.0, 6.109],       #llj2
-        [25.0, 6.109],       #rlj2
-        [100.0, 6.109],      #llj3
-        [100.0, 6.109],      #rlj3
-        [1.0, 6.109],        #llj4
-        [1.0, 6.109],        #rlj4
-        [75.0, 6.109],       #llj5 
-        [75.0, 6.109],       #rlj5
-        [25.0, 6.109],       #llj6
-        [45.0, 6.109],       #rlj6
-        [120.0, 6.109],      #laj1
-        [120.0, 6.109],      #raj1
-        [95.0, 6.109],       #laj2
-        [1.0, 6.109],        #raj2
-        [120.0, 6.109],      #laj3
-        [120.0, 6.109],      #raj3
-        [1.0, 6.109],        #laj4
-        [90.0, 6.109]]),     #raj4
-        dtype=np.float64)
+        # TODO ver agent actions
+        # -1 - CarryBall
+        # -2 - Long Kick
+        # -3 - Dynamic Kick
+        # -4 - Direct Kick
+        self.action_space = spaces.Discrete(4)
 
   def createObservationSpace(self):
-    
     self.observation_space = spaces.Dict({
-      'angleAux':"Diferença entre o ângulo/orientação/direção do alvo final e da posição do jogador, que neste caso tem que ser menor do que 5.",
-      'clearToDirectKick':"Calculada (ver:AgentActions.cpp)",
-      'clearToLongKick':"Calculada (ver:AgentActions.cpp)",
-      'isBallInFront':"ws->theirGoalPos.getDistanceTo(ws->ball->position.to2d()) < ws->theirGoalPos.getDistanceTo(ws->me->position.to2d());",
-      'lastDynamickKick':"Tempo de execução do último DynamicKick.",
-      'maxdist':4.0,
-      'mindist':9.0, 
-      'theirGoalInterceptionPoint':"lMeBall.getIntersection(lTheirGoal);",
-      'targetToBallDist':"targetPosition.to2d().getDistanceTo(ballPos)",
-      'oppDist'[12]:"np.array() getOpponentPlayer(x)->position.to2d().getDistanceTo(ballPos)",
-      'playerToBallDist':"WorldState::getRelativeToMe(ws→ballPos.to2d())    Vector WorldState::getRelativeToMe(Vector pos) const {return pos - me->position.to2d();}"
+      'aliesArray':"x,y, z e orientação dos aliados",
+      'opponentsArray':"x,y, z e orientação dos oponentes",
+      'ballPos':"x,y, z da bola",
+      'mePos':"x,y, z e orientação do ativo",
+      'target':"x,y, z e orientação do alvo",
+      'playMode':"Playmode definido no server"
     })
 
   def close(self):
     ...
+
+  def episodeDone(self):
+    if(self.ws.time > 20):
+      return True
+    if(ballWithEnemy()):
+      return True
+    if(ballOutsideTheField()):
+      return True
+    if((self.ws.scoreLeft != 0) and (self.ws.scoreRight != 0)):
+      return True
+    # TODO ball pos inside target radius(0,5 meters)
+    # if()
+    if()
+
+  # TODO return true or false - Ball is with the enemy?
+  def ballWithEnemy(self):
+    ...
+
+  # TODO return true or false - Ball is outside the field
+  def ballOutsideTheField(self):
+    ...
+  
+  def ballWithOurTeam(self):
+    ...
+
+  def calculateReward(self):
+    reward = 0
+    if(ballWithOurTeam()):
+      reward+=1
+    if(self.ws.scoreRight != 0):
+      # TODO see if right is our team
+      reward+=5
+    if(self.ws.scoreLeft != 0):
+      # TODO see if left is opponent team
+      reward-=5
+    if(ballWithEnemy()):
+      reward-=2
+    # TODO reward distance variation ball
+    # distanciaPercorrida = Distância percorrida em direção ao target ou contra otarget(distância inicial - distância atual)
+    # distanciaInicial = Distancia inicial da bola para o target
+    # distancia atual = distância da bola ao target no final de cada step
+    # reward+=(3*(distanciaPercorridaBola/distanciaInicialBola))
