@@ -101,8 +101,8 @@ class AgentComms(Singleton):
         try:
            for unum in self.agents:
                 self.agents[unum].sendall(fullmsg.encode())
-                print("[AGENT COMMS]Socket message sent to player %s." %(unum))
-                print("[AGENT COMMS]Socket message: {}".format(fullmsg))
+                #print("[AGENT COMMS]Socket message sent to player %s." %(unum))
+                #print("[AGENT COMMS]Socket message: {}".format(fullmsg))
             
         except socket.error as err:
            print("[AGENT COMMS]Socket message not sent to player %s." %(unum))
@@ -132,7 +132,7 @@ class AgentComms(Singleton):
        try:
            sock=self.agents[unum]
            sock.sendall(fullmsg.encode())    
-           print("[AGENT COMMS] Socket message sent to player %s." %(unum))
+           #print("[AGENT COMMS] Socket message sent to player %s." %(unum))
        except KeyError:
             print("[AGENT COMMS] Player %s has no connection initialized to Gym." %(unum))
        except socket.error as err:
@@ -153,7 +153,7 @@ class AgentComms(Singleton):
         try:
             for unum in self.agents:
                 self.agents[unum].recv(4)
-                print("[AGENT COMMS]Socket message received from player %s" %(unum))
+                #print("[AGENT COMMS]Socket message received from player %s" %(unum))
             
         except socket.error as err:
             print("[AGENT COMMS]Socket message not received from player %s" %(unum))
@@ -175,7 +175,7 @@ class AgentComms(Singleton):
         """
         try:
             self.agents[unum].recv(4)
-            print("[AGENT COMMS]Socket message received from player %s." %(unum))
+            #print("[AGENT COMMS]Socket message received from player %s." %(unum))
         except KeyError:
             print("[AGENT COMMS] Player %s has no connection initialized to Gym." %(unum))
         except socket.error as err:

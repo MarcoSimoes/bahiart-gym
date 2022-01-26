@@ -176,7 +176,8 @@ class Player(object):
         self.time = self.parser.getTime(parsedMsg, self.time)
 
         #BALL
-        self.ballPolarPos = self.parser.getBallVision(parsedMsg, self.ballPolarPos)
+        self.ballPolarPos = self.parser.getBallVision(parsedMsg, self.ballPolarPos) # [distance, horiAngle1, vertAngle2]
+
 
         #FORCE RESISTANCE PERCEPTORS
         self.lf = self.parser.getFootResistance('lf', parsedMsg, self.lf)

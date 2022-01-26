@@ -46,7 +46,7 @@ class Comms(Singleton):
         fullmsg = str(prefix, "utf-8") + msg
         try:
             self.sock.send(fullmsg.encode())
-            print("Socket message sent.")
+            #print("Socket message sent.")
         except socket.error as err:
             print("Socket message not sent.")
             print("Error : " + str(err))

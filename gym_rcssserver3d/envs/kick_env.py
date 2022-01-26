@@ -49,7 +49,6 @@ class KickEnv(gym.Env):
             Actions based in numbers passed to the joints. 
             22 joints total (define which one will be used in each train)
         """
-
     
         self.command.reqFullState()
         self.ws.staticUpdate()

@@ -53,11 +53,11 @@ class SExprReader(AbstractFilter):
   
   # called if redundant parantheses are found.
   def illegal_close_paren(self, i):
-    print ("Ignore a close parenthesis: %d" % i)
+    #print ("Ignore a close parenthesis: %d" % i) # --GM-- UNCOMMENT AND FIX THIS
     return
   # called if it reaches the end-of-file while the stack is not empty.
   def premature_eof(self, i, x):
-    print ("Premature end of file: %d parens left, partial=%s" % (i, x))
+    #print ("Premature end of file: %d parens left, partial=%s" % (i, x)) # --GM-- UNCOMMENT AND FIX THIS
     return
 
   # reset the internal states.
