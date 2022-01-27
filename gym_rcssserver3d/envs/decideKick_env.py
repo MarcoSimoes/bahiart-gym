@@ -14,7 +14,7 @@ sys.path.append("../../server")
 
 from server import *
 
-class decideKick_env(gym.Env):
+class DecideKickEnv(gym.Env):
   metadata = {'render.modes': ['human']}
 
   optPlayer: Player = None
