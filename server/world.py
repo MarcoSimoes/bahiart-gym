@@ -48,9 +48,9 @@ class World(Singleton):
             self.net.updateSExp()
             serverExp = self.net.serverExp            
         except Exception as e:
-            #pass
-            print("-----SERVER S-EXPRESSION UPDATE ERROR-----:")
-            print(e)
+            pass
+            #print("-----SERVER S-EXPRESSION UPDATE ERROR-----:")
+            #print(e)
         #DEBUG
         #print("SERVER EXPRESSION BEGIN")
         #print(serverExp)

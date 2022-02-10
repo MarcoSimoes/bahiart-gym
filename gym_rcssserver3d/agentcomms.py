@@ -136,9 +136,10 @@ class AgentComms(Singleton):
        except KeyError:
             print("[AGENT COMMS] Player %s has no connection initialized to Gym." %(unum))
        except socket.error as err:
-           print("[AGENTCOMMS] Socket message not sent.")
-           print("Error : " + str(err))
-           print("Message : " + str(fullmsg))
+           pass
+           #print("[AGENTCOMMS] Socket message not sent.")
+           #print("Error : " + str(err))
+           #print("Message : " + str(fullmsg))
         
     def receiveAll(self):
         """

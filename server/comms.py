@@ -48,9 +48,10 @@ class Comms(Singleton):
             self.sock.send(fullmsg.encode())
             #print("Socket message sent.")
         except socket.error as err:
-            print("Socket message not sent.")
-            print("Error : " + str(err))
-            print("Message : " + str(fullmsg))
+            pass
+            #print("Socket message not sent.")
+            #print("Error : " + str(err))
+            #print("Message : " + str(fullmsg))
 
     def updateSExp(self):
         try:

@@ -1,6 +1,7 @@
 import sys
 sys.path.append("../")
 import gym
+import numpy as np
 from gym import spaces
 from server.player import Player
 from server.trainer import Trainer
@@ -29,6 +30,7 @@ class DemoEnv(gym.Env):
         self.ws.dynamicUpdate()
 
         self.episodeInitTime = None
+        self.episodeInitBallPos = None
         self.reward = 100
         self.goalsScored = 0
         
@@ -50,6 +52,8 @@ class DemoEnv(gym.Env):
 
         if(self.episodeInitTime is None):
             self.episodeInitTime = self.ws.time
+        if(self.episodeInitBallPos is None):
+            self.episodeInitBallPos = np.array([self.ws.ballFinalPos[0], self.ws.ballFinalPos[1]])
 
         message = str(action)            
         self.agents.sendAll(message)
@@ -62,16 +66,24 @@ class DemoEnv(gym.Env):
         self.state = np.array([obsBallDist, obsBallSpeed])
         
         #Verify if episode is done either by scoring a goal or having passed 1 minute since the start of the episode.
-        if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > 60):
+        if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > 20):
             done = True
             currTime = self.ws.time
             elapsedTime = currTime - self.episodeInitTime
-            rewardDecrease = elapsedTime * 1.665 # About 10 points every 6 seconds
-            print("Elapsed Time: {}".format(elapsedTime))
+            episodeEndBallPos = np.array([self.ws.ballFinalPos[0], self.ws.ballFinalPos[1]])
+            ballTravDist = np.linalg.norm(episodeEndBallPos - self.episodeInitBallPos)
+            if(ballTravDist < 5.0):
+                reward = ballTravDist
+            elif(ballTravDist < 10):
+                reward = ballTravDist*3
+            elif(ballTravDist < 20):
+                reward = ballTravDist*5
             self.episodeInitTime = None
-            reward = self.reward - rewardDecrease
+            self.episodeInitBallPos = None
             if(self.goalsScored < self.ws.scoreLeft):
                 self.goalsScored += 1
+                reward = reward*10
+            print("Elapsed Time: {} / BallTravDist: {} / Reward: {}".format(elapsedTime, ballTravDist, reward))
         else:
             reward = 0
             done = False
@@ -91,7 +103,7 @@ class DemoEnv(gym.Env):
             self.command.changePlayMode("PlayOn") # if playmode is GoalLeft, sets playmode to playOn
         
         #Place the ball in the center of the field
-        self.command.beamBall(0.0, 0.0, 0.0)
+        self.command.beamBall(-3.0, 0.0, 0.0)
 
         #Place the Player behind the ball
         self.command.beamPlayer(self.optPlayer.getUnum(), "Left", -5.0, 0, 0.3)
