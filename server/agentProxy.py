@@ -2,7 +2,6 @@ import socket
 from socket import timeout
 import threading
 import re
-import time
 from server.player import Player
 
 
@@ -113,11 +112,16 @@ class AgentProxy:
                         
     def agentToServer(self):
         while True:
-            length = self.agentSock.recv(4)
-            sockLen = int.from_bytes(length, 'little')          
-            sockIntLen = socket.ntohl(sockLen)
-            message = self.agentSock.recv(sockIntLen)
-            fullmessage = length + message
+            try:
+                length = self.agentSock.recv(4)
+                sockLen = int.from_bytes(length, 'little')          
+                sockIntLen = socket.ntohl(sockLen)
+                message = self.agentSock.recv(sockIntLen)
+                fullmessage = length + message
+            except Exception as e:
+                print("[PROXY]!!!!!!EXCEPTION HERE!!!!!!")
+                print(repr(e))
+                #pass
 
             if not message:
                 if self.isConnected:

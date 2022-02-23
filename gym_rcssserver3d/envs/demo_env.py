@@ -30,7 +30,7 @@ class DemoEnv(gym.Env):
         self.ws.dynamicUpdate()
 
         self.episodeInitTime = None
-        self.episodeInitBallPos = None
+        self.episodeInitBallX = None
         self.reward = 100
         self.goalsScored = 0
         
@@ -52,8 +52,8 @@ class DemoEnv(gym.Env):
 
         if(self.episodeInitTime is None):
             self.episodeInitTime = self.ws.time
-        if(self.episodeInitBallPos is None):
-            self.episodeInitBallPos = np.array([self.ws.ballFinalPos[0], self.ws.ballFinalPos[1]])
+        if(self.episodeInitBallX is None):
+            self.episodeInitBallX = self.ws.ballFinalPos[0]
 
         message = str(action)            
         self.agents.sendAll(message)
@@ -70,19 +70,26 @@ class DemoEnv(gym.Env):
             done = True
             currTime = self.ws.time
             elapsedTime = currTime - self.episodeInitTime
-            episodeEndBallPos = np.array([self.ws.ballFinalPos[0], self.ws.ballFinalPos[1]])
-            ballTravDist = np.linalg.norm(episodeEndBallPos - self.episodeInitBallPos)
-            if(ballTravDist < 5.0):
+            episodeEndBallX = self.ws.ballFinalPos[0]
+            ballTravDist = episodeEndBallX - self.episodeInitBallX
+            if(ballTravDist < 0.0):
+                reward = ballTravDist*2
+            elif(ballTravDist < 5.0):
                 reward = ballTravDist
             elif(ballTravDist < 10):
                 reward = ballTravDist*3
             elif(ballTravDist < 20):
-                reward = ballTravDist*5
+                reward = ballTravDist*4
             self.episodeInitTime = None
-            self.episodeInitBallPos = None
+            self.episodeInitBallX = None
             if(self.goalsScored < self.ws.scoreLeft):
                 self.goalsScored += 1
-                reward = reward*10
+                if(elapsedTime < 10):
+                    reward = reward*10
+                elif(elapsedTime < 15):
+                    reward = reward*8
+                elif(elapsedTime < 21):
+                    reward = reward*5
             print("Elapsed Time: {} / BallTravDist: {} / Reward: {}".format(elapsedTime, ballTravDist, reward))
         else:
             reward = 0
