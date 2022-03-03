@@ -39,7 +39,7 @@ class DemoEnv(gym.Env):
 
         self.state = np.array([0.0,0.0])
 
-        self.thisStep = 0
+        self.thisStep = 1 #USED ONLY FOR DEBUGING AT THE MOMENT.
 
     def step(self, action): 
         """
@@ -55,8 +55,11 @@ class DemoEnv(gym.Env):
         if(self.episodeInitBallX is None):
             self.episodeInitBallX = self.ws.ballFinalPos[0]
 
-        message = str(action)            
+        message = str(action)
+        #debugMessage = "Step: " + str(self.thisStep)
         self.agents.sendAll(message)
+        #self.agents.sendAll(debugMessage)
+        #self.thisStep += 1
         self.agents.receiveAll()
 
         self.ws.dynamicUpdate()
