@@ -1,16 +1,16 @@
 from gym.spaces import box, space
 from numpy.core.fromnumeric import shape
-from server.player import Player
-from server.trainer import Trainer
-from server.proxy import Proxy
-from server.world import World
+from bahiart_gym.server.player import Player
+from bahiart_gym.server.trainer import Trainer
+from bahiart_gym.server.proxy import Proxy
+from bahiart_gym.server.world import World
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
 import numpy as np
 import sys, time
-sys.path.append("../../server")
+sys.path.append("../server")
 
 from server import *
 

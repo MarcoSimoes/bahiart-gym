@@ -1,5 +1,5 @@
-from server.sexpr import str2sexpr
-from server.singleton import Singleton
+from bahiart_gym.server.sexpr import str2sexpr
+from bahiart_gym.server.singleton import Singleton
 from multiprocessing import Lock
 
 class Parser(object):

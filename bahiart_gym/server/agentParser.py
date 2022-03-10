@@ -1,8 +1,8 @@
-from server.sexpr import str2sexpr
-from server.singleton import Singleton
+from bahiart_gym.server.sexpr import str2sexpr
+from bahiart_gym.server.singleton import Singleton
 from multiprocessing import Lock
 import numpy as np
-#from server.parsr import Parser
+#from bahiart_gym.server.parsr import Parser
 
 class AgentParser(Singleton):
     """

@@ -1,6 +1,6 @@
 import socket
 import threading
-from server.singleton import Singleton
+from bahiart_gym.server.singleton import Singleton
 
 class InvalidHostAndPortLengths(Exception):
     """ Raised when Host and Port lists has different sizes """

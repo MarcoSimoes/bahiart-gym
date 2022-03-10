@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='gym_rcssserver3d',
+setup(name='bahiart_gym',
         version='0.0.1',
-        install_requires=['gym', 'numpy', 'tensorflow']
+        install_requires=['gym', 'numpy', 'torch', 'stable-baselines3[extra]']
     )

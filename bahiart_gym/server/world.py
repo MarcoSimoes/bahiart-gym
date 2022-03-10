@@ -1,8 +1,8 @@
 from math import sqrt
-from server.comms import Comms
-from server.ball import Ball
-from server.singleton import Singleton
-from server.trainer import Trainer
+from bahiart_gym.server.comms import Comms
+from bahiart_gym.server.ball import Ball
+from bahiart_gym.server.singleton import Singleton
+from bahiart_gym.server.trainer import Trainer
 
 class World(Singleton):
     

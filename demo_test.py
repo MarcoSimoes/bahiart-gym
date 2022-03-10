@@ -1,9 +1,10 @@
-from server.proxy import Proxy
-from gym_rcssserver3d.envs.demo_env import DemoEnv
+from bahiart_gym.server.proxy import Proxy
+from bahiart_gym.envs.demo_env import DemoEnv
+import gym
 import time
 from stable_baselines3 import DQN
 
-proxy = Proxy(3500)
+proxy = Proxy(3800)
 proxy.start()
 
 env = DemoEnv()
@@ -15,8 +16,8 @@ env.setPlayer(ply)
 
 env.stayIdleBeforeKickOff()
 
-model = DQN('MlpPolicy', env, verbose=1, tensorboard_log="./tensorboard_test/")
-model.learn(total_timesteps=20000)
+model = DQN('MlpPolicy', env, verbose=1)
+model.learn(total_timesteps=10000)
 model.save("DQN_training_model")
 
 #model = DQN.load("DQN_training_model")

@@ -1,7 +1,7 @@
 import socket
 import select as slt
-from server.serverParser import ServerParser
-from server.singleton import Singleton
+from bahiart_gym.server.serverParser import ServerParser
+from bahiart_gym.server.singleton import Singleton
 
 class Comms(Singleton):
     """

@@ -5,7 +5,7 @@
 ##  * public domain *
 ##
 
-from server.abstfilter import AbstractFeeder, AbstractFilter, AbstractConsumer
+from bahiart_gym.server.abstfilter import AbstractFeeder, AbstractFilter, AbstractConsumer
 
 
 ##  SExprReader

@@ -1,19 +1,16 @@
-import sys
-sys.path.append("../")
+#import sys
+#sys.path.append("../")
 import gym
 import numpy as np
 from gym import spaces
-from server.player import Player
-from server.trainer import Trainer
-from server.world import World
-from gym_rcssserver3d.agentcomms import AgentComms
-from gym_rcssserver3d.agentcomms import InvalidHostAndPortLengths
+from bahiart_gym.server.player import Player
+from bahiart_gym.server.trainer import Trainer
+from bahiart_gym.server.world import World
+from bahiart_gym.agentcomms import AgentComms
+from bahiart_gym.agentcomms import InvalidHostAndPortLengths
 
-import numpy as np
-
-sys.path.append("../../server")
-
-from server import *
+#sys.path.append("../server")
+#from bahiart_gym.server import *
 
 class DemoEnv(gym.Env):
     metadata = {'render.modes': ['human']}

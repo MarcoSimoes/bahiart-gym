@@ -1,5 +1,5 @@
-from server.comms import Comms
-from server.singleton import Singleton
+from bahiart_gym.server.comms import Comms
+from bahiart_gym.server.singleton import Singleton
 #from connection import sock
 
 class Trainer(Singleton):

@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-from server.singleton import Singleton
+from bahiart_gym.server.singleton import Singleton
 
 class Ball(Singleton):
 

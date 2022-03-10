@@ -1,6 +1,6 @@
-from server.player import Player
+from bahiart_gym.server.player import Player
 import socket
-from server.agentProxy import AgentProxy
+from bahiart_gym.server.agentProxy import AgentProxy
 import threading
 import time
 

@@ -2,7 +2,7 @@ import socket
 from socket import timeout
 import threading
 import re
-from server.player import Player
+from bahiart_gym.server.player import Player
 
 
 class AgentProxy:

@@ -1,6 +1,6 @@
 from numpy.core.defchararray import array
-from server.ball import Ball
-from server.agentParser import AgentParser
+from bahiart_gym.server.ball import Ball
+from bahiart_gym.server.agentParser import AgentParser
 from math import fabs, sqrt
 import numpy as np
 
