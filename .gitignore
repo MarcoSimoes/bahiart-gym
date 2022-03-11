@@ -51,5 +51,8 @@ Thumbs.db
 *.mov
 *.wmv
 
+#Package files
+*.zip
+
 #Not needed folders
 bahiart_gym.egg-info/

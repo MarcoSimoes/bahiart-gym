@@ -27,8 +27,7 @@ class DemoEnv(gym.Env):
         self.ws.dynamicUpdate()
 
         self.episodeInitTime = None
-        self.episodeInitBallX = None
-        self.reward = 100
+        self.episodeInitBallX = -3.0
         self.goalsScored = 0
         
         self.action_space = spaces.Discrete(3)
@@ -49,8 +48,6 @@ class DemoEnv(gym.Env):
 
         if(self.episodeInitTime is None):
             self.episodeInitTime = self.ws.time
-        if(self.episodeInitBallX is None):
-            self.episodeInitBallX = self.ws.ballFinalPos[0]
 
         message = str(action)
         #debugMessage = "Step: " + str(self.thisStep)
@@ -65,7 +62,7 @@ class DemoEnv(gym.Env):
         obsBallSpeed = self.ws.ballSpeed
         self.state = np.array([obsBallDist, obsBallSpeed])
         
-        #Verify if episode is done either by scoring a goal or having passed 1 minute since the start of the episode.
+        #Verify if episode is done either by scoring a goal or having passed 20 seconds since the start of the episode.
         if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > 20):
             done = True
             currTime = self.ws.time
@@ -81,7 +78,6 @@ class DemoEnv(gym.Env):
             elif(ballTravDist < 20):
                 reward = ballTravDist*4
             self.episodeInitTime = None
-            self.episodeInitBallX = None
             if(self.goalsScored < self.ws.scoreLeft):
                 self.goalsScored += 1
                 if(elapsedTime < 10):
