@@ -56,3 +56,4 @@ Thumbs.db
 
 #Not needed folders
 bahiart_gym.egg-info/
+.vscode/
