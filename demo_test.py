@@ -1,3 +1,20 @@
+"""
+        Copyright (C) 2022  Salvador, Bahia
+        Gabriel Mascarenhas, Marco Simões, Rafael Fonseca
+
+        BahiaRT GYM is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as
+        published by the Free Software Foundation, either version 3 of the
+        License, or (at your option) any later version.
+
+        BahiaRT GYM is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU Affero General Public License for more details.
+
+        You should have received a copy of the GNU Affero General Public License
+        along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 #This demo environment was designed to be used with just a single agent.
 #Remember to run the rcssserver3d and RoboViz(or any other monitor) before running this script.
 
