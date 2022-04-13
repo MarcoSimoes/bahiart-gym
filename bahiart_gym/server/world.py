@@ -1,6 +1,6 @@
 """
         Copyright (C) 2022  Salvador, Bahia
-        Gabriel Mascarenhas, Marco Simões, Rafael Fonseca
+        Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
 
         This file is part of BahiaRT GYM.
 

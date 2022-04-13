@@ -84,6 +84,14 @@ The [extra] version is quite usefull since it allows us to use things like tenso
 
 ## Cloning and installing the BahiaRT-Gym
 
+### Using PiP
+
+To install the toolkit using pip simply make sure you have your venv activated and type the following on your terminal:
+```bash
+   pip install bahiart_gym
+```
+
+### Using the source from the repository
 To clone the repository, go to the same path where your 'venv' folder is located, then use the following command:
 ```bash
    git clone https://bitbucket.org/bahiart3d/bahiart-gym.git
@@ -106,3 +114,7 @@ Now BahiaRT-Gym's package is installed and ready to use on your python's virtual
  Always remember to initiate the RCSSSERVER3D before running this script.
 
  Feel free to explore and modify those lines as you wish to experiment on the toolkit.
+
+# Authors
+ Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
+
