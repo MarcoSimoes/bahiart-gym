@@ -118,3 +118,5 @@ Now BahiaRT-Gym's package is installed and ready to use on your python's virtual
 # Authors
  Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
 
+# Contact
+teambahiart@gmail.com
