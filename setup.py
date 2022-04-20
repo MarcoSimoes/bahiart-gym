@@ -2,11 +2,11 @@ from distutils.core import setup
 setup(
   name = 'bahiart_gym',      
   packages = ['bahiart_gym'],   
-  version = '1.0',     
+  version = '1.0.0',     
   license='agpl-3.0',        
   description = 'A toolkit to develop openAI Gym environments on top of the RCSSSERVER3D simulator',   
   author = 'Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca',                  
-  author_email = 'gabrielmascsousa@gmail.com',     
+  author_email = 'teambahiart@gmail.com',     
   url = 'https://bitbucket.org/bahiart3d/bahiart-gym/',   
   download_url = 'https://bitbucket.org/bahiart3d/bahiart-gym/downloads/BahiaRT_GYM_v1.0.0.zip',    
   keywords = ['CUSTOM', 'ENVIRONMENT', 'GYM', 'OPTIMIZATION', 'MACHINE', 'LEARNING'],
