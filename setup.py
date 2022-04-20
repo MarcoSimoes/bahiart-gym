@@ -8,7 +8,7 @@ setup(
   author = 'Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca',                  
   author_email = 'gabrielmascsousa@gmail.com',     
   url = 'https://bitbucket.org/bahiart3d/bahiart-gym/',   
-  download_url = 'TO_BE_ADDED',    
+  download_url = 'https://bitbucket.org/bahiart3d/bahiart-gym/downloads/BahiaRT_GYM_v1.0.0.zip',    
   keywords = ['CUSTOM', 'ENVIRONMENT', 'GYM', 'OPTIMIZATION', 'MACHINE', 'LEARNING'],
   install_requires=[            
           'gym',
