@@ -16,9 +16,11 @@ setup(
       ],
   classifiers=[
     'Development Status :: 5 - Production/Stable',      
-    'Intended Audience :: Developers',      
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',      
     'Topic :: Software Development :: Build Tools',
-    'License :: OSI Approved :: GNU Affero General Public License v3.0',   
-    'Programming Language :: Python :: 3.7',      
+    'License :: OSI Approved :: GNU Affero General Public License v3',   
+    'Programming Language :: Python :: 3.7', 
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',     
   ],
 )
