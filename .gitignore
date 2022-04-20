@@ -44,7 +44,16 @@ Thumbs.db
 *.mp4
 *.tiff
 *.avi
+
+#Test txt files
+*.txt
 *.flv
 *.mov
 *.wmv
 
+#Package files
+*.zip
+
+#Not needed folders
+bahiart_gym.egg-info/
+.vscode/
