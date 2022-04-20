@@ -1,29 +1,48 @@
+"""
+        Copyright (C) 2022  Salvador, Bahia
+        Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
+
+        BahiaRT GYM is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as
+        published by the Free Software Foundation, either version 3 of the
+        License, or (at your option) any later version.
+
+        BahiaRT GYM is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU Affero General Public License for more details.
+
+        You should have received a copy of the GNU Affero General Public License
+        along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+#This demo environment was designed to be used with just a single agent.
+#Remember to run the rcssserver3d and RoboViz(or any other monitor) before running this script.
+
 from bahiart_gym.server.proxy import Proxy
 from bahiart_gym.envs.demo_env import DemoEnv
 from stable_baselines3 import DQN
-import time
 
-proxy = Proxy(3800)                                         #Importa o proxy que será utilizado para vincular o agente ao servidor na porta especificada.
-proxy.start()                                               #Inicia o proxy
+proxy = Proxy(3800)                                                     #Imports the proxy that will be used to bind the agent to the server at the specified port. Change the number as you please, but remember it when launching your agent.
+proxy.start()                                                           #Starts the proxy.
 
-env = DemoEnv()                                             #Instancia o ambiente de demonstração
+env = DemoEnv()                                                         #Creates a demo env instance.
 
-time.sleep(5)                                               #Espera 5 segundos. Isso é apenas para garantir que o agente seja manualmente inicializado a tempo.
+input("Press any key once the agent is connected to the server...")     #Simple input so the environment will wait for the agent. Remember to use the proxy port you previously chose instead of the default 3100.
 
-ply = proxy.getPlayerObj('6')                               #Recupera o objeto gerado pelo proxy para o agente especificado para o treinamento.
-env.setPlayer(ply)                                          #Define o objeto do agente dentro do ambiente.
+ply = proxy.getPlayerObj('6')                                           #Gets the player object created by the proxy. Change the number 6 according to the one of your agent.
+env.setPlayer(ply)                                                      #Defines the retrieved object inside the environment.
 
-env.stayIdleBeforeKickOff()                                 #Mantém o ambiente estático enquanto o playmode for "before kick off"
+env.stayIdleBeforeKickOff()                                             #Keeps the environment idle during the 'beforeKickOff' playmode so you can start it at any time by clicking B or K on the Roboviz screen.
 
-model = DQN('MlpPolicy', env, verbose=1)                    #Define o modelo de treinamento como DQN.
-model.learn(total_timesteps=10000)                          #Inicia o aprendizado. A variavel "total_timesteps" define em quantos steps o aprendizado será realizado
-model.save("DQN_training_model")                            #Após o final do aprendizado, salva o modelo em um arquivo com o nome especificado.
+model = DQN('MlpPolicy', env, verbose=1)                                #Defines the training model as DQN.
+model.learn(total_timesteps=10000)                                      #Starts learning. The "total_timesteps" variable defines how many steps the learning will take.
+model.save("DQN_training_model")                                        #After the learning is done, this saves the model in a file with the given name.
 
-#model = DQN.load("DQN_training_model")                     #O modelo também pode ser iniciado diretamente com uma rede já treinada utilizando a função load("nome_do_arquivo_de_treinamento_salvo")
+#model = DQN.load("DQN_training_model")                                 #The model can also be initialized with an already trained network using the load("trained_model_file") function.
 
-obs = env.reset()                                           #Reseta o ambiente, colocando o agente e a bola em suas posições iniciais.
+obs = env.reset()                                                       #Resets the environment, beaming the agent and the ball to predefined initial positions.
 while True:
-    action, _states = model.predict(obs)                    #Agora que o treinamento ja foi concluido, esse scripts irá utilizar a rede neural para gerar as ações que serão utilizadas pelo agente.
-    obs, rewards, dones, info = env.step(action)            #Aqui a função step envia a ação para o agente e espera ele a executar.
+    action, _states = model.predict(obs)                                #Now that the training is over, this script function will generate actions based on the trained model network.
+    obs, rewards, dones, info = env.step(action)                        #Here, the step function sends the action to the agent and waits its execution.
     if(dones):
-        env.reset()                                         #Toda vez que o episodio terminar, a função reset é chamada, reposicionando o agente e a bola.
+        env.reset()                                                     #At the end of every episode, the environment is reset.

@@ -1,14 +1,12 @@
-from gym.envs.registration import register
-
-# register(
-#     id='kick-v0',
-#     entry_point='bahiart_gym.envs:KickEnv',
-# )
-register(
-    id='demo-v0',
-    entry_point='bahiart_gym.envs:DemoEnv'
-)
-# register(
-#     id='decideKick-v0',
-#     entry_point='bahiart_gym.envs:DecideKickEnv'
-# )
+from bahiart_gym.agentcomms import AgentComms
+from bahiart_gym.server.agentParser import AgentParser
+from bahiart_gym.server.agentProxy import AgentProxy
+from bahiart_gym.server.ball import Ball
+from bahiart_gym.server.comms import Comms
+from bahiart_gym.server.parsr import Parser
+from bahiart_gym.server.player import Player
+from bahiart_gym.server.proxy import Proxy
+from bahiart_gym.server.serverParser import ServerParser
+from bahiart_gym.server.singleton import Singleton
+from bahiart_gym.server.trainer import Trainer
+from bahiart_gym.server.world import World
