@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'bahiart_gym',      
   packages = ['bahiart_gym'],   
-  version = '1.0.0',     
+  version = '1.0.1',     
   license='agpl-3.0',        
   description = 'A toolkit to develop openAI Gym environments on top of the RCSSSERVER3D simulator',   
   author = 'Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca',                  
