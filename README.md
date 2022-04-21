@@ -4,21 +4,20 @@
 
 ## Processes architecture example
 
-![Processes Architecture](./img/Processes_Architecture.png)
+![Processes Architecture](https://bytebucket.org/bahiart3d/bahiart-gym/raw/435074a5b6123b0fba8dc76ee9a71d99e5fb795a/img/Processes_Architecture.png)
 
 Here is a quick demonstration of what the processes architecture look like. As you can see by the green box, the BahiaRT-Gym is composed of an environment, either yours or the demo one already present on this repository, and a proxy. The latter is responsible to connect the agents to the server and relay the perceptions sent back from the server to the gym environment, besides returning those to the agents as expected.
 
 ## Requirements
 
- **1. Ubuntu 18.04**
  
- **2. Python 3.7**
+ **1. Python 3.7**
  
- **3. OpenAI Gym package**
+ **2. OpenAI Gym package**
  
- **4. PyTorch**
+ **3. PyTorch**
  
- **5. Stable-Baselines3**
+ **4. Stable-Baselines3**
 
 ## Requirements details
  Stable-Baselines3 requires Python 3.7+ and PyTorch >= 1.8.1.
@@ -56,7 +55,9 @@ Here is a quick demonstration of what the processes architecture look like. As y
    ```
 From now on, every pip or python command should be used inside the venv. This way, any installed library won't cause any conflicts with your system.
 
-## Installing PyTorch
+## Installing PyTorch (recommended)
+
+We recommend using PyTorch to support reinforcement learning algorithms. If you want to run the demo example released with this package, you need PyTorch.
 
 PyTorch's installation depends on your system's specifications.
 
@@ -70,12 +71,17 @@ If you use CPU only, the command to install the same Torch version is the follow
 ```
 If you're interested in Torch for different specifications, check the official website: https://pytorch.org/get-started/locally/
 
-## Installing Gym and Stable-Baselines3
+## Installing Gym (required) and Stable-Baselines3 (recommended)
+
+We recommend using Stable-Baselines3 for reinforcement learning algorithms usage. If you want to run the demo example released with this package, you need Stable-Baselines3.
 
 To install gym, use the following command:
 ```bash
    pip install gym
 ```
+
+The gym will be installed automatically if you use PiP to install bahiart-gym.
+
 To install Stable-Baselines3, use the following command:
 ```bash
    pip install stable-baselines3[extra]
