@@ -8,9 +8,9 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
-  name = 'bahiart_gym',      
-  packages = ['bahiart_gym'],   
-  version = '1.0.3',      
+  name = 'bahiart_gym',     
+  packages=find_packages(),  
+  version = '1.0.3.rc1',      
   license='agpl-3.0',        
   description = 'A toolkit to develop openAI Gym environments on top of the RCSSSERVER3D simulator',
   long_description=long_description,
@@ -18,7 +18,6 @@ setup(
   author = 'Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca',                  
   author_email = 'teambahiart@gmail.com',     
   url = 'https://bitbucket.org/bahiart3d/bahiart-gym/',   
-  download_url = 'https://bitbucket.org/bahiart3d/bahiart-gym/downloads/BahiaRT_GYM_v1.0.0.zip',    
   keywords = ['CUSTOM', 'ENVIRONMENT', 'GYM', 'OPTIMIZATION', 'MACHINE', 'LEARNING'],
   install_requires=[            
           'gym',
