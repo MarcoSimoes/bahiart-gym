@@ -4,7 +4,7 @@
 
 ## Processes architecture example
 
-![Processes Architecture](./img/Processes_Architecture.png)
+![Processes Architecture](https://bytebucket.org/bahiart3d/bahiart-gym/raw/435074a5b6123b0fba8dc76ee9a71d99e5fb795a/img/Processes_Architecture.png)
 
 Here is a quick demonstration of what the processes architecture look like. As you can see by the green box, the BahiaRT-Gym is composed of an environment, either yours or the demo one already present on this repository, and a proxy. The latter is responsible to connect the agents to the server and relay the perceptions sent back from the server to the gym environment, besides returning those to the agents as expected.
 
