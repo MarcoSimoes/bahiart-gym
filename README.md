@@ -84,14 +84,14 @@ The [extra] version is quite usefull since it allows us to use things like tenso
 
 ## Cloning and installing the BahiaRT-Gym
 
-### Using PiP
+### Option 1: Using PiP
 
 To install the toolkit using pip simply make sure you have your venv activated and type the following on your terminal:
 ```bash
    pip install bahiart_gym
 ```
 
-### Using the source from the repository
+### Option 2: Using the source from the repository
 To clone the repository, go to the same path where your 'venv' folder is located, then use the following command:
 ```bash
    git clone https://bitbucket.org/bahiart3d/bahiart-gym.git
