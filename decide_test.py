@@ -1,5 +1,5 @@
 from bahiart_gym.server.proxy import Proxy
-from bahiart_gym.envs.demo_env import DemoEnv
+from bahiart_gym.envs.decideKick_env import DecideKickEnv
 import gym
 import time
 from stable_baselines3 import DQN
@@ -7,10 +7,10 @@ from stable_baselines3 import DQN
 proxy = Proxy(3800)
 proxy.start()
 
-env = DemoEnv()
+env = DecideKickEnv()
 
 print("-------------------------------")
-print("> Waiting for agent to connect")
+print("Waiting for agent to connect")
 time.sleep(5)
 
 ply = proxy.getPlayerObj('6')
@@ -28,7 +28,8 @@ obs = env.reset()
 while True:
     action, _states = model.predict(obs)
     #print("ACTION: {}".format(action))
-    obs, rewards, dones, info = env.step(2)
-    if(dones):
+    # obs, rewards, done, info = env.step(action)
+    obs, rewards, done, info = env.step(1)
+    if(done):
         env.reset()
     #env.render()

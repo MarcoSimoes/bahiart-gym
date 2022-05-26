@@ -1,22 +1,3 @@
-"""
-        Copyright (C) 2022  Salvador, Bahia
-        Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
-
-        This file is part of BahiaRT GYM.
-
-        BahiaRT GYM is free software: you can redistribute it and/or modify
-        it under the terms of the GNU Affero General Public License as
-        published by the Free Software Foundation, either version 3 of the
-        License, or (at your option) any later version.
-
-        BahiaRT GYM is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-        GNU Affero General Public License for more details.
-
-        You should have received a copy of the GNU Affero General Public License
-        along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""
 #import sys
 #sys.path.append("../")
 import gym
@@ -46,7 +27,8 @@ class DemoEnv(gym.Env):
         self.ws.dynamicUpdate()
 
         self.episodeInitTime = None
-        self.episodeInitBallX = -3.0
+        self.episodeInitBallX = None
+        self.reward = 100
         self.goalsScored = 0
         
         self.action_space = spaces.Discrete(3)
@@ -67,6 +49,8 @@ class DemoEnv(gym.Env):
 
         if(self.episodeInitTime is None):
             self.episodeInitTime = self.ws.time
+        if(self.episodeInitBallX is None):
+            self.episodeInitBallX = self.ws.ballFinalPos[0]
 
         message = str(action)
         #debugMessage = "Step: " + str(self.thisStep)
@@ -81,7 +65,7 @@ class DemoEnv(gym.Env):
         obsBallSpeed = self.ws.ballSpeed
         self.state = np.array([obsBallDist, obsBallSpeed])
         
-        #Verify if episode is done either by scoring a goal or having passed 20 seconds since the start of the episode.
+        #Verify if episode is done either by scoring a goal or having passed 1 minute since the start of the episode.
         if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > 20):
             done = True
             currTime = self.ws.time
@@ -97,6 +81,7 @@ class DemoEnv(gym.Env):
             elif(ballTravDist < 20):
                 reward = ballTravDist*4
             self.episodeInitTime = None
+            self.episodeInitBallX = None
             if(self.goalsScored < self.ws.scoreLeft):
                 self.goalsScored += 1
                 if(elapsedTime < 10):
