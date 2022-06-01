@@ -18,15 +18,15 @@ env.setPlayer(ply)
 
 env.stayIdleBeforeKickOff()
 
-model = DQN('MlpPolicy', env, verbose=1)
-model.learn(total_timesteps=10000)
-model.save("DQN_training_model")
+# model = DQN('MlpPolicy', env, verbose=1)
+# model.learn(total_timesteps=10000)
+# model.save("DQN_training_model")
 
 #model = DQN.load("DQN_training_model")
 
 obs = env.reset()
 while True:
-    action, _states = model.predict(obs)
+    #action, _states = model.predict(obs)
     #print("ACTION: {}".format(action))
     obs, rewards, dones, info = env.step(2)
     if(dones):

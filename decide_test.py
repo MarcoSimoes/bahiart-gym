@@ -27,7 +27,7 @@ model.save("DQN_training_model")
 obs = env.reset()
 while True:
     action, _states = model.predict(obs)
-    #print("ACTION: {}".format(action))
+    print("ACTION: {}".format(action))
     # obs, rewards, done, info = env.step(action)
     obs, rewards, done, info = env.step(1)
     if(done):

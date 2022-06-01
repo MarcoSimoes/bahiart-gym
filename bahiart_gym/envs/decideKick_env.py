@@ -71,7 +71,7 @@ class DecideKickEnv(gym.Env):
 
     #self.thisStep = 1 #USED ONLY FOR DEBUGING AT THE MOMENT
 
-  def step(self, action): 
+  def step(self, action, loop=-1): 
     """
         Takes an action, whether to stand still, walk towards the ball or kick the ball.
     """
@@ -90,8 +90,10 @@ class DecideKickEnv(gym.Env):
     self.agents.sendAll(message)
     #self.agents.sendAll(debugMessage)
     #self.thisStep += 1
-    print("receiving.........")
-    print(self.agents.receiveAll())
+    if(loop != -1):
+      print("--- LOOP "+str(loop)+" ---")
+      print("> Message Received : ")
+      print(self.agents.receiveAll())
     #try:
       # print(self.agents.getAgents()[6])
      # print(self.agents.getAgentMessages())

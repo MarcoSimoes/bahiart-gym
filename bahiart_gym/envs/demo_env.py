@@ -42,7 +42,6 @@ class DemoEnv(gym.Env):
         """
             Takes an action, whether to stand still, walk towards the ball or kick the ball.
         """
-
         self.command.reqFullState()
         self.ws.staticUpdate()
         self.ws.dynamicUpdate()
@@ -53,6 +52,7 @@ class DemoEnv(gym.Env):
             self.episodeInitBallX = self.ws.ballFinalPos[0]
 
         message = str(action)
+
         #debugMessage = "Step: " + str(self.thisStep)
         self.agents.sendAll(message)
         #self.agents.sendAll(debugMessage)
