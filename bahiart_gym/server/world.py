@@ -1,13 +1,11 @@
 from math import sqrt
 from bahiart_gym.server.comms import Comms
-# from bahiart_gym.server.ball import Ball
 from bahiart_gym.server.singleton import Singleton
 from bahiart_gym.server.trainer import Trainer
 
 class World(metaclass=Singleton):
     
     net = Comms()
-    # ball = Ball()
     parser = net.serverParser
     trainer = Trainer()
     

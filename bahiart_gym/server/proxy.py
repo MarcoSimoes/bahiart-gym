@@ -2,7 +2,6 @@ from bahiart_gym.server.player import Player
 import socket
 from bahiart_gym.server.agentProxy import AgentProxy
 import threading
-import time
 
 class Proxy:
 

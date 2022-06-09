@@ -1,7 +1,6 @@
 from multiprocessing import Lock
 from bahiart_gym.server.sexpr import str2sexpr
 from bahiart_gym.server.singleton import Singleton
-#from server.parsr import Parser
 
 class ServerParser(metaclass=Singleton):
     """
@@ -26,7 +25,7 @@ class ServerParser(metaclass=Singleton):
             elif lst[i] == word:
                 found=True
             if found:
-    #            print("Word: ",str(lst[i]), "Found: ", str(found))
+            # print("Word: ",str(lst[i]), "Found: ", str(found))
                 break 
         return found
 

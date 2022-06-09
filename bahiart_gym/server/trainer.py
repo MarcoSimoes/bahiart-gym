@@ -1,6 +1,5 @@
 from bahiart_gym.server.comms import Comms
 from bahiart_gym.server.singleton import Singleton
-#from connection import sock
 
 class Trainer(metaclass=Singleton):
     """
