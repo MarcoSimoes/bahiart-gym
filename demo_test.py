@@ -11,9 +11,13 @@ env = DemoEnv()
 
 print("-------------------------------")
 print("> Waiting for agent to connect")
-time.sleep(5)
 
 ply = proxy.getPlayerObj('6')
+
+while(ply == None):
+    time.sleep(0.5)
+    ply = proxy.getPlayerObj('6')
+
 env.setPlayer(ply)
 
 env.stayIdleBeforeKickOff()

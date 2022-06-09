@@ -13,7 +13,6 @@ class Comms(metaclass=Singleton):
     def __init__(self, host='localhost', port=3200):
         self.HOST = host
         self.PORT = port
-        if(self.sock != None)
         try: 
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             print("[COMMS] Socket created.")

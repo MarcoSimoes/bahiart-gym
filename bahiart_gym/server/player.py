@@ -1,5 +1,5 @@
 from numpy.core.defchararray import array
-from bahiart_gym.server.ball import Ball
+# from bahiart_gym.server.ball import Ball
 from bahiart_gym.server.agentParser import AgentParser
 from math import fabs, sqrt
 import numpy as np
@@ -18,7 +18,7 @@ class Player(object):
     """
 
     parser = AgentParser()
-    ball = Ball()
+    # ball = Ball()
 
     def pol2cart(self, mag, theta):
         x = mag * np.cos(theta)

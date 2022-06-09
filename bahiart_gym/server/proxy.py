@@ -38,7 +38,7 @@ class Proxy:
                 return player
         
         self.verifyAgent(agentNumber)
-        return
+        return None
 
     def verifyAgent(self,agentNumber:str):
         for x in range(len(self.proxies)):
