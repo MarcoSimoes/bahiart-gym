@@ -29,7 +29,7 @@ class Comms(Singleton):
     """
     serverSocket = None
 
-    def __init__(self, host='localhost', port=3200):
+    def __init__(self, host='localhost', port=3300):
 
         self.HOST = host
         self.PORT = port

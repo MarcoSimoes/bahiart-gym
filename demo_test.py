@@ -22,7 +22,7 @@ from bahiart_gym.server.proxy import Proxy
 from bahiart_gym.envs.demo_env import DemoEnv
 from stable_baselines3 import DQN
 
-proxy = Proxy(3800)                                                     #Imports the proxy that will be used to bind the agent to the server at the specified port. Change the number as you please, but remember it when launching your agent.
+proxy = Proxy(3800,3900)                                                     #Imports the proxy that will be used to bind the agent to the server at the specified port. Change the number as you please, but remember it when launching your agent.
 proxy.start()                                                           #Starts the proxy.
 
 env = DemoEnv()                                                         #Creates a demo env instance.
@@ -34,15 +34,16 @@ env.setPlayer(ply)                                                      #Defines
 
 env.stayIdleBeforeKickOff()                                             #Keeps the environment idle during the 'beforeKickOff' playmode so you can start it at any time by clicking B or K on the Roboviz screen.
 
-model = DQN('MlpPolicy', env, verbose=1)                                #Defines the training model as DQN.
-model.learn(total_timesteps=10000)                                      #Starts learning. The "total_timesteps" variable defines how many steps the learning will take.
+model = DQN('MlpPolicy', env, verbose=1, tensorboard_log='./tblog/')                                #Defines the training model as DQN.
+model.learn(total_timesteps=10000)  #tb_log_name='filename'                                    #Starts learning. The "total_timesteps" variable defines how many steps the learning will take.
 model.save("DQN_training_model")                                        #After the learning is done, this saves the model in a file with the given name.
 
 #model = DQN.load("DQN_training_model")                                 #The model can also be initialized with an already trained network using the load("trained_model_file") function.
 
 obs = env.reset()                                                       #Resets the environment, beaming the agent and the ball to predefined initial positions.
 while True:
-    action, _states = model.predict(obs)                                #Now that the training is over, this script function will generate actions based on the trained model network.
+    action, _states = model.predict(obs)  
+    print(action)                              #Now that the training is over, this script function will generate actions based on the trained model network.
     obs, rewards, dones, info = env.step(action)                        #Here, the step function sends the action to the agent and waits its execution.
     if(dones):
         env.reset()                                                     #At the end of every episode, the environment is reset.
