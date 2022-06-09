@@ -174,11 +174,12 @@ class AgentComms(metaclass=Singleton):
                 sockLen = int.from_bytes(length, 'little')          
                 sockIntLen = socket.ntohl(sockLen)
                 if(unum not in self.agentMessages):
-                    self.agentMessages = []
+                    self.agentMessages[unum] = []
                 try:
                     self.agentMessages[unum].append(self.agents[unum].recv(sockIntLen).decode())
-                except:
+                except Exception as e:
                     print("Couldn't add message into list")
+                    print(str(e))
         except socket.error as err:
             print("[AGENT COMMS]Socket message not received from player %s" %(unum))
             print("Error : " + str(err))
@@ -198,11 +199,12 @@ class AgentComms(metaclass=Singleton):
             sockLen = int.from_bytes(length, 'little')          
             sockIntLen = socket.ntohl(sockLen)
             if(unum not in self.agentMessages):
-                self.agentMessages = []
+                self.agentMessages[unum] = []
             try:
                 self.agentMessages[unum].append(self.agents[unum].recv(sockIntLen).decode())
-            except:
+            except Exception as e:
                 print("Couldn't add message into list")
+                print(str(e))
             #print("[AGENT COMMS]Socket message received from player %s." %(unum))
         except KeyError:
             print("[AGENT COMMS] Player %s has no connection initialized to Gym." %(unum))

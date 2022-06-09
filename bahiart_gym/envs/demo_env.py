@@ -9,9 +9,6 @@ from bahiart_gym.server.world import World
 from bahiart_gym.agentcomms import AgentComms
 from bahiart_gym.agentcomms import InvalidHostAndPortLengths
 
-#sys.path.append("../server")
-#from bahiart_gym.server import *
-
 class DemoEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
@@ -37,27 +34,34 @@ class DemoEnv(gym.Env):
 
         self.state = np.array([0.0,0.0])
 
-        self.thisStep = 1 #USED ONLY FOR DEBUGING AT THE MOMENT.
+        self.currentStep = 1 #USED ONLY FOR DEBUGING AT THE MOMENT.
 
     def step(self, action): 
         """
             Takes an action, whether to stand still, walk towards the ball or kick the ball.
         """
+        self.currentStep += 1
 
         message = str(action)
-
-        #debugMessage = "Step: " + str(self.thisStep)
         self.agents.sendAll(message)
-        #self.agents.sendAll(debugMessage)
-        #self.thisStep += 1
         
-        # The step keeps waiting while the 'actionComplete' flag has been received.
-        agentMessages = {}
-        while("actionComplete" not in agentMessages.values()):
-            self.agents.receiveAll()
-            agentMessages = self.agents.getAgentMessages()
+        
+        # IMPORTANT 
+        # 
+        # This loop can be used to wait till action has been completed and a flag has been received. 
+        # In this way, the next step is only called after the previous action has been fully completed.
+        # 
+        # The step keeps waiting while the 'actionComplete' flag has been received. (The flag can be changed on the while loop)
+        # agentMessages = {}
+        # while("actionComplete" not in agentMessages.values()):
+        #     self.agents.receiveAll()
+        #     agentMessages = self.agents.getAgentMessages()
 
-        
+        # receiveAll receives the messages and stores in a dictionary
+        # getAgentMessages returns the dictionary with the messages and clear it on the function call
+
+        self.agents.receiveAll()
+
         self.command.reqFullState()
         self.ws.staticUpdate()
         self.ws.dynamicUpdate()
