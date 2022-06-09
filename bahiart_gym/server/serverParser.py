@@ -74,7 +74,7 @@ class ServerParser(Singleton):
             objIndex = latestIndex
             objNode = latestNode
             return objIndex, objNode
-        if(playerLeft != None or playerRight != None):
+        if(isPlayer):
             return playerLeft, playerRight
         elif(foundObj):
             objIndex = idx

@@ -56,9 +56,9 @@ class World(Singleton):
         #BALL
         self.ballRadius = 0.0
         self.ballMass = 0.0
-        self.ballIndex = None
-        self.ballNode = None
-        self.ballGraph = None
+        self.ballIndex = 0
+        self.ballNode = []
+        self.ballGraph = []
 
         #BALL SPEED
         self.ballFinalPos = []
@@ -88,8 +88,8 @@ class World(Singleton):
             self.teamRight = str(self.parser.getValue('team_right', serverExp, self.teamRight))
         except Exception as e:
             pass
-            #print("-----ENVIRONMENT EXCEPTION-----: ")
-            #print(e)
+            # print("-----ENVIRONMENT EXCEPTION-----: ")
+            # print(e)
 
         #BALLPOS
         try:
@@ -101,10 +101,9 @@ class World(Singleton):
             #print("-----BALLPOSS EXCEPTION-----:")
             #print(e)
 
-        #PLAYERSPOS
+        #PLAYERS POSITIONS
         try:
             self.updatePlayersDict(serverExp)
-            print(str(self.playersLeft))
         except Exception as e:
             pass
             # print("-----PLAYERS POS EXCEPTION-----:")
@@ -129,7 +128,7 @@ class World(Singleton):
     def staticUpdate(self):
         serverExp = []
         
-        while(self.ballIndex is None):    
+        while(self.ballIndex is 0):    
             try:
                 self.trainer.reqFullState()
                 self.net.updateSExp()

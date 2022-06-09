@@ -82,7 +82,7 @@ class DemoEnv(gym.Env):
         self.state = np.array([obsBallDist, obsBallSpeed])
         
         #Verify if episode is done either by scoring a goal or having passed 20 seconds since the start of the episode.
-        if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > 20):
+        if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > 40):
             done = True
             currTime = self.ws.time
             elapsedTime = currTime - self.episodeInitTime
