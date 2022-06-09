@@ -1,6 +1,5 @@
 import os
 import subprocess
-import threading
 import time
 
 cfgfile=open("config.ini","r")
@@ -87,4 +86,15 @@ time.sleep(60)
 
 
 
+# START.SH
+# rcssserver3d &>>server.log &
 
+# sleep 1
+
+
+# python3 /home/rafael/acso/bahiart-gym/demo_test.py &
+
+# sleep 15
+
+# cd /home/rafael/acso/bahiart/
+# ./startAgent.sh 6 localhost 3800 demo /home/rafael/acso/bahiart/log
