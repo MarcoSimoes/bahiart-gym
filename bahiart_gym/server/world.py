@@ -37,6 +37,8 @@ class World(Singleton):
         self.playMode = 0
         self.scoreLeft = 0
         self.scoreRight = 0
+        self.teamLeft = None
+        self.teamRight = None
 
         #STATIC
         self.fieldLength = 0.0
@@ -81,6 +83,8 @@ class World(Singleton):
             self.playMode = int(self.parser.getValue('play_mode', serverExp, self.playMode))
             self.scoreLeft = int(self.parser.getValue('score_left', serverExp, self.scoreLeft))
             self.scoreRight = int(self.parser.getValue('score_right', serverExp, self.scoreRight))
+            self.teamLeft = str(self.parser.getValue('team_left', serverExp, self.teamLeft))
+            self.teamRight = str(self.parser.getValue('team_right', serverExp, self.teamRight))
         except Exception as e:
             pass
             #print("-----ENVIRONMENT EXCEPTION-----: ")
