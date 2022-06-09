@@ -39,10 +39,10 @@ class World(Singleton):
         self.scoreRight = 0
         self.teamLeft = None
         self.teamRight = None
-        self.playersLeft = None
-        self.playersRight = None
-        self.playersLeftIndex = None
-        self.playersRightIndex = None
+        self.playersLeft = []
+        self.playersRight = []
+        self.playersLeftIndex = []
+        self.playersRightIndex = []
         self.connectedPlayers = 0
 
         #STATIC
@@ -77,10 +77,6 @@ class World(Singleton):
             pass
             #print("-----SERVER S-EXPRESSION UPDATE ERROR-----:")
             #print(e)
-        #DEBUG
-        #print("SERVER EXPRESSION BEGIN")
-        #print(serverExp)
-        #print("SERVER EXPRESSION END")
         
         #ENVIRONMENT
         try:
@@ -108,10 +104,11 @@ class World(Singleton):
         #PLAYERSPOS
         try:
             self.updatePlayersDict(serverExp)
+            print(str(self.playersLeft))
         except Exception as e:
             pass
-            #print("-----PLAYERS POS EXCEPTION-----:")
-            #print(e)
+            # print("-----PLAYERS POS EXCEPTION-----:")
+            # print(e)
 
         #BALL SPEED
         try:
@@ -128,14 +125,10 @@ class World(Singleton):
             # print("------EXCEPTION SPEED---------")
             # print(e)
             # print("---------END EXCEPTION-------")
-
-        #DEBUG
-        #print("Game Time: " + self.time)
-        #print("score right: " + self.scoreRight)
-        #print("score left: " + self.scoreLeft)
-        #print("PlayMode: " + self.playMode)
     
     def staticUpdate(self):
+        serverExp = []
+        
         while(self.ballIndex is None):    
             try:
                 self.trainer.reqFullState()
@@ -169,33 +162,39 @@ class World(Singleton):
             self.ballRadius = float(self.parser.getValue('BallRadius', serverExp, self.ballRadius))
             self.ballMass = float(self.parser.getValue('BallMass', serverExp, self.ballMass))
 
-            #PLAYERS
+        except Exception as e:
+            pass
+            #print("-----BALLPOSS EXCEPTION-----")
+            #print(e)
+
+        try:
+            #PLAYERS POSITIONS
+            self.trainer.reqFullState()
+            self.net.updateSExp()
+            serverExp = self.net.serverExp
             self.updatePlayersIndex(serverExp)
         except Exception as e:
             pass
-            #print("-----BALLPOSS EXCEPTION-----:")
-            #print(e)
+            # print("-----PLAYER INDEX ERROR-----")
+            # print(e)
     
     def updatePlayersIndex(self, serverExp):
-        playersLeftIndex = []
-        playersRightIndex = []
+        playersLeftIndex = [0]*12
+        playersRightIndex = [0]*12
         connectedPlayers = 0
-        playerLeft = None
-        playerRight = None
+        playerLeft = []
+        playerRight = []
 
-        for i in range(1, 11):
-            playerLeft, playerRight = self.parser.getObjIndex("matNum"+str(i), serverExp, playerLeft, playerRight, True)
-            if(playerLeft != None):
+        for i in range(0, 12):
+            playerLeft, playerRight = self.parser.getObjIndex("matNum{}".format(i), serverExp, playerLeft, playerRight, True)
+            if(playerLeft != []):
                 playersLeftIndex[i] = playerLeft[0]
                 connectedPlayers += 1
-            else:
-                playersLeftIndex[i] = None
             
-            if(playerRight != None):
+            if(playerRight != []):
                 playersRightIndex[i] = playerRight[0]
                 connectedPlayers += 1
-            else:
-                playersRightIndex[i] = None
+            continue
 
         self.playersLeftIndex = playersLeftIndex.copy()
         self.playersRightIndex = playersRightIndex.copy()
@@ -204,18 +203,18 @@ class World(Singleton):
     def updatePlayersDict(self, serverExp):
         playersLeftDict = {}
         playersRightDict = {}
-        playerNode = None
-        playerGraph = None
-        playerPos = None
+        playerNode = []
+        playerGraph = []
+        playerPos = []
 
-        for i in range(1, 11):
-            if(self.playersLeftIndex[i] != None):
+        for i in range(1, 12):
+            if(self.playersLeftIndex[i] != 0):
                 playerNode = self.parser.getObjNd(serverExp, self.playersLeftIndex[i])
                 playerGraph = self.parser.getObjGraph(playerNode, playerGraph)
                 playerPos = self.parser.getObjPos(playerGraph, playerPos)
                 playersLeftDict[i] = playerPos.copy()
             
-            if(self.playersRightIndex[i] != None):
+            if(self.playersRightIndex[i] != 0):
                 playerNode = self.parser.getObjNd(serverExp, self.playersLeftIndex[i])
                 playerGraph = self.parser.getObjGraph(playerNode, playerGraph)
                 playerPos = self.parser.getObjPos(playerGraph, playerPos)

@@ -49,17 +49,16 @@ class ServerParser(Singleton):
                 break 
         return found
 
-    #Gets the entire ball node
     def getObjIndex(self, obj_model_string, lst: list, latestIndex, latestNode, isPlayer=False):
         sceneGraph = lst[2]
         sceneGraphHeader = lst[1]
         foundObj=False
-        playerLeft = None
-        playerRight = None
+        playerLeft = []
+        playerRight = []
         if(sceneGraphHeader[0]=="RSG"):
             for idx, nod in enumerate(sceneGraph):
                 foundObj=self.searchObject(obj_model_string,nod)
-                if(foundObj and isPlayer):  
+                if(foundObj and isPlayer): 
                     #Save node and team and keep looking for a possible second one
                     left = self.searchObject('matLeft', nod)
                     if(left):
@@ -72,8 +71,6 @@ class ServerParser(Singleton):
                 elif(foundObj):
                     break
         else:
-            # if(latestIndex is None):
-            #     latestIndex = 35 #In previous tests, the index 35 seemed to be the ball index almost everytime. This is just to make sure i'm not using None as index.
             objIndex = latestIndex
             objNode = latestNode
             return objIndex, objNode
