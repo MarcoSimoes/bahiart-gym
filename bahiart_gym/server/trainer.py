@@ -2,7 +2,7 @@ from bahiart_gym.server.comms import Comms
 from bahiart_gym.server.singleton import Singleton
 #from connection import sock
 
-class Trainer(Singleton):
+class Trainer(metaclass=Singleton):
     """
     Sends comands to the server as a Trainer program.
 

@@ -3,7 +3,7 @@ from bahiart_gym.server.sexpr import str2sexpr
 from bahiart_gym.server.singleton import Singleton
 #from server.parsr import Parser
 
-class ServerParser(Singleton):
+class ServerParser(metaclass=Singleton):
     """
     Class to retrieve and parse the S-Expression sent from the server
     """

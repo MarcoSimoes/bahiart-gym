@@ -30,6 +30,7 @@ class DemoEnv(gym.Env):
         self.episodeInitBallX = None
         self.reward = 100
         self.goalsScored = 0
+        self.episodeMaxTime = 20
         
         self.action_space = spaces.Discrete(3)
         self.observation_space = spaces.Box(np.array([0, 0]), np.array([60, 300])) #BallDist goes from 0 to 60. BallSpeed goes from 0 to 300.
@@ -42,6 +43,21 @@ class DemoEnv(gym.Env):
         """
             Takes an action, whether to stand still, walk towards the ball or kick the ball.
         """
+
+        message = str(action)
+
+        #debugMessage = "Step: " + str(self.thisStep)
+        self.agents.sendAll(message)
+        #self.agents.sendAll(debugMessage)
+        #self.thisStep += 1
+        
+        # The step keeps waiting while the 'actionComplete' flag has been received.
+        agentMessages = {}
+        while("actionComplete" not in agentMessages.values()):
+            self.agents.receiveAll()
+            agentMessages = self.agents.getAgentMessages()
+
+        
         self.command.reqFullState()
         self.ws.staticUpdate()
         self.ws.dynamicUpdate()
@@ -51,14 +67,6 @@ class DemoEnv(gym.Env):
         if(self.episodeInitBallX is None):
             self.episodeInitBallX = self.ws.ballFinalPos[0]
 
-        message = str(action)
-
-        #debugMessage = "Step: " + str(self.thisStep)
-        self.agents.sendAll(message)
-        #self.agents.sendAll(debugMessage)
-        #self.thisStep += 1
-        self.agents.receiveAll()
-
         self.ws.dynamicUpdate()
         
         obsBallDist = self.optPlayer.ballPolarPos[0]
@@ -66,7 +74,7 @@ class DemoEnv(gym.Env):
         self.state = np.array([obsBallDist, obsBallSpeed])
         
         #Verify if episode is done either by scoring a goal or having passed 1 minute since the start of the episode.
-        if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > 20):
+        if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > self.episodeMaxTime):
             done = True
             currTime = self.ws.time
             elapsedTime = currTime - self.episodeInitTime

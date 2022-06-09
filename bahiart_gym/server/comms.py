@@ -3,7 +3,7 @@ import select as slt
 from bahiart_gym.server.serverParser import ServerParser
 from bahiart_gym.server.singleton import Singleton
 
-class Comms(Singleton):
+class Comms(metaclass=Singleton):
     """
     Communication class between Gym and Server.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection
@@ -11,24 +11,23 @@ class Comms(Singleton):
     serverSocket = None
 
     def __init__(self, host='localhost', port=3200):
-
         self.HOST = host
         self.PORT = port
+        if(self.sock != None)
         try: 
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print("Socket created.")
+            print("[COMMS] Socket created.")
         except socket.error as err:
-            print("Socket not created.")
-            print("Error : " + str(err))
-        
+            print("[COMMS] Socket not created.")
+            print("[COMMS] Error : " + str(err))
         try: 
             self.sock.connect((self.HOST, self.PORT))
             self.serverSocket = self.sock
-            print("Connection established")
+            print("[COMMS] Connection established")
             self.serverSocket.setblocking(0)
         except socket.error as err:
-            print("Connection not established.")
-            print("Error : " + str(err))
+            print("[COMMS] Connection not established.")
+            print("[COMMS] Error : " + str(err))
 
         self.setParser()
 
@@ -83,13 +82,13 @@ class Comms(Singleton):
                     read = len(byteMsg)
 
         except socket.timeout:
-            print("Timeout in updateSExp")
+            print("[COMMS] Timeout in updateSExp")
             return(False)
         except socket.error as err:
-            print("Socker error in updateSExp")
+            print("[COMMS] Socker error in updateSExp")
             return(False)
         except:
-            print("Connection Dropped in updateSExp")
+            print("[COMMS] Connection Dropped in updateSExp")
             return(False)
 
         #Transforms byteMsg into string

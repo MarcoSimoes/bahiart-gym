@@ -2,7 +2,7 @@ import sys
 import numpy as np
 from bahiart_gym.server.singleton import Singleton
 
-class Ball(Singleton):
+class Ball(metaclass=Singleton):
 
     def __init__(self):
         super().__init__()

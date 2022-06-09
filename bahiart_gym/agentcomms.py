@@ -6,7 +6,7 @@ class InvalidHostAndPortLengths(Exception):
     """ Raised when Host and Port lists has different sizes """
     pass
 
-class AgentComms(Singleton):
+class AgentComms(metaclass=Singleton):
     """
     Communication class between Gym and Agents.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection
@@ -165,11 +165,7 @@ class AgentComms(Singleton):
         
     def receiveAll(self):
         """
-        Receive messages from all connected agents and returns it as a dictionary.
-
-        Returns
-        -------
-        Dictionary.
+        Receive messages from all connected agents.
 
         """
         try:
@@ -177,34 +173,36 @@ class AgentComms(Singleton):
                 length = self.agents[unum].recv(4)          
                 sockLen = int.from_bytes(length, 'little')          
                 sockIntLen = socket.ntohl(sockLen)
-                self.agentMessages[unum] = self.agents[unum].recv(sockIntLen).decode()
-            
-            return self.agentMessages
-            
+                if(unum not in self.agentMessages):
+                    self.agentMessages = []
+                try:
+                    self.agentMessages[unum].append(self.agents[unum].recv(sockIntLen).decode())
+                except:
+                    print("Couldn't add message into list")
         except socket.error as err:
             print("[AGENT COMMS]Socket message not received from player %s" %(unum))
             print("Error : " + str(err))
                   
     def receive(self,unum: int):
         """
-        Receive a confirmation message from player number unum and returns the message.
+        Receive a message from player number unum.
 
         Parameters
         ----------
         unum : int
             Number of player's t-shirt whose message is received.
 
-        Returns
-        -------
-        String.
-
         """
         try:
             length = self.agents[unum].recv(4)          
             sockLen = int.from_bytes(length, 'little')          
             sockIntLen = socket.ntohl(sockLen)
-            self.agentMessages[unum] = self.agents[unum].recv(sockIntLen).decode()
-            return self.agentMessages[unum]
+            if(unum not in self.agentMessages):
+                self.agentMessages = []
+            try:
+                self.agentMessages[unum].append(self.agents[unum].recv(sockIntLen).decode())
+            except:
+                print("Couldn't add message into list")
             #print("[AGENT COMMS]Socket message received from player %s." %(unum))
         except KeyError:
             print("[AGENT COMMS] Player %s has no connection initialized to Gym." %(unum))
@@ -215,7 +213,7 @@ class AgentComms(Singleton):
 
     def getAgentMessages(self):
         """
-        Returns dictionary with agent messages.
+        Returns dictionary with agent messages and clear previous messages.
 
         Parameters
         ----------
@@ -226,4 +224,6 @@ class AgentComms(Singleton):
         Dictionary.
 
         """
-        return self.agentMessages
+        agentMsgs = self.agentMessages.copy()
+        self.agentMessages = {}
+        return agentMsgs
