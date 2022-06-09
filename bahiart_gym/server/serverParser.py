@@ -50,32 +50,48 @@ class ServerParser(Singleton):
         return found
 
     #Gets the entire ball node
-    def getBallIndex(self, lst: list, latestIndex):
+    def getObjIndex(self, obj_model_string, lst: list, latestIndex, latestNode, isPlayer=False):
         sceneGraph = lst[2]
         sceneGraphHeader = lst[1]
-        foundBall=False
+        foundObj=False
+        playerLeft = None
+        playerRight = None
         if(sceneGraphHeader[0]=="RSG"):
             for idx, nod in enumerate(sceneGraph):
-                foundBall=self.searchObject("models/soccerball.obj",nod)
-                if(foundBall):  
+                foundObj=self.searchObject(obj_model_string,nod)
+                if(foundObj and isPlayer):  
+                    #Save node and team and keep looking for a possible second one
+                    left = self.searchObject('matLeft', nod)
+                    if(left):
+                        playerLeft = [idx, nod]
+                    right = self.searchObject('matRight', nod)
+                    if(right):
+                        playerRight = [idx, nod]
+                    foundObj = False
+                    continue
+                elif(foundObj):
                     break
         else:
-            if(latestIndex is None):
-                latestIndex = 35 #In previous tests, the index 35 seemed to be the ball index almost everytime. This is just to make sure i'm not using None as index.
-            ballIndex = latestIndex
-            return ballIndex
-        if(foundBall):
-            ballIndex = idx
-            return ballIndex
+            # if(latestIndex is None):
+            #     latestIndex = 35 #In previous tests, the index 35 seemed to be the ball index almost everytime. This is just to make sure i'm not using None as index.
+            objIndex = latestIndex
+            objNode = latestNode
+            return objIndex, objNode
+        if(playerLeft != None or playerRight != None):
+            return playerLeft, playerRight
+        elif(foundObj):
+            objIndex = idx
+            objNode = nod
+            return objIndex, objNode
 
-    def getBallNd(self, lst: list, ballIndex):
+    def getObjNd(self, lst: list, objIndex):
         sceneGraph = lst[2]
-        ballNd = sceneGraph[ballIndex]
-        return ballNd
+        objNd = sceneGraph[objIndex]
+        return objNd
 
 
     #Gets only the N.O.A.P Values inside the node
-    def getBallGraph(self, lst: list, old):
+    def getObjGraph(self, lst: list, old):
         value = old
         for i in range(0,len(lst)):
             if value == [] or value == old:
@@ -83,7 +99,7 @@ class ServerParser(Singleton):
                     value = lst[1:]
                     return value
                 elif type(lst[i]) is list:
-                    value = self.getBallGraph(lst[i], old)
+                    value = self.getObjGraph(lst[i], old)
                 else:
                     continue
                 if value == None or value == old:
@@ -94,15 +110,15 @@ class ServerParser(Singleton):
             value = old
         return value
 
-    def getBallPos(self, lst: list, old: list):
+    def getObjPos(self, lst: list, old: list):
         if(lst is None or len(lst) < 12):
             return old
         else:
             x = lst[12]
             y = lst[13]
             z = lst[14]
-            ballPos = [float(x), float(y), float(z)]
-            return ballPos
+            objPos = [float(x), float(y), float(z)]
+            return objPos
 
     def search(self, word: str, lst: list):
         for i in range(0,len(lst)):
