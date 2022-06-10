@@ -23,7 +23,7 @@ from bahiart_gym.server.ball import Ball
 from bahiart_gym.server.singleton import Singleton
 from bahiart_gym.server.trainer import Trainer
 
-class World(Singleton):
+class World(metaclass=Singleton):
     
     net = Comms()
     ball = Ball()

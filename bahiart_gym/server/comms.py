@@ -22,7 +22,7 @@ import select as slt
 from bahiart_gym.server.serverParser import ServerParser
 from bahiart_gym.server.singleton import Singleton
 
-class Comms(Singleton):
+class Comms(metaclass=Singleton):
     """
     Communication class between Gym and Server.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection

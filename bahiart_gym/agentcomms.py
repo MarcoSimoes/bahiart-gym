@@ -25,7 +25,7 @@ class InvalidHostAndPortLengths(Exception):
     """ Raised when Host and Port lists has different sizes """
     pass
 
-class AgentComms(Singleton):
+class AgentComms(metaclass=Singleton):
     """
     Communication class between Gym and Agents.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection

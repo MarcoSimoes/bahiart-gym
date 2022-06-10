@@ -23,7 +23,7 @@ from multiprocessing import Lock
 import numpy as np
 #from bahiart_gym.server.parsr import Parser
 
-class AgentParser(Singleton):
+class AgentParser(metaclass=Singleton):
     """
     Class to retrieve and parse the S-Expression sent by the server to the agents
     """

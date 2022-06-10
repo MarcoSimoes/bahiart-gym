@@ -17,11 +17,13 @@
         You should have received a copy of the GNU Affero General Public License
         along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-class Singleton(object):
-  
+class Singleton(type):
+
   _instances = {}
-  
-  def __new__(cls, *args, **kwargs):
-    if cls not in cls._instances:
-        cls._instances[cls] = super(Singleton, cls).__new__(cls, *args, **kwargs)
-    return cls._instances[cls]
+
+  def __call__(cls, *args, **kwargs):
+        
+      if cls not in cls._instances:
+        cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+      
+      return cls._instances[cls]
