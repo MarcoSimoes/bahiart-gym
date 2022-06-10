@@ -1,4 +1,7 @@
 """
+        Copyright (C) 2022  Salvador, Bahia
+        Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
+        
         This file is part of BahiaRT GYM.
 
         BahiaRT GYM is free software: you can redistribute it and/or modify

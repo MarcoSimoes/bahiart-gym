@@ -42,10 +42,9 @@ class DemoEnv(gym.Env):
         self.ws.dynamicUpdate()
 
         self.episodeInitTime = None
-        self.episodeInitBallX = None
-        self.reward = 100
+        self.episodeInitBallX = -3.0
         self.goalsScored = 0
-        self.episodeMaxTime = 20
+        self.episodeMaxTime = 40
         
         self.action_space = spaces.Discrete(3)
         self.observation_space = spaces.Box(np.array([0, 0]), np.array([60, 300])) #BallDist goes from 0 to 60. BallSpeed goes from 0 to 300.
@@ -79,8 +78,7 @@ class DemoEnv(gym.Env):
 
         if(self.episodeInitTime is None):
             self.episodeInitTime = self.ws.time
-        if(self.episodeInitBallX is None):
-            self.episodeInitBallX = self.ws.ballFinalPos[0]
+        
 
         self.ws.dynamicUpdate()
         
@@ -88,7 +86,7 @@ class DemoEnv(gym.Env):
         obsBallSpeed = self.ws.ballSpeed
         self.state = np.array([obsBallDist, obsBallSpeed])
         
-        #Verify if episode is done either by scoring a goal or having passed 1 minute since the start of the episode.
+        #Verify if episode is done either by scoring a goal or having passed 40 seconds since the start of the episode.
         if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > self.episodeMaxTime):
             done = True
             currTime = self.ws.time
@@ -104,7 +102,6 @@ class DemoEnv(gym.Env):
             elif(ballTravDist < 20):
                 reward = ballTravDist*4
             self.episodeInitTime = None
-            self.episodeInitBallX = None
             if(self.goalsScored < self.ws.scoreLeft):
                 self.goalsScored += 1
                 if(elapsedTime < 10):

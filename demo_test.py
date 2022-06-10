@@ -17,9 +17,10 @@
         You should have received a copy of the GNU Affero General Public License
         along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+#This demo environment was designed to be used with just a single agent.
+#Remember to run the rcssserver3d and RoboViz(or any other monitor) before running this script.
 from bahiart_gym.server.proxy import Proxy
 from bahiart_gym.envs.demo_env import DemoEnv
-import gym
 import time
 import sys
 from stable_baselines3 import DQN
@@ -28,7 +29,7 @@ from stable_baselines3 import DQN
 proxyPort=3800
 serverPort=3100
 monitorPort=3200
-
+                                                     
 if(len(sys.argv) > 1):
     proxyPort=int(sys.argv[1])
     
@@ -39,36 +40,37 @@ if(len(sys.argv) > 3):
     monitorPort=int(sys.argv[3])
 
 print("Starting proxy in port ",proxyPort," connecting to port ",serverPort)
-proxy = Proxy(proxyPort,serverPort)
-proxy.start()
+proxy = Proxy(proxyPort,serverPort)                                             #Create the proxy that will be used to bind the agent to the server at the specified port. Change the number in config.ini, as you please, but remember it when launching your agent.
+proxy.start()                                                                   #Starts the proxy.
 print("\nStarting DemoEnv in monitorPort ",monitorPort,"\n")
-env = DemoEnv(monitorPort)
+env = DemoEnv(monitorPort)                                                      #Creates a demo env instance.
+
 
 print("-------------------------------")
 print("> Waiting for agent to connect")
 
 
-ply = proxy.getPlayerObj('6')
+ply = proxy.getPlayerObj('6')                                                   #Gets the player object created by the proxy. Change the number 6 according to the one of your agent.
 
 while(ply == None):
     time.sleep(0.5)
     ply = proxy.getPlayerObj('6')
 
-env.setPlayer(ply)
+env.setPlayer(ply)                                                              #Defines the retrieved object inside the environment.
 
 env.stayIdleBeforeKickOff()
 
-# model = DQN('MlpPolicy', env, verbose=1)
-# model.learn(total_timesteps=10000)
-# model.save("DQN_training_model")
+# model = DQN('MlpPolicy', env, verbose=1)                                      #Defines the training model as DQN.
+# model.learn(total_timesteps=10000)                                            #Starts learning. The "total_timesteps" variable defines how many steps the learning will take.
+# model.save("DQN_training_model")                                              #After the learning is done, this saves the model in a file with the given name.
 
-#model = DQN.load("DQN_training_model")
+#model = DQN.load("DQN_training_model")                                         #The model can also be initialized with an already trained network using the load("trained_model_file") function.
 
-obs = env.reset()
+obs = env.reset()                                                               #Resets the environment, beaming the agent and the ball to predefined initial positions.
 while True:
-    #action, _states = model.predict(obs)
+    #action, _states = model.predict(obs)                                       #Now that the training is over, this script function will generate actions based on the trained model network.
     #print("ACTION: {}".format(action))
-    obs, rewards, dones, info = env.step(2)
+    obs, rewards, dones, info = env.step(2)                                     #Here, the step function sends the action to the agent and waits its execution.
     if(dones):
-        env.reset()
+        env.reset()                                                             #At the end of every episode, the environment is reset.
     #env.render()
