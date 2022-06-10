@@ -49,37 +49,45 @@ class ServerParser(metaclass=Singleton):
                 break 
         return found
 
-    def getObjIndex(self, obj_model_string, lst: list, latestIndex, latestNode, isPlayer=False):
+    def getObjIndex(self, obj_model_string, lst: list, latestIndex, latestIndex2=0, isPlayer=False):
         sceneGraph = lst[2]
         sceneGraphHeader = lst[1]
         foundObj=False
-        playerLeft = []
-        playerRight = []
+        if(isPlayer):
+            playerLeft = latestIndex
+            playerRight = latestIndex2
         if(sceneGraphHeader[0]=="RSG"):
             for idx, nod in enumerate(sceneGraph):
                 foundObj=self.searchObject(obj_model_string,nod)
                 if(foundObj and isPlayer): 
                     #Save node and team and keep looking for a possible second one
                     left = self.searchObject('matLeft', nod)
-                    if(left):
-                        playerLeft = [idx, nod]
                     right = self.searchObject('matRight', nod)
+                    if(left):
+                        playerLeft = idx
+                    else:
+                        playerLeft = latestIndex
                     if(right):
-                        playerRight = [idx, nod]
-                    foundObj = False
+                        playerRight = idx
+                    else:
+                        playerRight = latestIndex2
                     continue
                 elif(foundObj):
                     break
         else:
-            objIndex = latestIndex
-            objNode = latestNode
-            return objIndex, objNode
+            if(isPlayer):
+                return playerLeft, playerRight
+            else:
+                objIndex = latestIndex
+                return objIndex
         if(isPlayer):
             return playerLeft, playerRight
         elif(foundObj):
             objIndex = idx
-            objNode = nod
-            return objIndex, objNode
+            return objIndex
+        else:
+            objIndex = latestIndex
+            return objIndex
 
     def getObjNd(self, lst: list, objIndex):
         sceneGraph = lst[2]
