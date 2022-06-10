@@ -5,11 +5,16 @@ from bahiart_gym.server.trainer import Trainer
 
 class World(metaclass=Singleton):
     
-    net = Comms()
-    parser = net.serverParser
-    trainer = Trainer()
     
-    def __init__(self):
+    
+    
+    def __init__(self,monitorPort=3200):
+        
+        print("Creating Comms with monitorPort ",monitorPort,"\n")
+        #Network Connection
+        self.net = Comms(port=monitorPort)
+        self.parser = self.net.serverParser
+        self.trainer = Trainer(self.net)
         
         #DYNAMIC
         self.time = 0.0

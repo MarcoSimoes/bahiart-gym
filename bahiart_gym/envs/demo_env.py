@@ -17,12 +17,12 @@ class DemoEnv(gym.Env):
 
     optPlayer: Player = None
 
-    def __init__(self):
-        
+    def __init__(self, monitorPort=3200):
+        print("Creating World with monitorPort ",monitorPort,"\n")
         #CREATING WORLD OBJECT AND UPDATING ITS VARIABLES
         self.agents=AgentComms()   
-        self.command = Trainer()
-        self.ws = World()
+        self.ws = World(monitorPort)
+        self.command = self.ws.trainer
         self.ws.staticUpdate()
         self.ws.dynamicUpdate()
 

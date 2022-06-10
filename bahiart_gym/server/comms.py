@@ -8,11 +8,13 @@ class Comms(metaclass=Singleton):
     Communication class between Gym and Server.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection
     """
-    serverSocket = None
+    
 
     def __init__(self, host='localhost', port=3200):
         self.HOST = host
         self.PORT = port
+        print("Trying connection to ",self.HOST,":",self.PORT, flush=True)
+        print("\ntype(port)",type(self.PORT), flush=True)
         try: 
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             print("[COMMS] Socket created.")
@@ -22,11 +24,11 @@ class Comms(metaclass=Singleton):
         try: 
             self.sock.connect((self.HOST, self.PORT))
             self.serverSocket = self.sock
-            print("[COMMS] Connection established")
+            print("[COMMS] Connection established to ",self.HOST,":",self.PORT, flush=True)
             self.serverSocket.setblocking(0)
         except socket.error as err:
-            print("[COMMS] Connection not established.")
-            print("[COMMS] Error : " + str(err))
+            print("[COMMS] Connection not established.", flush=True)
+            print("[COMMS] Error : " + str(err), flush=True)
 
         self.setParser()
 

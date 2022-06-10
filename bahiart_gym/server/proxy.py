@@ -3,6 +3,7 @@ import socket
 from bahiart_gym.server.agentProxy import AgentProxy
 import threading
 
+
 class Proxy:
 
 
@@ -49,6 +50,7 @@ class Proxy:
         while True:
             self.agentSock.listen()
             newAgentSock, _ = self.agentSock.accept()
+
 
             try:
                 pxy = AgentProxy(newAgentSock,self.SERVER_PORT,self.SERVER_HOST)

@@ -27,8 +27,8 @@ class Trainer(metaclass=Singleton):
 
     """
 
-    def __init__(self):
-        self.net = Comms()
+    def __init__(self,monitorPort=3200):
+        self.net = Comms(port=monitorPort)
 
     def changePlayMode(self, playmode: str):
         
