@@ -17,12 +17,14 @@
         You should have received a copy of the GNU Affero General Public License
         along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from setuptools import setup, find_packages
-#from distutils.core import setup
-import pathlib
-
-
-setup(name='bahiart_gym',
-        version='0.0.1',
-        install_requires=['gym', 'numpy', 'torch', 'stable-baselines3[extra]']
-    )
+from bahiart_gym.server.agentParser import AgentParser
+from bahiart_gym.server.agentProxy import AgentProxy
+from bahiart_gym.server.ball import Ball
+from bahiart_gym.server.comms import Comms
+from bahiart_gym.server.parsr import Parser
+from bahiart_gym.server.player import Player
+from bahiart_gym.server.proxy import Proxy
+from bahiart_gym.server.serverParser import ServerParser
+from bahiart_gym.server.singleton import Singleton
+from bahiart_gym.server.trainer import Trainer
+from bahiart_gym.server.world import World
