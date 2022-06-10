@@ -1,7 +1,8 @@
 import os
 import subprocess
 import time
-import sys
+from terminate import killEnv
+
 
 
 
@@ -50,24 +51,25 @@ def startEnv():
     while not proxyAvailable:
         try:
             output=subprocess.check_output("lsof -i:"+str(proxyPort), shell=True)
-            # print("\nOk: ", output.decode("utf-8"),)
             proxyAvailable=True
-        except subprocess.CalledProcessError as e:
-            # print("\nError: ", e.output.decode("utf-8"))
+        except subprocess.CalledProcessError:
             pass
 
     
     cwd = os.getcwd()
     os.chdir(teamFolder)
-    subprocess.Popen(teamCommand,cwd=teamFolder, shell=True)
+    teamProcess = subprocess.Popen(teamCommand,cwd=teamFolder, shell=True)
     os.chdir(cwd)
     
+    return serverProcess.pid, trainingProcess.pid, teamProcess.pid
     
     
 #Main Function
 
 if __name__ == '__main__':
-    startEnv()
+    p1, p2, p3= startEnv()
+    time.sleep(30)
+    killEnv(p1,p2,p3)
     
     
    
