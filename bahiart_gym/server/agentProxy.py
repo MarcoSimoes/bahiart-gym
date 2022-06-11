@@ -35,6 +35,7 @@ class AgentProxy:
         self.agentNumber = '0'
         self.listOfMessages = []
         self.player = None
+        self.MAX_MSG_BUFFER=10
         
     def connectToServer(self):
         serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -64,17 +65,18 @@ class AgentProxy:
         threading._start_new_thread(self.serverToAgent,())
         threading._start_new_thread(self.agentToServer,())
 
-    def serverToAgent(self):
-        self.serverSock.settimeout(self.MAX_WAIT_TIME)
+  #  def serverToAgent(self):
+    def agentToServer(self):
+        self.agentSock.settimeout(self.MAX_WAIT_TIME) #server
         length = ''.encode()
         message = ''.encode()
         splitMessage = re.split("\s",message.decode())
         while True:
             try:
-                length = self.serverSock.recv(4)          
+                length = self.agentSock.recv(4)    #server      
                 sockLen = int.from_bytes(length, 'little')          
                 sockIntLen = socket.ntohl(sockLen)
-                message = self.serverSock.recv(sockIntLen)
+                message = self.agentSock.recv(sockIntLen) #server
                 fullmessage = length + message
                 
                 if not message:
@@ -84,7 +86,7 @@ class AgentProxy:
                         return
 
                 try:
-                    self.agentSock.sendall(fullmessage)
+                    self.serverSock.sendall(fullmessage) #agent
                 except:
                     if self.isConnected:
                         self.closeConnection()
@@ -106,6 +108,58 @@ class AgentProxy:
                         return
             
             # Searching agent number
+            # if self.agentNumber == '0':    
+            #     # If the proxy doesn't know the agent, 
+            #     # it keeps searching in the messages for the number of the agent.
+            #     splitMessage = re.split("\s",message.decode())
+            #     for x in range(len(splitMessage)):
+            #         if 'unum' in splitMessage[x]:
+            #             self.agentNumber = str(splitMessage[x+1].split(')',1)[0])
+            #             # # # # # # # # # # # # # # # # 
+            #             # Instance of player created  #
+            #             self.player = Player(self.agentNumber)
+            #             # # # # # # # # # # # # # # # #
+                
+            # if not message.decode() == "(syn)":
+            #     if self.getIsConnected:
+            #         self.listOfMessages.append(message.decode())
+            #         if self.player is not None:
+            #             try:
+            #                 self.player.updateStats(message.decode())
+            #             except Exception as e:
+            #                 print(e)
+
+
+                        
+#    def agentToServer(self):
+    def serverToAgent(self):
+        self.serverSock.setblocking(True)
+        while True:
+            try:
+                length = self.serverSock.recv(4) #agent
+                sockLen = int.from_bytes(length, 'little')          
+                sockIntLen = socket.ntohl(sockLen)
+                message = self.serverSock.recv(sockIntLen) #agent
+                fullmessage = length + message
+            except Exception as e:
+                print("[PROXY] serverToAgent() !!!!!!EXCEPTION HERE!!!!!!")
+                print(repr(e))
+                #pass
+
+            if not message:
+                if self.isConnected:
+                    self.closeConnection
+                else:
+                    return
+
+            try:
+                self.agentSock.sendall(fullmessage) #server
+            except:
+                if self.isConnected:
+                    self.closeConnection()
+                else:
+                    return
+            
             if self.agentNumber == '0':    
                 # If the proxy doesn't know the agent, 
                 # it keeps searching in the messages for the number of the agent.
@@ -117,45 +171,26 @@ class AgentProxy:
                         # Instance of player created  #
                         self.player = Player(self.agentNumber)
                         # # # # # # # # # # # # # # # #
-                
+                        if 'team' in splitMessage[x+2]:
+                            self.player.side=splitMessage[x+3].split(')',1)[0]
+                        break
+            
             if not message.decode() == "(syn)":
                 if self.getIsConnected:
-                    self.listOfMessages.append(message.decode())
+                    self.addMessage(message.decode())
+                    
                     if self.player is not None:
-                        try:
-                            self.player.updateStats(message.decode())
-                        except Exception as e:
-                            print(e)
-
-
+                        # try:
+                        #     self.player.updateStats(message.decode())
+                        # except Exception as e:
+                        #     print(e)
+                        self.player.updateStats(message.decode())
                         
-    def agentToServer(self):
-        while True:
-            try:
-                length = self.agentSock.recv(4)
-                sockLen = int.from_bytes(length, 'little')          
-                sockIntLen = socket.ntohl(sockLen)
-                message = self.agentSock.recv(sockIntLen)
-                fullmessage = length + message
-            except Exception as e:
-                print("[PROXY]!!!!!!EXCEPTION HERE!!!!!!")
-                print(repr(e))
-                #pass
-
-            if not message:
-                if self.isConnected:
-                    self.closeConnection
-                else:
-                    return
-
-            try:
-                self.serverSock.sendall(fullmessage)
-            except:
-                if self.isConnected:
-                    self.closeConnection()
-                else:
-                    return
-    
+    def addMessage(self,msg : str):
+        if len(self.listOfMessages)>=self.MAX_MSG_BUFFER:
+            self.listOfMessages.pop(0)
+        self.listOfMessages.append(msg)
+        
     def getAgentNumber(self):
         return self.agentNumber
     
