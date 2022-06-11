@@ -33,7 +33,6 @@ class AgentProxy:
         self.MAX_WAIT_TIME = 0.15
         self.isConnected = True
         self.agentNumber = '0'
-        self.listOfMessages = []
         self.player = None
         self.MAX_MSG_BUFFER=10
         
@@ -107,31 +106,11 @@ class AgentProxy:
                     else:
                         return
             
-            # Searching agent number
-            # if self.agentNumber == '0':    
-            #     # If the proxy doesn't know the agent, 
-            #     # it keeps searching in the messages for the number of the agent.
-            #     splitMessage = re.split("\s",message.decode())
-            #     for x in range(len(splitMessage)):
-            #         if 'unum' in splitMessage[x]:
-            #             self.agentNumber = str(splitMessage[x+1].split(')',1)[0])
-            #             # # # # # # # # # # # # # # # # 
-            #             # Instance of player created  #
-            #             self.player = Player(self.agentNumber)
-            #             # # # # # # # # # # # # # # # #
-                
-            # if not message.decode() == "(syn)":
-            #     if self.getIsConnected:
-            #         self.listOfMessages.append(message.decode())
-            #         if self.player is not None:
-            #             try:
-            #                 self.player.updateStats(message.decode())
-            #             except Exception as e:
-            #                 print(e)
+            
 
 
                         
-#    def agentToServer(self):
+
     def serverToAgent(self):
         self.serverSock.setblocking(True)
         while True:
@@ -177,7 +156,7 @@ class AgentProxy:
             
             if not message.decode() == "(syn)":
                 if self.getIsConnected:
-                    self.addMessage(message.decode())
+                    
                     
                     if self.player is not None:
                         # try:
@@ -186,21 +165,12 @@ class AgentProxy:
                         #     print(e)
                         self.player.updateStats(message.decode())
                         
-    def addMessage(self,msg : str):
-        if len(self.listOfMessages)>=self.MAX_MSG_BUFFER:
-            self.listOfMessages.pop(0)
-        self.listOfMessages.append(msg)
+    
         
     def getAgentNumber(self):
         return self.agentNumber
     
-    def getAgentMessages(self):
-        # Return list of messages and clear it
-        messages = self.listOfMessages.copy()
-        self.listOfMessages = []
-
-        return messages
-
+    
     def getIsConnected(self):
         return self.isConnected
 

@@ -180,6 +180,7 @@ class Player(object):
         
     def updateStats(self, agentMsg):
         
+        parsedMsg=[]
         self.lf=self.rf=self.lf1=self.rf1=[[0.0,]*3,]*2
         #AGENT MSG
         if len(agentMsg) > 0:
