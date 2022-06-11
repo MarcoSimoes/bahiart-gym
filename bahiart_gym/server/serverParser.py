@@ -65,12 +65,10 @@ class ServerParser(metaclass=Singleton):
                     right = self.searchObject('matRight', nod)
                     if(left):
                         playerLeft = idx
-                    else:
-                        playerLeft = latestIndex
+                        continue
                     if(right):
                         playerRight = idx
-                    else:
-                        playerRight = latestIndex2
+                        continue
                     continue
                 elif(foundObj):
                     break

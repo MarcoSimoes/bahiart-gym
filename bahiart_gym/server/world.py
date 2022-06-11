@@ -37,8 +37,8 @@ class World(metaclass=Singleton):
         self.playMode = 0
         self.scoreLeft = 0
         self.scoreRight = 0
-        self.teamLeft = None
-        self.teamRight = None
+        self.teamLeftName = None
+        self.teamRightName = None
         
         #PLAYER
         self.playersLeft = {}
@@ -46,9 +46,6 @@ class World(metaclass=Singleton):
         self.playersLeftIndex = [0]*12
         self.playersRightIndex = [0]*12
         self.connectedPlayers = 0
-        self.playerNode = []
-        self.playerGraph = []
-        self.playerPos = []
 
         #STATIC
         self.fieldLength = 0.0
@@ -62,15 +59,24 @@ class World(metaclass=Singleton):
         self.ballRadius = 0.0
         self.ballMass = 0.0
         self.ballIndex = 0
-        self.ballNode = []
-        self.ballGraph = []
 
         #BALL SPEED
         self.ballFinalPos = []
         self.ballInitPos = []
         self.ballSpeed = 0
         self.ballInitTime = 0
-        self.count = 0
+
+        #PRIVATE
+        self.__count = 0
+        self.__playerLeftNode = []
+        self.__playerLeftGraph = []
+        self.__playerLeftPos = []
+        self.__playerRightNode = []
+        self.__playerRightGraph = []
+        self.__playerRightPos = []
+        self.__ballNode = []
+        self.__ballGraph = []
+        self.__serverExpLength = 0
     
     def dynamicUpdate(self):
         
@@ -82,6 +88,17 @@ class World(metaclass=Singleton):
             pass
             # print("-----SERVER S-EXPRESSION UPDATE ERROR-----:")
             # print(e)
+
+        try:
+            if(len(serverExp[2]) != self.__serverExpLength):
+                self.playersLeftIndex = [0]*12
+                self.playersRightIndex = [0]*12
+                self.connectedPlayers = 0
+                self.staticUpdate()
+        except Exception as e:
+            pass
+            # print("-----STATIC UPDATE AFTER LENGTH CHANGE ERROR-----:")
+            # print(e) 
         
         #ENVIRONMENT
         try:
@@ -89,8 +106,8 @@ class World(metaclass=Singleton):
             self.playMode = int(self.parser.getValue('play_mode', serverExp, self.playMode))
             self.scoreLeft = int(self.parser.getValue('score_left', serverExp, self.scoreLeft))
             self.scoreRight = int(self.parser.getValue('score_right', serverExp, self.scoreRight))
-            self.teamLeft = str(self.parser.getValue('team_left', serverExp, self.teamLeft))
-            self.teamRight = str(self.parser.getValue('team_right', serverExp, self.teamRight))
+            self.teamLeftName = str(self.parser.getValue('team_left', serverExp, self.teamLeftName))
+            self.teamRightName = str(self.parser.getValue('team_right', serverExp, self.teamRightName))
         except Exception as e:
             pass
             # print("-----ENVIRONMENT EXCEPTION-----: ")
@@ -98,9 +115,9 @@ class World(metaclass=Singleton):
 
         #BALLPOS
         try:
-            self.ballNode = self.parser.getObjNd(serverExp, self.ballIndex)
-            self.ballGraph = self.parser.getObjGraph(self.ballNode, self.ballGraph)
-            self.ballFinalPos = self.parser.getObjPos(self.ballGraph, self.ballFinalPos)       
+            self.__ballNode = self.parser.getObjNd(serverExp, self.ballIndex)
+            self.__ballGraph = self.parser.getObjGraph(self.__ballNode, self.__ballGraph)
+            self.ballFinalPos = self.parser.getObjPos(self.__ballGraph, self.ballFinalPos)       
         except Exception as e:
             pass
             # print("-----BALL POS EXCEPTION-----:")
@@ -116,14 +133,14 @@ class World(metaclass=Singleton):
 
         #BALL SPEED
         try:
-            if(self.count == 0):
+            if(self.__count == 0):
                 self.ballInitPos = self.ballFinalPos
                 self.ballInitTime = self.time
-            if(self.count == 9):
+            if(self.__count == 9):
                 if(len(self.ballInitPos) > 0):
                     self.ballSpeed = sqrt(((self.ballFinalPos[0] - self.ballInitPos[0])**2) + ((self.ballFinalPos[1] - self.ballInitPos[1])**2)) / (self.time - self.ballInitTime)
-                self.count = -1
-            self.count = self.count + 1
+                self.__count = -1
+            self.__count = self.__count + 1
         except Exception as e:
             pass
             # print("------EXCEPTION SPEED---------")
@@ -135,18 +152,30 @@ class World(metaclass=Singleton):
         self.trainer.reqFullState()
         self.net.updateSExp()
         serverExp = self.net.serverExp
+        self.__serverExpLength = len(serverExp[2])
         
         while(self.ballIndex is 0):    
             try:
                 self.trainer.reqFullState()
                 self.net.updateSExp()
                 serverExp = self.net.serverExp
-                self.ballIndex = self.parser.getObjIndex("models/soccerball.obj", serverExp, self.ballIndex, self.ballNode) #The ball should be initiated along with the server so if the ball is up, everything else should be ready as well.
+                self.ballIndex = self.parser.getObjIndex("models/soccerball.obj", serverExp, self.ballIndex, self.__ballNode) #The ball should be initiated along with the server so if the ball is up, everything else should be ready as well.
             except Exception as e:
                 pass
                 # print("-----BALL INDEX EXCEPTION-----:")
                 # print(e)
         
+        while(self.__serverExpLength > 36 and self.connectedPlayers == 0):
+            try:
+                self.trainer.reqFullState()
+                self.net.updateSExp()
+                serverExp = self.net.serverExp
+                self.updatePlayersIndex(serverExp)
+            except Exception as e:
+                pass
+                # print("-----PLAYER INDEX LOOP EXCEPTION-----:")
+                # print(e)
+
         try:
             self.ballIndex = self.parser.getObjIndex("models/soccerball.obj", serverExp, self.ballIndex) #The ball should be initiated along with the server so if the ball is up, everything else should be ready as well.
         except Exception as e:
@@ -166,7 +195,6 @@ class World(metaclass=Singleton):
             #BALL
             self.ballRadius = float(self.parser.getValue('BallRadius', serverExp, self.ballRadius))
             self.ballMass = float(self.parser.getValue('BallMass', serverExp, self.ballMass))
-
         except Exception as e:
             pass
             # print("-----FIELD/BALL EXCEPTION-----")
@@ -199,13 +227,18 @@ class World(metaclass=Singleton):
 
         for i in range(1, 12):
             if(self.playersLeftIndex[i] != 0):
-                self.playerNode = self.parser.getObjNd(serverExp, self.playersLeftIndex[i])
-                self.playerGraph = self.parser.getObjGraph(self.playerNode, self.playerGraph)
-                self.playerPos = self.parser.getObjPos(self.playerGraph, self.playerPos)
-                self.playersLeft[i] = self.playerPos.copy()
+                self.__playerLeftNode = self.parser.getObjNd(serverExp, self.playersLeftIndex[i])
+                self.__playerLeftGraph = self.parser.getObjGraph(self.__playerLeftNode, self.__playerLeftGraph)
+                self.__playerLeftPos = self.parser.getObjPos(self.__playerLeftGraph, self.__playerLeftPos)
+                self.playersLeft[i] = self.__playerLeftPos.copy()
+            elif(i in self.playersLeft.keys()):
+                del self.playersLeft[i]
+                
             
             if(self.playersRightIndex[i] != 0):
-                self.playerNode = self.parser.getObjNd(serverExp, self.playersLeftIndex[i])
-                self.playerGraph = self.parser.getObjGraph(self.playerNode, self.playerGraph)
-                self.playerPos = self.parser.getObjPos(self.playerGraph, self.playerPos)
-                self.playersRight[i] = self.playerPos.copy()
+                self.__playerRightNode = self.parser.getObjNd(serverExp, self.playersRightIndex[i])
+                self.__playerRightGraph = self.parser.getObjGraph(self.__playerRightNode, self.__playerRightGraph)
+                self.__playerRightPos = self.parser.getObjPos(self.__playerRightGraph, self.__playerRightPos)
+                self.playersRight[i] = self.__playerRightPos.copy()
+            elif(i in self.playersRight.keys()):
+                del self.playersRight[i]
