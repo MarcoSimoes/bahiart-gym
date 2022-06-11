@@ -17,5 +17,14 @@
         You should have received a copy of the GNU Affero General Public License
         along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from bahiart_gym.envs.demo_env import DemoEnv
-
+# -*- coding: utf-8 -*-
+import os
+import signal
+def killEnv(serverPID, envPID, teamPID):
+    
+    print("Killing server ...\n")
+    os.kill(serverPID, signal.SIGKILL)
+    print("Killing environment ...\n")
+    os.kill(envPID, signal.SIGTERM)
+    print("Killing team ...\n")
+    os.kill(teamPID, signal.SIGTERM)

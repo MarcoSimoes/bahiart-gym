@@ -3,7 +3,7 @@
         Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
 
         This file is part of BahiaRT GYM.
-        
+
         BahiaRT GYM is free software: you can redistribute it and/or modify
         it under the terms of the GNU Affero General Public License as
         published by the Free Software Foundation, either version 3 of the
@@ -18,7 +18,6 @@
         along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from numpy.core.defchararray import array
-from bahiart_gym.server.ball import Ball
 from bahiart_gym.server.agentParser import AgentParser
 from math import fabs, sqrt
 import numpy as np
@@ -37,7 +36,6 @@ class Player(object):
     """
 
     parser = AgentParser()
-    ball = Ball()
 
     def pol2cart(self, mag, theta):
         x = mag * np.cos(theta)

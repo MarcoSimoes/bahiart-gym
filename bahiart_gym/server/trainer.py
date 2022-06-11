@@ -19,7 +19,6 @@
 """
 from bahiart_gym.server.comms import Comms
 from bahiart_gym.server.singleton import Singleton
-#from connection import sock
 
 class Trainer(metaclass=Singleton):
     """
@@ -47,8 +46,8 @@ class Trainer(metaclass=Singleton):
 
     """
 
-    def __init__(self):
-        self.net = Comms()
+    def __init__(self,monitorPort=3200):
+        self.net = Comms(port=monitorPort)
 
     def changePlayMode(self, playmode: str):
         

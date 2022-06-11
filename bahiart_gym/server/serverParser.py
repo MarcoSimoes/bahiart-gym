@@ -3,7 +3,7 @@
         Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
 
         This file is part of BahiaRT GYM.
-        
+
         BahiaRT GYM is free software: you can redistribute it and/or modify
         it under the terms of the GNU Affero General Public License as
         published by the Free Software Foundation, either version 3 of the
@@ -20,7 +20,6 @@
 from multiprocessing import Lock
 from bahiart_gym.server.sexpr import str2sexpr
 from bahiart_gym.server.singleton import Singleton
-#from server.parsr import Parser
 
 class ServerParser(metaclass=Singleton):
     """
@@ -45,7 +44,7 @@ class ServerParser(metaclass=Singleton):
             elif lst[i] == word:
                 found=True
             if found:
-    #            print("Word: ",str(lst[i]), "Found: ", str(found))
+            # print("Word: ",str(lst[i]), "Found: ", str(found))
                 break 
         return found
 

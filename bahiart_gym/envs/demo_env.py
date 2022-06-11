@@ -17,8 +17,6 @@
         You should have received a copy of the GNU Affero General Public License
         along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-#import sys
-#sys.path.append("../")
 import gym
 import numpy as np
 from gym import spaces
@@ -28,26 +26,25 @@ from bahiart_gym.server.world import World
 from bahiart_gym.agentcomms import AgentComms
 from bahiart_gym.agentcomms import InvalidHostAndPortLengths
 
-#sys.path.append("../server")
-#from bahiart_gym.server import *
 
 class DemoEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
     optPlayer: Player = None
 
-    def __init__(self):
-        
+    def __init__(self, monitorPort=3200):
+        print("Creating World with monitorPort ",monitorPort,"\n")
         #CREATING WORLD OBJECT AND UPDATING ITS VARIABLES
         self.agents=AgentComms()   
-        self.command = Trainer()
-        self.ws = World()
+        self.ws = World(monitorPort)
+        self.command = self.ws.trainer
         self.ws.staticUpdate()
         self.ws.dynamicUpdate()
 
         self.episodeInitTime = None
         self.episodeInitBallX = -3.0
         self.goalsScored = 0
+        self.episodeMaxTime = 40
         
         self.action_space = spaces.Discrete(3)
         self.observation_space = spaces.Box(np.array([0, 0]), np.array([60, 300])) #BallDist goes from 0 to 60. BallSpeed goes from 0 to 300.
@@ -61,19 +58,27 @@ class DemoEnv(gym.Env):
             Takes an action, whether to stand still, walk towards the ball or kick the ball.
         """
 
+        message = str(action)
+
+        #debugMessage = "Step: " + str(self.thisStep)
+        self.agents.sendAll(message)
+        #self.agents.sendAll(debugMessage)
+        #self.thisStep += 1
+        
+        # The step keeps waiting while the 'actionComplete' flag has been received.
+        agentMessages = {}
+        while("actionComplete" not in agentMessages.values()):
+            self.agents.receiveAll()
+            agentMessages = self.agents.getAgentMessages()
+
+        
         self.command.reqFullState()
         self.ws.staticUpdate()
         self.ws.dynamicUpdate()
 
         if(self.episodeInitTime is None):
             self.episodeInitTime = self.ws.time
-
-        message = str(action)
-        #debugMessage = "Step: " + str(self.thisStep)
-        self.agents.sendAll(message)
-        #self.agents.sendAll(debugMessage)
-        #self.thisStep += 1
-        self.agents.receiveAll()
+        
 
         self.ws.dynamicUpdate()
         
@@ -81,8 +86,8 @@ class DemoEnv(gym.Env):
         obsBallSpeed = self.ws.ballSpeed
         self.state = np.array([obsBallDist, obsBallSpeed])
         
-        #Verify if episode is done either by scoring a goal or having passed 20 seconds since the start of the episode.
-        if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > 40):
+        #Verify if episode is done either by scoring a goal or having passed 40 seconds since the start of the episode.
+        if(self.goalsScored < self.ws.scoreLeft or (self.ws.time - self.episodeInitTime) > self.episodeMaxTime):
             done = True
             currTime = self.ws.time
             elapsedTime = currTime - self.episodeInitTime

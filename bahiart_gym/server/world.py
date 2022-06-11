@@ -19,18 +19,21 @@
 """
 from math import sqrt
 from bahiart_gym.server.comms import Comms
-from bahiart_gym.server.ball import Ball
 from bahiart_gym.server.singleton import Singleton
 from bahiart_gym.server.trainer import Trainer
 
 class World(metaclass=Singleton):
     
-    net = Comms()
-    ball = Ball()
-    parser = net.serverParser
-    trainer = Trainer()
     
-    def __init__(self):
+    
+    
+    def __init__(self,monitorPort=3200):
+        
+        print("Creating Comms with monitorPort ",monitorPort,"\n")
+        #Network Connection
+        self.net = Comms(port=monitorPort)
+        self.parser = self.net.serverParser
+        self.trainer = Trainer(self.net)
         
         #DYNAMIC
         self.time = 0.0

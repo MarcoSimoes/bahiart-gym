@@ -3,7 +3,7 @@
         Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
 
         This file is part of BahiaRT GYM.
-        
+
         BahiaRT GYM is free software: you can redistribute it and/or modify
         it under the terms of the GNU Affero General Public License as
         published by the Free Software Foundation, either version 3 of the
@@ -27,27 +27,27 @@ class Comms(metaclass=Singleton):
     Communication class between Gym and Server.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection
     """
-    serverSocket = None
+    
 
     def __init__(self, host='localhost', port=3200):
-
         self.HOST = host
         self.PORT = port
+        print("Trying connection to ",self.HOST,":",self.PORT, flush=True)
+        print("\ntype(port)",type(self.PORT), flush=True)
         try: 
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print("Socket created.")
+            print("[COMMS] Socket created.")
         except socket.error as err:
-            print("Socket not created.")
-            print("Error : " + str(err))
-        
+            print("[COMMS] Socket not created.")
+            print("[COMMS] Error : " + str(err))
         try: 
             self.sock.connect((self.HOST, self.PORT))
             self.serverSocket = self.sock
-            print("Connection established")
+            print("[COMMS] Connection established to ",self.HOST,":",self.PORT, flush=True)
             self.serverSocket.setblocking(0)
         except socket.error as err:
-            print("Connection not established.")
-            print("Error : " + str(err))
+            print("[COMMS] Connection not established.", flush=True)
+            print("[COMMS] Error : " + str(err), flush=True)
 
         self.setParser()
 
@@ -102,13 +102,13 @@ class Comms(metaclass=Singleton):
                     read = len(byteMsg)
 
         except socket.timeout:
-            print("Timeout in updateSExp")
+            print("[COMMS] Timeout in updateSExp")
             return(False)
         except socket.error as err:
-            print("Socker error in updateSExp")
+            print("[COMMS] Socker error in updateSExp")
             return(False)
         except:
-            print("Connection Dropped in updateSExp")
+            print("[COMMS] Connection Dropped in updateSExp")
             return(False)
 
         #Transforms byteMsg into string
