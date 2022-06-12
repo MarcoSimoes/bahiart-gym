@@ -1,3 +1,22 @@
+"""
+        Copyright (C) 2022  Salvador, Bahia
+        Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
+
+        This file is part of BahiaRT GYM.
+
+        BahiaRT GYM is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as
+        published by the Free Software Foundation, either version 3 of the
+        License, or (at your option) any later version.
+
+        BahiaRT GYM is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU Affero General Public License for more details.
+
+        You should have received a copy of the GNU Affero General Public License
+        along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 import socket
 import select as slt
 from bahiart_gym.server.serverParser import ServerParser
@@ -8,11 +27,13 @@ class Comms(metaclass=Singleton):
     Communication class between Gym and Server.
     Constructor default parameters creates a HOST-PORT localhost-3200 connection
     """
-    serverSocket = None
+    
 
     def __init__(self, host='localhost', port=3200):
         self.HOST = host
         self.PORT = port
+        print("Trying connection to ",self.HOST,":",self.PORT, flush=True)
+        print("\ntype(port)",type(self.PORT), flush=True)
         try: 
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             print("[COMMS] Socket created.")
@@ -22,11 +43,11 @@ class Comms(metaclass=Singleton):
         try: 
             self.sock.connect((self.HOST, self.PORT))
             self.serverSocket = self.sock
-            print("[COMMS] Connection established")
+            print("[COMMS] Connection established to ",self.HOST,":",self.PORT, flush=True)
             self.serverSocket.setblocking(0)
         except socket.error as err:
-            print("[COMMS] Connection not established.")
-            print("[COMMS] Error : " + str(err))
+            print("[COMMS] Connection not established.", flush=True)
+            print("[COMMS] Error : " + str(err), flush=True)
 
         self.setParser()
 

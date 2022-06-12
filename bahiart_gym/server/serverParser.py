@@ -1,3 +1,22 @@
+"""
+        Copyright (C) 2022  Salvador, Bahia
+        Gabriel Mascarenhas, Marco A. C. Simões, Rafael Fonseca
+
+        This file is part of BahiaRT GYM.
+
+        BahiaRT GYM is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as
+        published by the Free Software Foundation, either version 3 of the
+        License, or (at your option) any later version.
+
+        BahiaRT GYM is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU Affero General Public License for more details.
+
+        You should have received a copy of the GNU Affero General Public License
+        along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 from multiprocessing import Lock
 from bahiart_gym.server.sexpr import str2sexpr
 from bahiart_gym.server.singleton import Singleton
@@ -29,33 +48,52 @@ class ServerParser(metaclass=Singleton):
                 break 
         return found
 
-    #Gets the entire ball node
-    def getBallIndex(self, lst: list, latestIndex):
+    def getObjIndex(self, obj_model_string, lst: list, latestIndex, latestIndex2=0, isPlayer=False):
         sceneGraph = lst[2]
         sceneGraphHeader = lst[1]
-        foundBall=False
+        foundObj=False
+        if(isPlayer):
+            playerLeft = latestIndex
+            playerRight = latestIndex2
         if(sceneGraphHeader[0]=="RSG"):
             for idx, nod in enumerate(sceneGraph):
-                foundBall=self.searchObject("models/soccerball.obj",nod)
-                if(foundBall):  
+                foundObj=self.searchObject(obj_model_string,nod)
+                if(foundObj and isPlayer): 
+                    #Save node and team and keep looking for a possible second one
+                    left = self.searchObject('matLeft', nod)
+                    right = self.searchObject('matRight', nod)
+                    if(left):
+                        playerLeft = idx
+                        continue
+                    if(right):
+                        playerRight = idx
+                        continue
+                    continue
+                elif(foundObj):
                     break
         else:
-            if(latestIndex is None):
-                latestIndex = 35 #In previous tests, the index 35 seemed to be the ball index almost everytime. This is just to make sure i'm not using None as index.
-            ballIndex = latestIndex
-            return ballIndex
-        if(foundBall):
-            ballIndex = idx
-            return ballIndex
+            if(isPlayer):
+                return playerLeft, playerRight
+            else:
+                objIndex = latestIndex
+                return objIndex
+        if(isPlayer):
+            return playerLeft, playerRight
+        elif(foundObj):
+            objIndex = idx
+            return objIndex
+        else:
+            objIndex = latestIndex
+            return objIndex
 
-    def getBallNd(self, lst: list, ballIndex):
+    def getObjNd(self, lst: list, objIndex):
         sceneGraph = lst[2]
-        ballNd = sceneGraph[ballIndex]
-        return ballNd
+        objNd = sceneGraph[objIndex]
+        return objNd
 
 
     #Gets only the N.O.A.P Values inside the node
-    def getBallGraph(self, lst: list, old):
+    def getObjGraph(self, lst: list, old):
         value = old
         for i in range(0,len(lst)):
             if value == [] or value == old:
@@ -63,7 +101,7 @@ class ServerParser(metaclass=Singleton):
                     value = lst[1:]
                     return value
                 elif type(lst[i]) is list:
-                    value = self.getBallGraph(lst[i], old)
+                    value = self.getObjGraph(lst[i], old)
                 else:
                     continue
                 if value == None or value == old:
@@ -74,15 +112,15 @@ class ServerParser(metaclass=Singleton):
             value = old
         return value
 
-    def getBallPos(self, lst: list, old: list):
+    def getObjPos(self, lst: list, old: list):
         if(lst is None or len(lst) < 12):
             return old
         else:
             x = lst[12]
             y = lst[13]
             z = lst[14]
-            ballPos = [float(x), float(y), float(z)]
-            return ballPos
+            objPos = [float(x), float(y), float(z)]
+            return objPos
 
     def search(self, word: str, lst: list):
         for i in range(0,len(lst)):
