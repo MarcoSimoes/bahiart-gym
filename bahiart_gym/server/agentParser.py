@@ -22,145 +22,96 @@ from bahiart_gym.server.singleton import Singleton
 from multiprocessing import Lock
 import numpy as np
 
-class AgentParser(metaclass=Singleton):
+
+class AgentParser(object):
     """
     Class to retrieve and parse the S-Expression sent by the server to the agents
     """
 
     def __init__(self):
         super().__init__()
-        self.mutex = Lock()
+       # self.mutex = Lock()
 
     def parse(self, string:str):
         parsedString = []       
-        with self.mutex:
-            parsedString = str2sexpr(string)    
+      #  with self.mutex:
+        try:
+            if len(string)>0:
+                parsedString = str2sexpr(string)   
+            else:
+                print("[PARSE] Empty String!")
+        except Exception as e:
+            print("[SEXPR] Erro:", e)
+            print("Message: ",string)
         return parsedString
 
-    def getHinjePos(self, word: str, lst: list, old):
-        value = old
-        for i in range(0,len(lst)):
-            if value == None or value == old:
-                if lst[i] == 'HJ':
-                    hingeName = lst[i+1]
-                    if hingeName[1] == word:
-                        ax = lst[i+2]
-                        value = ax[1]
-                        return float(value)
-                    else:
-                        continue
-                elif type(lst[i]) is list:
-                    value = self.getHinjePos(word, lst[i], old)
-                else:
-                    continue
-                if value == None or value == old:
-                    continue
-            else:
-                return value
-        if value is None:
-            value = old
-        return value
+    def getHingePos(self, lst: list):
+        hingeName = lst[0][1]
+        ax=float(lst[1][1])
+        return hingeName,float(ax)
+                    
 
-    #Can be used for ACC too. Just send 'ACC' as the word instead of 'GYR'
-    def getGyr(self, word: str, lst: list, old):
-        value = old
-        for i in range(0,len(lst)):
-            if value == [] or value == old:
-                if lst[i] == word:
-                    valuesList = lst[i+2]
-                    x = float(valuesList[1])
-                    y = float(valuesList[2])
-                    z = float(valuesList[3])
-                    value = [x, y, z]
-                    return value
-                elif type(lst[i]) is list:
-                    value = self.getGyr(word, lst[i], old)
-                else:
-                    continue
-                if value == None or value == old:
-                    continue
-            else:
-                return value
-        if value is None:
-            value = old
-        return value
+    
+    def getAcc(self, lst:list):
+        ax=float(lst[1][1])
+        ay=float(lst[1][2])
+        az=float(lst[1][3])
+        return [ax,ay,az]
+    
 
-    def getTime(self, lst: list, old, word='GS'):
+    def getGyr(self, lst: list):
+        
+        gx=float(lst[1][1])
+        gy=float(lst[1][2])
+        gz=float(lst[1][3])
+        return [gx,gy,gz]
+
+    def getGameState(self,lst: list):
         try:
-            value = old.copy()
-        except:
-            value = old
-        time = None
-        for i in range(0,len(lst)):
-            if value == [] or value == old:
-                if lst[i] == word:
-                    time = self.getValue('t', lst, old)
-                    value = float(time)
-                    return value
-                elif type(lst[i]) is list:
-                    value = self.getTime(lst[i], old)
-                else:
-                    continue
-                if value == None or value == old:
-                    continue
-            else:
-                return value
-        if value is None:
-            value = old
-        return value
+            leftscore=0
+            rightscore=0
+            gTime=0.0
+            playmode="other"
+            if(lst[0][0]=='sl'):
+                leftscore=int(lst[0][1])
+            if(lst[1][0]=='sr'):
+                rightscore=int(lst[1][1])
+            if(lst[2][0]=='t'):
+                gTime=float(lst[2][1])
+            if(lst[3][0]=='pm'):
+                playmode=lst[3][1]
+            return [leftscore,rightscore,gTime,playmode]
+        except Exception as e:
+            #print("Exception [agentParser]getTime():", e)
+            return None    
+
+    def getTime(self, lst: list):
+            try:
+                cTime=float(lst[0][1])
+                return cTime
+            except Exception as e:
+                #print("Exception [agentParser]getTime():", e)
+                return None
+        
 
 
-    def getBallVision(self, lst: list, old):
-        value = old
-        for i in range(0,len(lst)):
-            if value == [] or value == old:
-                if lst[i] == 'B':
-                    valuesList = lst[i+1]
-                    distance = float(valuesList[1])
-                    angle1 = float(valuesList[2])
-                    angle2 = float(valuesList[3])
-                    value = [distance, angle1, angle2]
-                    return value
-                elif type(lst[i]) is list:
-                    value = self.getBallVision(lst[i], old)
-                else:
-                    continue
-                if value == None or value == old:
-                    continue
-            else:
-                return value
-        if value is None:
-            value = old
+    def getBallVision(self, lst: list):
+        distance = float(lst[0][1])
+        angleH = float(lst[0][2])
+        angleV = float(lst[0][3])
+        value = [distance, angleH, angleV]
         return value
+                
 
-    def getFootResistance(self, word: str, lst: list, old):
-        value = old
-        for i in range(0,len(lst)):
-            if value == [] or value == old:
-                if lst[i] == 'FRP':
-                    foot = lst[i+1]
-                    if foot[1] == word:
-                        coordList = lst[i+2]
-                        forceList = lst[i+3]
-                        x1 = float(coordList[1])
-                        y1 = float(coordList[2])
-                        z1 = float(coordList[3])
-                        x2 = float(forceList[1])
-                        y2 = float(forceList[2])
-                        z2 = float(forceList[3])
-                        value = [[x1, y1, z1], [x2, y2, z2]]
-                        return value
-                elif type(lst[i]) is list:
-                    value = self.getFootResistance(word, lst[i], old)
-                else:
-                    continue
-                if value == None or value == old:
-                    continue
-            else:
-                return value
-        if value == None or value == []:
-            value = old
-        return value
+    def getFootResistance(self,  lst: list):
+        x1 = float(lst[1][1])
+        y1 = float(lst[1][2])
+        z1 = float(lst[1][3])
+        x2 = float(lst[2][1])
+        y2 = float(lst[2][2])
+        z2 = float(lst[2][3])
+        return [[x1, y1, z1], [x2, y2, z2]]
+                        
 
     def search(self, word: str, lst: list):
         for i in range(0,len(lst)):

@@ -33,7 +33,7 @@ class Proxy:
         self.AGENT_PORT = agent_port
 
         self.agentSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.agentSock.bind((self.SERVER_HOST, self.AGENT_PORT))
+        self.agentSock.bind(('localhost', self.AGENT_PORT))
    
         self.proxies = []
 
